@@ -1,0 +1,49 @@
+                      rBBBBBB7                        iZBBBP:                   
+                   .KMq7:...rDMs                    YMEr:i:vZR7                 
+                 iBBI         .BBu                .BB.       .RBD               
+                RB7             iBQ  r1IKbbgMggRZqBB   ....    .BB.             
+               QB.                BBQZPP57rii:ii::rrr .iriii:.   XBr            
+              BB                   ... ....:..........   .:iir.   vBr           
+             DB             .::ii::.::i::...       .::i:.   ::i.   vB:          
+            DB            .iii::::ii:.           .      .:.. .:i.   UB.         
+           QB           .:i:::::i:.         5Y   P:         .  .r:   1BK        
+          QB.          .ii:::::i.           1B  qB              .r:   .BBb.     
+        iBB           :::::::::             PB MB.                r:     7gQu   
+      :BBr           i:::::::.             :BBQB.                  ::.  :YXM:   
+  :1PQB7           .::....::.              ZBX:                    ::::.iMBJ    
+  EB5:           ...  .s7::.                                       15     .BQ.  
+   rRBMDbXBd      .:UQBPi:.                                        .BDqbggBBX   
+       .PBQ.  :j7dBBMu:..:           .r7.                 Js1r      RQ :..      
+        :RPZBQRPPBY   ..:           iBBBBI               7BBBB      SB          
+                1M .:::i:           1BBBd:               iQBDi      7B          
+                Bs :::::.           bBBg:  .iii::...::::.JBQE7      rB.         
+               .Q: :.:::            KBBBBs ............. uBBBB      :B.         
+               rB  :::::            PBBQB: ............  vBBBg      :B.         
+               YQ  :.:::            SBBBBi ........::::: ZBBQQ      :B.         
+               :B. ::::.            YBBBB:    .          rBBB7      :B:         
+                B1 :::::             KBB1                  .         QQ         
+                ZB  ::::                                        ...   Bi        
+                 BP .:::.     .....         .         :Y      si:iii:iB7        
+                 .BM  ::::.  .j.i::::i2     BBiiBQi5BRBQ      :ii..  DB         
+                   BQ:  .:::. .    .         PBBPdBBYPI             qB:         
+                    iQQi  .:::. .                           ...  .IBB           
+                    vSXBBIi. ..:::::::::::::.:.......:.::... ..rSRE.            
+                   .B: .7PBBDX7..   .................   ..:7uXBQB7              
+                    Rv.:...:i1PBBME57i:.....::iiirrYUdRDQQIZBBQPPRZBE           
+                   UP::::::      ::iSgBBBQBEXKQRgMdKXuLi  uBX.     .BBr         
+                  iB7..::i:       .EQPuUuIPBP            KB          vB.        
+                 vR71Ui...:      PBL        dBi   . .   .Br           BK        
+                7B:  BMXU7:.    bB           RB  ...    EB            BD        
+                Bq  .B7 vSPPPLiLB:           :B.      rSMB            UB        
+               UQ.  .Br ...irsYBQ            .Qr    :5b.:B. ..     .: .B.       
+              Ig     QE .::..  BZ             BM7JugBs  :Q:.i:i:::i:i. BK       
+             QD  .5Y:RB   .:: iB: :.       .. RbrJ. 7SPRBE  .....:.    JB:      
+             bPiv5: :.BB      BS .::ii::::i:: gD.ZPd: uBBBKsjL:...iXEdQB2       
+               :iv:    Bd    .BB:  ...::....  vB   rgPsi  LXPZQBQBRKri.         
+                5KrQi   BL     7QBB2:   :ii:rrZB.                               
+               JB. Mi .QQ          :BBQQQgdDZDJ                                 
+               .12qBBBBr  ...   ::vPQr                                          
+                    IBEr:...:rZBQbIr                                            
+                       i12P52L:
+
+${spring-boot.formatted-version}

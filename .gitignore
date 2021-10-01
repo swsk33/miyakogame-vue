@@ -1,0 +1,16 @@
+# idea
+/**/*.iml
+/**/.idea/
+
+# vscode
+/**/.vscode/
+
+# vue-cli
+/**/node_modules/
+/**/dist/
+
+# maven
+/**/target/
+
+# 自定义
+/server-springboot/resources/avatars/user/
