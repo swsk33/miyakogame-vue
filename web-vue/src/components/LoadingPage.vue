@@ -34,8 +34,8 @@ export default {
 				setTimeout(() => {
 					this.closeLoading = true;
 				}, 800);
+				clearInterval(checkComplete);
 			}
-			clearInterval(checkComplete);
 		}, 100);
 	},
 };

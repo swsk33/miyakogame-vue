@@ -1,5 +1,6 @@
 <template>
 	<div class="miyakoGame">
+		<mainmenu></mainmenu>
 		<loadingpage></loadingpage>
 	</div>
 </template>
@@ -7,10 +8,12 @@
 <script>
 import mouseffect from '@/assets/js/mouseffect.js';
 import loadingpage from '@/components/LoadingPage.vue';
+import mainmenu from '@/components/MainMenu.vue';
 
 export default {
 	components: {
 		loadingpage,
+		mainmenu,
 	},
 	mounted() {
 		mouseffect.enableAll();

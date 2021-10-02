@@ -76,8 +76,9 @@ export default {
 				boom: undefined
 			},
 			tip: {
-				true: undefined,
-				false: undefined
+				info: undefined,
+				warn: undefined,
+				error: undefined
 			},
 			weapon: {
 				normal: undefined,

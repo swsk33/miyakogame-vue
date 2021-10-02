@@ -83,6 +83,29 @@ export default {
 				p2: undefined,
 				p3: undefined
 			},
+			tipicon: {
+				info: {
+					i1: undefined,
+					i2: undefined,
+					i3: undefined,
+					i4: undefined,
+					i5: undefined
+				},
+				warn: {
+					w1: undefined,
+					w2: undefined,
+					w3: undefined,
+					w4: undefined,
+					w5: undefined
+				},
+				error: {
+					e1: undefined,
+					e2: undefined,
+					e3: undefined,
+					e4: undefined,
+					e5: undefined
+				}
+			},
 			title: {
 				normal: undefined
 			},
