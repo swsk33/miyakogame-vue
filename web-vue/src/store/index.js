@@ -5,6 +5,7 @@ import {
 import audio from './audio.js';
 import image from './image.js';
 import loading from './loading.js';
+import gamingcontrol from './gamingcontrol.js';
 
 export default createStore({
 	state: {},
@@ -14,5 +15,6 @@ export default createStore({
 		audio,
 		image,
 		loading,
+		gamingcontrol
 	},
 });
