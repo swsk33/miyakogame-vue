@@ -94,6 +94,27 @@ export default {
 			state.gameArea = payload;
 		},
 		/**
+		 * 移动一次宫子，payload是一个布尔值，true表示向上移动，否则向下
+		 */
+		moveMiyako(state, payload) {
+			const miyako = state.miyako;
+			const position = miyako.getPosition();
+			const size = miyako.getSize();
+			if (payload) {
+				if (position.y - miyako.speed < 0) {
+					miyako.style.top = '0px';
+				} else {
+					miyako.style.top = (position.y - miyako.speed) + 'px';
+				}
+			} else {
+				if (position.y + size.height + miyako.speed > state.gameArea.height) {
+					miyako.style.top = (state.gameArea.height - size.height) + 'px';
+				} else {
+					miyako.style.top = (position.y + miyako.speed) + 'px';
+				}
+			}
+		},
+		/**
 		 * 重置布丁的位置，第一次需要在在组件挂载时调用
 		 */
 		resetPuddingsPosition(state) {

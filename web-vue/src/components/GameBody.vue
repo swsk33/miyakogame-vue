@@ -36,7 +36,7 @@ const { mapState: gameState, mapMutations: gameMutations, mapActions: gameAction
 
 export default {
 	methods: {
-		...gameMutations(['resetPuddingsPosition', 'setGameArea']),
+		...gameMutations(['resetPuddingsPosition', 'setGameArea', 'moveMiyako']),
 		...gameActions([]),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
@@ -61,6 +61,14 @@ export default {
 			}
 			return lineNumber;
 		},
+		listenerHandle(e) {
+			if (e.keyCode == 87 || e.keyCode == 38) {
+				this.moveMiyako(true);
+			}
+			if (e.keyCode == 83 || e.keyCode == 40) {
+				this.moveMiyako(false);
+			}
+		},
 	},
 	computed: {
 		...gameState(['miyako', 'puddings']),
@@ -73,6 +81,8 @@ export default {
 		};
 		this.setGameArea(area);
 		this.resetPuddingsPosition();
+		// 全局添加键盘事件
+		document.body.addEventListener('keydown', this.listenerHandle);
 	},
 };
 </script>

@@ -60,6 +60,17 @@ function GameEntity(position, size) {
 		const y = parseInt(top.substring(0, top.length - 2));
 		return new Position(x, y);
 	};
+	/**
+	 * 获取这个实体的尺寸
+	 * @returns 实体尺寸对象
+	 */
+	this.getSize = () => {
+		const widthStr = this.style.width;
+		const heightStr = this.style.height;
+		const width = parseInt(widthStr.substring(0, widthStr.length - 2));
+		const height = parseInt(heightStr.substring(0, heightStr.length - 2));
+		return new Size(width, height);
+	}
 }
 
 export {

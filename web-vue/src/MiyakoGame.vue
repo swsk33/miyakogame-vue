@@ -1,8 +1,8 @@
 <template>
 	<div class="miyakoGame">
 		<mainmenu></mainmenu>
-		<loadingpage></loadingpage>
 		<gamebody></gamebody>
+		<loadingpage></loadingpage>
 	</div>
 </template>
 
