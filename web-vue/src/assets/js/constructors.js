@@ -39,14 +39,6 @@ function Size(width, height) {
  */
 function GameEntity(position, size) {
 	/**
-	 * 实体的绝对定位位置
-	 */
-	this.position = position;
-	/**
-	 * 实体尺寸
-	 */
-	this.size = size;
-	/**
 	 * 元素的css属性
 	 */
 	this.style = {
@@ -58,34 +50,16 @@ function GameEntity(position, size) {
 		height: size.height + 'px'
 	};
 	/**
-	 * 改变实体位置
-	 * @param {Position} position 位置对象
+	 * 获取这个实体的位置
+	 * @returns 实体位置对象
 	 */
-	this.changePosition = (position) => {
-		this.position = position;
-		this.style.left = position.x + 'px';
-		this.style.top = position.y + 'px';
-	}
-	/**
-	 * 改变实体大小
-	 * @param {Size} size 大小对象
-	 */
-	this.changeSize = (size) => {
-		this.size = size;
-		this.style.width = size.width + 'px';
-		this.style.top = size.top + 'px';
-	}
-	/**
-	 * 控制实体显隐
-	 * @param {Boolean} isShow true为显示，false为隐藏
-	 */
-	this.display = (isShow) => {
-		if (isShow) {
-			this.style.display = 'block';
-		} else {
-			this.style.display = 'none';
-		}
-	}
+	this.getPosition = () => {
+		const left = this.style.left;
+		const top = this.style.top;
+		const x = parseInt(left.substring(0, left.length - 2));
+		const y = parseInt(top.substring(0, top.length - 2));
+		return new Position(x, y);
+	};
 }
 
 export {

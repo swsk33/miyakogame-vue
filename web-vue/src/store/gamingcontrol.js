@@ -73,7 +73,7 @@ export default {
 		/**
 		 * 表示宫子对象
 		 */
-		miyako: undefined,
+		miyako: new Character(3, 10, new Position(0, 0), new Size(110, 108)),
 		/**
 		 * 表示所有布丁对象，二维数组，第一个参数为列数，第二个参数为行数，从0开始算
 		 */
@@ -88,7 +88,7 @@ export default {
 	},
 	mutations: {
 		/**
-		 * 设定游戏域大小
+		 * 设定游戏域大小，payload中要有width属性表示游戏域宽度，height属性表示游戏域高度
 		 */
 		setGameArea(state, payload) {
 			state.gameArea = payload;
@@ -101,24 +101,13 @@ export default {
 				for (let j = 0; j < 8; j++) {
 					let x = state.gameArea.width - 270 + i * 70;
 					let y = j * 65;
+					let getPudding = state.puddings[i][j];
 					let position = new Position(x, y);
-					state.puddings[i][j].changePosition(position);
+					getPudding.style.left = position.x + 'px';
+					getPudding.style.top = position.y + 'px';
 				}
 			}
 		},
 	},
-	actions: {
-		/**
-		 * 设定游戏域大小，payload中要有width属性表示游戏域宽度，height属性表示游戏域高度
-		 */
-		setGameArea(context, payload) {
-			context.commit('setGameArea', payload);
-		},
-		/**
-		 * 重置布丁的位置，第一次需要在在组件挂载时调用
-		 */
-		resetPuddingsPosition(context) {
-			context.commit('resetPuddingsPosition');
-		}
-	}
+	actions: {}
 }

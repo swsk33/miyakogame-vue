@@ -23,7 +23,7 @@
 		</div>
 		<div class="gameBackground">
 			<!--宫子-->
-			<img src="@/assets/image/miyako/normal.png" class="miyako" />
+			<img src="@/assets/image/miyako/normal.png" class="miyako" :style="miyako.style" />
 			<!--所有布丁，类名为：pudding-列-行，从0计数-->
 			<img v-for="n in 32" :key="n" :class="'pudding-' + getPuddingColumn(n) + '-' + getPuddingLine(n)" :src="getPuddingImage(n)" :style="puddings[getPuddingColumn(n)][getPuddingLine(n)].style" />
 		</div>
@@ -32,11 +32,12 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapState: gameState, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: gameState, mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 
 export default {
 	methods: {
-		...gameActions(['setGameArea', 'resetPuddingsPosition']),
+		...gameMutations(['resetPuddingsPosition', 'setGameArea']),
+		...gameActions([]),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');
@@ -72,7 +73,6 @@ export default {
 		};
 		this.setGameArea(area);
 		this.resetPuddingsPosition();
-		this.$forceUpdate();
 	},
 };
 </script>
@@ -175,13 +175,6 @@ export default {
 		width: 100%;
 		height: calc(100vh - 55px);
 		background-color: #77ffff;
-
-		.miyako {
-			position: absolute;
-			left: 0px;
-			width: 110px;
-			height: 108px;
-		}
 
 		@for $i from 0 through 3 {
 			@for $j from 0 through 7 {
