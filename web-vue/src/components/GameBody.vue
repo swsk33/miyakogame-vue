@@ -36,7 +36,7 @@ const { mapState: gameState, mapMutations: gameMutations, mapActions: gameAction
 
 export default {
 	methods: {
-		...gameMutations(['resetPuddingsPosition', 'setGameArea', 'moveMiyako']),
+		...gameMutations(['resetPuddings', 'setGameArea', 'moveMiyako']),
 		...gameActions([]),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
@@ -80,7 +80,7 @@ export default {
 			height: gameBackground.offsetHeight,
 		};
 		this.setGameArea(area);
-		this.resetPuddingsPosition();
+		this.resetPuddings();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
 	},

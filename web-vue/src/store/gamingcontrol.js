@@ -115,9 +115,9 @@ export default {
 			}
 		},
 		/**
-		 * 重置布丁的位置，第一次需要在在组件挂载时调用
+		 * 重置布丁，第一次需要在在组件挂载时调用
 		 */
-		resetPuddingsPosition(state) {
+		resetPuddings(state) {
 			for (let i = 0; i < 4; i++) {
 				for (let j = 0; j < 8; j++) {
 					let x = state.gameArea.width - 270 + i * 70;

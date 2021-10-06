@@ -71,6 +71,23 @@ function GameEntity(position, size) {
 		const height = parseInt(heightStr.substring(0, heightStr.length - 2));
 		return new Size(width, height);
 	}
+	/**
+	 * 判断自身是否与传入的实体相碰撞
+	 * @param {GameEntity} otherEntity 传入实体
+	 * @returns 是否碰撞
+	 */
+	this.isCollision = (otherEntity) => {
+		const selfPosition = this.getPosition();
+		const selfSize = this.getSize();
+		const otherPosition = otherEntity.getPosition();
+		const otherSize = otherEntity.getSize();
+		// 起始条件：自身的右下角的点位于传入实体的左上角
+		const startCondition = (selfPosition.x + selfSize.width >= otherPosition.x) && (selfPosition.y + selfSize.height >= otherPosition.y);
+		// 终止条件：自身的左上角的点位于传入实体的右下角
+		const endCondition = (selfPosition.x <= otherPosition.x + otherSize.width) && (selfPosition.y <= otherPosition.y + otherSize.height);
+		// 两者同时达成，才算碰撞
+		return startCondition && endCondition;
+	}
 }
 
 export {
