@@ -124,8 +124,10 @@ export default {
 					let y = j * 65;
 					let getPudding = state.puddings[i][j];
 					let position = new Position(x, y);
+					getPudding.style.display = 'block';
 					getPudding.style.left = position.x + 'px';
 					getPudding.style.top = position.y + 'px';
+					getPudding.isEaten = false;
 				}
 			}
 		},
