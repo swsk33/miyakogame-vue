@@ -32,12 +32,15 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapState: gameState, mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapMutations: gameMutations } = createNamespacedHelpers('gamingcontrol');
+const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
+const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 
 export default {
 	methods: {
-		...gameMutations(['resetPuddings', 'setGameArea', 'moveMiyako']),
-		...gameActions([]),
+		...gameMutations(['setGameArea']),
+		...miyakoActions(['moveMiyako']),
+		...puddingActions(['resetPuddings']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');
@@ -71,7 +74,8 @@ export default {
 		},
 	},
 	computed: {
-		...gameState(['miyako', 'puddings']),
+		...puddingState(['puddings']),
+		...miyakoState(['miyako']),
 	},
 	mounted() {
 		let gameBackground = document.querySelector('.gameBackground');

@@ -54,6 +54,7 @@ function checkImageLoaded(imageList) {
 	return loaded;
 }
 
+// vuex-图片资源模块
 export default {
 	namespaced: true,
 	state: {

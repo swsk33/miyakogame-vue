@@ -1,3 +1,4 @@
+// vuex-加载主控制
 export default {
 	namespaced: true,
 	state: {

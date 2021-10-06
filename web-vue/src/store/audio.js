@@ -53,6 +53,7 @@ function checkAudioLoaded(audioList) {
 	return loaded;
 }
 
+// vuex-音频资源模块
 export default {
 	namespaced: true,
 	state: {

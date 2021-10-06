@@ -5,6 +5,8 @@ import {
 import audio from './audio.js';
 import image from './image.js';
 import loading from './loading.js';
+import pudding from './pudding.js';
+import miyako from './miyako.js';
 import gamingcontrol from './gamingcontrol.js';
 
 export default createStore({
@@ -15,6 +17,8 @@ export default createStore({
 		audio,
 		image,
 		loading,
+		pudding,
+		miyako,
 		gamingcontrol
 	},
 });
