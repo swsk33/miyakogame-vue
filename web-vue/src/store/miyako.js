@@ -39,6 +39,12 @@ export default {
 		setMiyakoPosition(state, payload) {
 			state.miyako.style.top = payload + 'px';
 		},
+		/**
+		 * 宫子生命值减1
+		 */
+		decreaseHealth(state) {
+			state.miyako.health--;
+		}
 	},
 	actions: {
 		/**

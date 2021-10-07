@@ -40,7 +40,7 @@ export default {
 	methods: {
 		...gameMutations(['setGameArea']),
 		...miyakoActions(['moveMiyako']),
-		...puddingActions(['resetPuddings']),
+		...puddingActions(['resetPuddings', 'moveAllPuddings']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');
@@ -87,6 +87,7 @@ export default {
 		this.resetPuddings();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
+		//setInterval(this.moveAllPuddings, 1);
 	},
 };
 </script>

@@ -62,6 +62,10 @@ export default {
 		 * 表示所有布丁对象，二维数组，第一个参数为列数，第二个参数为行数，从0开始算
 		 */
 		puddings: initializePuddings(),
+		/**
+		 * 布丁移动方向，true表示向上移动
+		 */
+		isUp: false
 	},
 	mutations: {
 		/**
@@ -91,6 +95,12 @@ export default {
 			state.puddingAtBorder.top = payload.top;
 			state.puddingAtBorder.bottom = payload.bottom;
 		},
+		/**
+		 * 改变布丁的移动方向
+		 */
+		alterPuddingMove(state) {
+			state.isUp = !state.isUp;
+		}
 	},
 	actions: {
 		/**
@@ -102,11 +112,12 @@ export default {
 				bottom: undefined
 			};
 			let isBorderSet = false;
+			const puddings = context.state.puddings;
 			// 上判定
-			for (let line = 0; line < 8; line++) {
-				for (let column = 0; column < 4; column++) {
-					if (!context.state.puddings[column][line].isEaten) {
-						puddingsAtBorder.top = context.state.puddings[column][line];
+			for (let line = 0; line < puddings[0].length; line++) {
+				for (let column = 0; column < puddings.length; column++) {
+					if (!puddings[column][line].isEaten) {
+						puddingsAtBorder.top = puddings[column][line];
 						isBorderSet = true;
 						break;
 					}
@@ -117,10 +128,10 @@ export default {
 			}
 			// 下判定
 			isBorderSet = false;
-			for (let line = 7; line >= 0; line--) {
-				for (let column = 0; column < 4; column++) {
-					if (!context.state.puddings[column][line].isEaten) {
-						puddingsAtBorder.bottom = context.state.puddings[column][line];
+			for (let line = puddings[0].length - 1; line >= 0; line--) {
+				for (let column = 0; column < puddings.length; column++) {
+					if (!puddings[column][line].isEaten) {
+						puddingsAtBorder.bottom = puddings[column][line];
 						isBorderSet = true;
 						break;
 					}
@@ -134,24 +145,126 @@ export default {
 		/**
 		 * 移动一次所有的布丁，多次移动时，移动方向是：下->左->上->左->下...
 		 */
-		moveAllPuddings(context) {},
+		moveAllPuddings(context) {
+			const rate = context.rootState.gamingcontrol.level * 2 + 1;
+			const puddings = context.state.puddings;
+			let eachPuddingPosition;
+			const arg = {
+				column: undefined,
+				line: undefined,
+				position: undefined
+			}
+			// 布丁正在上移时
+			if (context.state.isUp) {
+				// 获取上边界布丁位置
+				const topPosition = context.state.puddingAtBorder.top.getPosition().y;
+				// 快到上边界时，直接移动到上边界，并左移50px
+				if (topPosition - rate < 0) {
+					for (let column = 0; column < puddings.length; column++) {
+						for (let line = 0; line < puddings[column].length; line++) {
+							if (!puddings[column][line].isEaten) {
+								eachPuddingPosition = puddings[column][line].getPosition();
+								eachPuddingPosition.y = eachPuddingPosition.y - topPosition;
+								eachPuddingPosition.x = eachPuddingPosition.x - 50;
+								arg.column = column;
+								arg.line = line;
+								arg.position = eachPuddingPosition;
+								context.commit('setPuddingPosition', arg);
+							}
+						}
+					}
+					// 改变方向
+					context.commit('alterPuddingMove');
+				} else { // 否则，正常向上移动
+					for (let column = 0; column < puddings.length; column++) {
+						for (let line = 0; line < puddings[column].length; line++) {
+							if (!puddings[column][line].isEaten) {
+								eachPuddingPosition = puddings[column][line].getPosition();
+								eachPuddingPosition.y = eachPuddingPosition.y - rate;
+								arg.column = column;
+								arg.line = line;
+								arg.position = eachPuddingPosition;
+								context.commit('setPuddingPosition', arg);
+							}
+						}
+					}
+				}
+			} else { // 正在下移时
+				// 获取下边界布丁位置和大小
+				const bottomPosition = context.state.puddingAtBorder.bottom.getPosition().y;
+				const bottomPuddingHeight = context.state.puddingAtBorder.bottom.getSize().height;
+				// 快到下边界时，直接移动到下边界，并左移50px
+				if (bottomPosition + bottomPuddingHeight + rate > context.rootState.gamingcontrol.gameArea.height) {
+					for (let column = 0; column < puddings.length; column++) {
+						for (let line = 0; line < puddings[column].length; line++) {
+							if (!puddings[column][line].isEaten) {
+								const distance = context.rootState.gamingcontrol.gameArea.height - bottomPosition - bottomPuddingHeight;
+								eachPuddingPosition = puddings[column][line].getPosition();
+								eachPuddingPosition.y = eachPuddingPosition.y + distance;
+								eachPuddingPosition.x = eachPuddingPosition.x - 50;
+								arg.column = column;
+								arg.line = line;
+								arg.position = eachPuddingPosition;
+								context.commit('setPuddingPosition', arg);
+							}
+						}
+					}
+					// 改变方向
+					context.commit('alterPuddingMove');
+				} else { // 否则，正常向下移动
+					for (let column = 0; column < puddings.length; column++) {
+						for (let line = 0; line < puddings[column].length; line++) {
+							if (!puddings[column][line].isEaten) {
+								eachPuddingPosition = puddings[column][line].getPosition();
+								eachPuddingPosition.y = eachPuddingPosition.y + rate;
+								arg.column = column;
+								arg.line = line;
+								arg.position = eachPuddingPosition;
+								context.commit('setPuddingPosition', arg);
+							}
+						}
+					}
+				}
+			}
+			// 每移动一次，检测是否有布丁越界或者碰到了宫子
+			context.dispatch('isPuddingOut');
+		},
+		/**
+		 * 判断是否有布丁越界或者碰到了宫子
+		 */
+		isPuddingOut(context) {
+			const puddings = context.state.puddings;
+			let eachPudding;
+			for (let column = 0; column < puddings.length; column++) {
+				for (let line = 0; line < puddings[column].length; line++) {
+					eachPudding = puddings[column][line];
+					if (!eachPudding.isEaten) {
+						if (eachPudding.getPosition().x <= 0 || eachPudding.isCollision(context.rootState.miyako.miyako)) {
+							context.dispatch('resetPuddings');
+							return;
+						}
+					}
+				}
+			}
+		},
 		/**
 		 * 重置布丁，第一次需要在在组件挂载时调用
 		 */
 		resetPuddings(context) {
+			const puddings = context.state.puddings;
 			let arg = {
 				column: undefined,
 				line: undefined,
 				position: undefined,
 				eaten: false
 			}
-			for (let i = 0; i < 4; i++) {
-				for (let j = 0; j < 8; j++) {
-					let x = context.rootState.gamingcontrol.gameArea.width - 270 + i * 70;
-					let y = j * 65;
+			for (let column = 0; column < puddings.length; column++) {
+				for (let line = 0; line < puddings[column].length; line++) {
+					let x = context.rootState.gamingcontrol.gameArea.width - 270 + column * 70;
+					let y = line * 65;
 					arg.position = new Position(x, y);
-					arg.column = i;
-					arg.line = j;
+					arg.column = column;
+					arg.line = line;
 					context.commit('setPuddingPosition', arg);
 					context.commit('setPuddingEaten', arg);
 				}
