@@ -11,7 +11,7 @@ import {
  * @param {Number} price 武器价格
  * @param {NodeRequire} texture 子弹贴图
  * @param {Number} interval 射击间隔（ms）
- * @param {NodeRequire} sound 射击音效
+ * @param {Audio} sound 射击音效
  * @param {Function} shooting 子弹发射方法，用于生成子弹对象，返回Bullet对象实体（回调函数，需要有两个形参position（Position位置对象）和size（Size尺寸对象），分别表示子弹初始位置和大小）
  */
 function Weapon(name, description, price, texture, interval, sound, shooting) {
@@ -60,8 +60,14 @@ export default {
 		/**
 		 * 武器列表
 		 */
-		weaponList: undefined
+		weaponList: [],
+		/**
+		 * 当前屏幕上的所有子弹
+		 */
+		bullets: []
 	},
-	mutations: {},
+	mutations: {
+
+	},
 	actions: {}
 }
