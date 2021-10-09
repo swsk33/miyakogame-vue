@@ -9,17 +9,19 @@ import {
  * @param {String} name 武器（魔法）名
  * @param {String} description 武器描述
  * @param {Number} price 武器价格
- * @param {NodeRequire} texture 子弹贴图
+ * @param {Number} count 该武器子弹剩余数量，-1表示无限
  * @param {Number} interval 射击间隔（ms）
+ * @param {NodeRequire} texture 子弹贴图
  * @param {Audio} sound 射击音效
  * @param {Function} shooting 子弹发射方法，用于生成子弹对象，返回Bullet对象实体（回调函数，需要有两个形参position（Position位置对象）和size（Size尺寸对象），分别表示子弹初始位置和大小）
  */
-function Weapon(name, description, price, texture, interval, sound, shooting) {
+function Weapon(name, description, price, count, interval, texture, sound, shooting) {
 	this.name = name;
 	this.description = description;
 	this.price = price;
-	this.texture = texture;
+	this.count = count;
 	this.interval = interval;
+	this.texture = texture;
 	this.sound = sound;
 	/**
 	 * 发射子弹
@@ -40,17 +42,98 @@ function Weapon(name, description, price, texture, interval, sound, shooting) {
 function Bullet(position, size, flying, hitTrigger) {
 	GameEntity.call(this, position, size);
 	/**
+	 * 这个子弹实体是否有效，如果这个子弹实体无效，则会在屏幕上隐藏，全局子弹飞行控制器也会将其从子弹数组中移除（例如一个子弹击中敌人，那就无效了，除非是穿透性子弹）
+	 */
+	this.valid = true;
+	/**
 	 * 子弹飞行一次
 	 * @param {Array} enemies 全部敌人对象数组
-	 * @returns 子弹飞行一次后的位置，为一个Position对象
+	 * @returns 子弹飞行一次后的状态，为一个对象，其中有position属性表示飞行一次后的位置，size属性表示飞行一次后的大小，如果大小不变，那么这个size属性将为undefined
 	 */
 	this.flying = flying;
 	/**
 	 * 子弹击中敌人
 	 * @param {Pudding} enemy 被击中的敌人对象
 	 * @param {Array} enemies 全部敌人数组
+	 * @returns 被击中的敌人或者敌人数组
 	 */
 	this.hitTrigger = hitTrigger;
+}
+
+/**
+ * 实体水平方向飞行，执行一次该函数，就会获得一个实体以指定速度水平方向飞行一次后的位置，正方向为水平向右
+ * @param {GameEntity} entity 传入实体
+ * @param {Number} velocity 飞行速度
+ * @returns 飞行一次之后实体的位置
+ */
+function entityFlyX(entity, velocity) {
+	const position = entity.getPosition();
+	position.x = position.x + velocity;
+	return position;
+}
+
+/**
+ * 实体垂直方向飞行，执行一次该函数，就会获得一个实体以指定速度垂直方向飞行一次后的位置，正方向为垂直向下
+ * @param {GameEntity} entity 传入实体
+ * @param {Number} velocity 飞行速度
+ * @returns 飞行一次之后实体的位置
+ */
+function entityFlyY(entity, velocity) {
+	const position = entity.getPosition();
+	position.y = position.y + velocity;
+	return position;
+}
+
+/**
+ * 实体向任一方向飞行，执行一次该函数，就会获得一个实体以指定速度和方向飞行一次后的位置
+ * @param {GameEntity} entity 传入实体
+ * @param {Number} velocity 速度
+ * @param {Number} direction 飞行方向，以水平向右为0，逆时针为正方向，单位度
+ * @returns 飞行一次之后的实体位置1
+ */
+function entityFly(entity, velocity, direction) {
+	// 弧度制转换
+	const arcDirection = (direction / 180) * Math.PI;
+	const position = entity.getPosition();
+	position.x = position.x + Math.cos(arcDirection) * velocity;
+	position.y = position.y - Math.sin(arcDirection) * velocity;
+	return position;
+}
+
+/**
+ * 实体大小改变，执行一次该函数，就会获得实体以指定速度改变大小之后的尺寸和位置，改变实体大小后，实体的中心位置不变（因此，实体坐标会变）
+ * @param {GameEntity} entity 游戏实体
+ * @param {Number} rate 大小改变速度（将游戏实体视作一个矩形，大小改变速度表示长和宽每一次增加的量）
+ * @returns 一个对象，其中position属性表示改变大小之后的位置，size属性表示改变大小之后的尺寸
+ */
+function entitySizeChange(entity, rate) {
+	const position = entity.getPosition();
+	const size = entity.getSize();
+	size.width = size.width + rate;
+	size.height = size.height + rate;
+	position.x = position.x - rate / 2;
+	position.y = position.y - rate / 2;
+	return {
+		size,
+		position
+	};
+}
+
+/**
+ * 初始化全部武器
+ * @returns 武器数组
+ */
+function initializeWeapon() {
+	// 默认武器
+	let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), (position, size) => {
+		this.sound.play();
+		let bullet = new Bullet(position, size, () => {
+			return entityFlyX(this);
+		}, (enemy) => {
+
+		});
+		return bullet;
+	})
 }
 
 // vuex-武器系统
@@ -67,7 +150,32 @@ export default {
 		bullets: []
 	},
 	mutations: {
-
+		/**
+		 * 改变当前的某个子弹的状态（位置、大小）,payload要有三个参数：position表示位置，size表示大小（非必须），index表示子弹数组中的子弹下标
+		 */
+		changeBulletOnScreen(state, payload) {
+			let getBullet = state.bullets[payload.index];
+			getBullet.style.left = payload.position.x + 'px';
+			getBullet.style.top = payload.position.y + 'px';
+			if (payload.size != undefined) {
+				getBullet.style.width = payload.size.width + 'px';
+				getBullet.style.height = payload.size.height + 'px';
+			}
+		},
+		/**
+		 * 改变当前子弹有效性，payload为一个整数表示要改变的子弹在子弹数组中的下标
+		 */
+		changeBulletValid(state, payload) {
+			state.bullets[payload].valid = !state.bullets[payload].valid;
+			state.bullets[payload].style.display = 'none';
+		}
 	},
-	actions: {}
+	actions: {
+		/**
+		 * 将每一个子弹执行一次飞行方法
+		 */
+		flyAllBullet(context) {
+
+		}
+	}
 }

@@ -7,8 +7,10 @@ import {
 /**
  * 布丁（敌人）对象构造函数，继承GameEntity
  * @param {Number} score 分值
+ * @param {Number} column 这个布丁位于第几列
+ * @param {Number} line 这个布丁位于第几行
  */
-function Pudding(score) {
+function Pudding(score, column, line) {
 	let position = new Position(0, 0);
 	let size = new Size(60, 60);
 	GameEntity.call(this, position, size);
@@ -20,6 +22,14 @@ function Pudding(score) {
 	 * 是否被吃掉
 	 */
 	this.isEaten = false;
+	/**
+	 * 这个布丁所在列数
+	 */
+	this.column = column;
+	/**
+	 * 这个布丁所在行数
+	 */
+	this.line = line;
 }
 
 /**
@@ -28,21 +38,21 @@ function Pudding(score) {
  */
 function initializePuddings() {
 	let puddings = [];
-	for (let i = 0; i < 4; i++) {
-		let column = [];
-		for (let j = 0; j < 8; j++) {
+	for (let column = 0; column < 4; column++) {
+		let puddingColumn = [];
+		for (let line = 0; line < 8; line++) {
 			let score;
-			if (i <= 1) {
+			if (column <= 1) {
 				score = 1;
-			} else if (i == 2) {
+			} else if (column == 2) {
 				score = 2;
 			} else {
 				score = 3;
 			}
-			let pudding = new Pudding(score);
-			column.push(pudding);
+			let pudding = new Pudding(score, column, line);
+			puddingColumn.push(pudding);
 		}
-		puddings.push(column);
+		puddings.push(puddingColumn);
 	}
 	return puddings;
 }
