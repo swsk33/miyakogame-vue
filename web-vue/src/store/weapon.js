@@ -55,7 +55,6 @@ function Bullet(position, size, flying, hitTrigger) {
 	 * 子弹击中敌人
 	 * @param {Pudding} enemy 被击中的敌人对象
 	 * @param {Array} enemies 全部敌人数组
-	 * @returns 被击中的敌人或者敌人数组
 	 */
 	this.hitTrigger = hitTrigger;
 }
@@ -119,23 +118,6 @@ function entitySizeChange(entity, rate) {
 	};
 }
 
-/**
- * 初始化全部武器
- * @returns 武器数组
- */
-function initializeWeapon() {
-	// 默认武器
-	let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), (position, size) => {
-		this.sound.play();
-		let bullet = new Bullet(position, size, () => {
-			return entityFlyX(this);
-		}, (enemy) => {
-
-		});
-		return bullet;
-	})
-}
-
 // vuex-武器系统
 export default {
 	namespaced: true,
@@ -143,7 +125,7 @@ export default {
 		/**
 		 * 武器列表
 		 */
-		weaponList: [],
+		weaponList: undefined,
 		/**
 		 * 当前屏幕上的所有子弹
 		 */
@@ -168,14 +150,54 @@ export default {
 		changeBulletValid(state, payload) {
 			state.bullets[payload].valid = !state.bullets[payload].valid;
 			state.bullets[payload].style.display = 'none';
+		},
+		/**
+		 * 设定全部武器列表，payload表示全部武器列表
+		 */
+		setWeapons(state, payload) {
+			state.weaponList = payload;
 		}
 	},
 	actions: {
 		/**
+		 * 初始化所有武器，需要在组件挂载时调用
+		 */
+		initializeWeapon(context) {
+			// 默认武器
+			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), (position, size) => {
+				this.sound.play();
+				let bullet = new Bullet(position, size, () => {
+					return entityFlyX(this);
+				}, (enemy) => {
+					// 标记该子弹无效
+					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+					// 击中布丁标记为被吃掉
+					context.commit('pudding/setPuddingEaten', {
+						column: enemy.column,
+						line: enemy.line,
+						eaten: true
+					}, {
+						root: true
+					});
+				});
+				return bullet;
+			});
+			const weapons = [];
+			weapons.push(defaultWeapon);
+			context.commit('setWeapons', weapons);
+		},
+		/**
 		 * 将每一个子弹执行一次飞行方法
 		 */
 		flyAllBullet(context) {
+			const allBullets = context.state.bullets;
+			for (let i = 0; i < allBullets.length; i++) {
+				const getBullet = allBullets[i];
+				// 控制子弹飞行时，检查每个子弹有效性，无效子弹移出数组
+				if (!getBullet.valid) {
 
+				}
+			}
 		}
 	}
 }

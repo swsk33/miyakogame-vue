@@ -35,12 +35,14 @@ import { createNamespacedHelpers } from 'vuex';
 const { mapMutations: gameMutations } = createNamespacedHelpers('gamingcontrol');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
+const { mapState: weaponState, mapActions: weaponActions } = createNamespacedHelpers('weapon');
 
 export default {
 	methods: {
 		...gameMutations(['setGameArea']),
 		...miyakoActions(['moveMiyako']),
 		...puddingActions(['resetPuddings', 'moveAllPuddings']),
+		...weaponActions(['initializeWeapon']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');
@@ -76,6 +78,7 @@ export default {
 	computed: {
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
+		...weaponState(['bullets']),
 	},
 	mounted() {
 		let gameBackground = document.querySelector('.gameBackground');
@@ -85,6 +88,7 @@ export default {
 		};
 		this.setGameArea(area);
 		this.resetPuddings();
+		this.initializeWeapon();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
 		//setInterval(this.moveAllPuddings, 1);
