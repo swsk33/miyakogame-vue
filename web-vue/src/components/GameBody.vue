@@ -26,13 +26,17 @@
 			<img src="@/assets/image/miyako/normal.png" class="miyako" :style="miyako.style" />
 			<!--所有布丁，类名为：pudding-列-行，从0计数-->
 			<img v-for="n in 32" :key="n" :class="'pudding-' + getPuddingColumn(n) + '-' + getPuddingLine(n)" :src="getPuddingImage(n)" :style="puddings[getPuddingColumn(n)][getPuddingLine(n)].style" />
+			<!-- 所有子弹，使用v-for实现动态生成子弹dom -->
+			<div v-for="bullet in bullets" :key="bullet" :style="bullet.style">
+				<img :src="bullet.texture" />
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapMutations: gameMutations } = createNamespacedHelpers('gamingcontrol');
+const { mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 const { mapState: weaponState, mapActions: weaponActions } = createNamespacedHelpers('weapon');
@@ -40,9 +44,10 @@ const { mapState: weaponState, mapActions: weaponActions } = createNamespacedHel
 export default {
 	methods: {
 		...gameMutations(['setGameArea']),
+		...gameActions(['startGameProcess', 'stopGameProcess']),
 		...miyakoActions(['moveMiyako']),
 		...puddingActions(['resetPuddings', 'moveAllPuddings']),
-		...weaponActions(['initializeWeapon']),
+		...weaponActions(['initializeWeapon', 'shooting']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');

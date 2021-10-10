@@ -24,10 +24,9 @@ function Weapon(name, description, price, count, interval, texture, sound, shoot
 	this.texture = texture;
 	this.sound = sound;
 	/**
-	 * 发射子弹
+	 * 发射子弹，即为生成子弹对象并加入到所有子弹数组中去
 	 * @param {Position} position 子弹初始的位置
 	 * @param {Size} size 子弹大小
-	 * @returns 子弹Bullet实体对象或者Bullet数组（有的武器是一次多发的）
 	 */
 	this.shooting = shooting;
 }
@@ -127,6 +126,10 @@ export default {
 		 */
 		weaponList: undefined,
 		/**
+		 * 当前武器索引
+		 */
+		currentWeapon: 0,
+		/**
 		 * 当前屏幕上的所有子弹
 		 */
 		bullets: []
@@ -152,6 +155,18 @@ export default {
 			state.bullets[payload].style.display = 'none';
 		},
 		/**
+		 * 移除指定子弹，payload为一个整数表示要移除的子弹数组下标
+		 */
+		removeBullet(state, payload) {
+			state.bullets.splice(payload, 1);
+		},
+		/**
+		 * 添加子弹到当前子弹数组中，payload表示子弹对象
+		 */
+		addBullet(state, payload) {
+			state.bullets.push(payload);
+		},
+		/**
 		 * 设定全部武器列表，payload表示全部武器列表
 		 */
 		setWeapons(state, payload) {
@@ -166,9 +181,9 @@ export default {
 			// 默认武器
 			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), (position, size) => {
 				this.sound.play();
-				let bullet = new Bullet(position, size, () => {
+				let bullet = new Bullet(position, size, (enemies) => {
 					return entityFlyX(this);
-				}, (enemy) => {
+				}, (enemy, enemies) => {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
 					// 击中布丁标记为被吃掉
@@ -180,22 +195,72 @@ export default {
 						root: true
 					});
 				});
-				return bullet;
+				context.commit('addBullet', bullet);
 			});
+			// 设定武器列表
 			const weapons = [];
 			weapons.push(defaultWeapon);
 			context.commit('setWeapons', weapons);
+		},
+		/**
+		 * 当前武器射击，payload中要有position和size属性表示子弹初始位置和大小
+		 */
+		shooting(context, payload) {
+			const getWeapon = context.state.weaponList[context.state.currentWeapon];
+			getWeapon.shooting(payload.position, payload.size);
 		},
 		/**
 		 * 将每一个子弹执行一次飞行方法
 		 */
 		flyAllBullet(context) {
 			const allBullets = context.state.bullets;
+			const allPuddings = context.rootState.pudding.puddings;
+			const gameArea = context.rootState.gamingcontrol.gameArea;
 			for (let i = 0; i < allBullets.length; i++) {
 				const getBullet = allBullets[i];
 				// 控制子弹飞行时，检查每个子弹有效性，无效子弹移出数组
 				if (!getBullet.valid) {
-
+					context.commit('removeBullet', i);
+					i--;
+					continue;
+				}
+				// 飞行一次
+				let position = getBullet.flying();
+				context.commit('changeBulletOnScreen', {
+					position: position,
+					index: i
+				});
+				// 然后检查这个子弹是否和布丁相碰
+				for (let j = 0; j < allPuddings.length; j++) {
+					for (let k = 0; k < allPuddings[j].length; k++) {
+						const getPudding = allBullets[j][k];
+						// 这个布丁被吃了，则跳过此次遍历
+						if (getPudding.isEaten) {
+							continue;
+						}
+						// 否则，判断这个子弹和这个布丁是否相撞
+						if (getBullet.isCollision(getPudding)) {
+							// 执行子弹撞击方法
+							getBullet.hitTrigger(getPudding, allPuddings);
+							// 重新设定布丁上下边界
+							context.commit('pudding/scanPuddingsAtBorder', null, {
+								root: true
+							});
+							// 如果这个子弹无效了，跳出循环
+							if (!getBullet.valid) {
+								break;
+							}
+						}
+					}
+					// 如果这个子弹无效了，跳出循环
+					if (!getBullet.valid) {
+						break;
+					}
+				}
+				// 如果这个子弹仍然有效，说明未击中敌人或者是击中敌人但是不消失类型，这时子弹遇到边界自动消失
+				if (getBullet.valid && (getBullet.position.x + getBullet.size.width >= gameArea.width || getBullet.position.y <= 0 || getBullet.position.y + getBullet.size.height >= gameArea.height)) {
+					context.commit('removeBullet', i);
+					i--;
 				}
 			}
 		}

@@ -12,6 +12,19 @@ export default {
 		gameArea: {
 			width: 0,
 			height: 0
+		},
+		/**
+		 * 游戏控制计时器
+		 */
+		controls: {
+			/**
+			 * 布丁移动计时器
+			 */
+			puddingMove: undefined,
+			/**
+			 * 子弹飞行计时器
+			 */
+			bulletFly: undefined
 		}
 	},
 	mutations: {
@@ -21,6 +34,45 @@ export default {
 		setGameArea(state, payload) {
 			state.gameArea = payload;
 		},
+		/**
+		 * 设定游戏主控，payload为一个对象，其中pudding、bullet属性都是计时器，分别表示循环调用所有布丁和子弹移动方法的计时器
+		 */
+		setControls(state, payload) {
+			state.controls.puddingMove = payload.pudding;
+			state.controls.bulletFly = payload.bullet;
+		},
+		/**
+		 * 清除游戏主控计时器
+		 */
+		clearControls(state) {
+			clearInterval(state.controls.puddingMove);
+			clearInterval(state.controls.bulletFly);
+		}
 	},
-	actions: {}
+	actions: {
+		/**
+		 * 启动游戏进程
+		 */
+		startGameProcess(context) {
+			let args = {
+				pudding: setInterval(() => {
+					context.dispatch('pudding/moveAllPuddings', null, {
+						root: true
+					});
+				}, 100),
+				bullet: setInterval(() => {
+					context.dispatch('weapon/flyAllBullet', null, {
+						root: true
+					});
+				}, 16)
+			}
+			context.commit('setControls', args);
+		},
+		/**
+		 * 停止游戏进程
+		 */
+		stopGameProcess(context) {
+			context.commit('clearControls', args);
+		}
+	}
 }
