@@ -13,7 +13,7 @@ import {
  * @param {Number} interval 射击间隔（ms）
  * @param {NodeRequire} texture 子弹贴图
  * @param {Audio} sound 射击音效
- * @param {Function} shooting 子弹发射方法，用于生成子弹对象，返回Bullet对象实体（回调函数，需要有两个形参position（Position位置对象）和size（Size尺寸对象），分别表示子弹初始位置和大小）
+ * @param {Function} shooting 子弹发射方法，用于生成子弹对象（回调函数，需要有个形参position（Position位置对象）），表示子弹初始位置，如果子弹是图片需要在style中定义background-image属性）
  */
 function Weapon(name, description, price, count, interval, texture, sound, shooting) {
 	this.name = name;
@@ -26,7 +26,6 @@ function Weapon(name, description, price, count, interval, texture, sound, shoot
 	/**
 	 * 发射子弹，即为生成子弹对象并加入到所有子弹数组中去
 	 * @param {Position} position 子弹初始的位置
-	 * @param {Size} size 子弹大小
 	 */
 	this.shooting = shooting;
 }
@@ -179,11 +178,10 @@ export default {
 		 */
 		initializeWeapon(context) {
 			// 默认武器
-			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), (position, size) => {
-				this.sound.play();
-				let bullet = new Bullet(position, size, (enemies) => {
-					return entityFlyX(this);
-				}, (enemy, enemies) => {
+			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), function (position) {
+				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
+					return entityFlyX(this, 8);
+				}, function (enemy, enemies) {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
 					// 击中布丁标记为被吃掉
@@ -195,6 +193,11 @@ export default {
 						root: true
 					});
 				});
+				// 设定子弹贴图等等
+				bullet.style.backgroundImage = 'url(' + require('@/assets/image/bullet/normal.png') + ')';
+				bullet.style.backgroundRepeat = 'no-repeat';
+				bullet.style.backgroundPosition = 'center';
+				bullet.style.backgroundSize = 'cover';
 				context.commit('addBullet', bullet);
 			});
 			// 设定武器列表
@@ -203,11 +206,12 @@ export default {
 			context.commit('setWeapons', weapons);
 		},
 		/**
-		 * 当前武器射击，payload中要有position和size属性表示子弹初始位置和大小
+		 * 当前武器射击，payload中要有position属性表示子弹初始位置
 		 */
 		shooting(context, payload) {
 			const getWeapon = context.state.weaponList[context.state.currentWeapon];
-			getWeapon.shooting(payload.position, payload.size);
+			getWeapon.shooting(payload.position);
+			getWeapon.sound.play();
 		},
 		/**
 		 * 将每一个子弹执行一次飞行方法
@@ -233,7 +237,7 @@ export default {
 				// 然后检查这个子弹是否和布丁相碰
 				for (let j = 0; j < allPuddings.length; j++) {
 					for (let k = 0; k < allPuddings[j].length; k++) {
-						const getPudding = allBullets[j][k];
+						const getPudding = allPuddings[j][k];
 						// 这个布丁被吃了，则跳过此次遍历
 						if (getPudding.isEaten) {
 							continue;
@@ -243,7 +247,7 @@ export default {
 							// 执行子弹撞击方法
 							getBullet.hitTrigger(getPudding, allPuddings);
 							// 重新设定布丁上下边界
-							context.commit('pudding/scanPuddingsAtBorder', null, {
+							context.dispatch('pudding/scanPuddingsAtBorder', null, {
 								root: true
 							});
 							// 如果这个子弹无效了，跳出循环
@@ -258,7 +262,7 @@ export default {
 					}
 				}
 				// 如果这个子弹仍然有效，说明未击中敌人或者是击中敌人但是不消失类型，这时子弹遇到边界自动消失
-				if (getBullet.valid && (getBullet.position.x + getBullet.size.width >= gameArea.width || getBullet.position.y <= 0 || getBullet.position.y + getBullet.size.height >= gameArea.height)) {
+				if (getBullet.valid && (getBullet.getPosition().x + getBullet.getSize().width >= gameArea.width || getBullet.getPosition().y <= 0 || getBullet.getPosition().y + getBullet.getSize().height >= gameArea.height)) {
 					context.commit('removeBullet', i);
 					i--;
 				}

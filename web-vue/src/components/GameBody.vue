@@ -27,9 +27,7 @@
 			<!--所有布丁，类名为：pudding-列-行，从0计数-->
 			<img v-for="n in 32" :key="n" :class="'pudding-' + getPuddingColumn(n) + '-' + getPuddingLine(n)" :src="getPuddingImage(n)" :style="puddings[getPuddingColumn(n)][getPuddingLine(n)].style" />
 			<!-- 所有子弹，使用v-for实现动态生成子弹dom -->
-			<div v-for="bullet in bullets" :key="bullet" :style="bullet.style">
-				<img :src="bullet.texture" />
-			</div>
+			<div v-for="bullet in bullets" :key="bullet" :style="bullet.style"></div>
 		</div>
 	</div>
 </template>
@@ -78,6 +76,13 @@ export default {
 			if (e.keyCode == 83 || e.keyCode == 40) {
 				this.moveMiyako(false);
 			}
+			if (e.keyCode == 32) {
+				let position = this.miyako.getPosition();
+				let size = this.miyako.getSize();
+				position.x = position.x + size.width;
+				position.y = position.y + size.height / 3;
+				this.shooting({ position });
+			}
 		},
 	},
 	computed: {
@@ -96,7 +101,7 @@ export default {
 		this.initializeWeapon();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
-		//setInterval(this.moveAllPuddings, 1);
+		this.startGameProcess();
 	},
 };
 </script>
