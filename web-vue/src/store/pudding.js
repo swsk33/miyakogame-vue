@@ -94,8 +94,12 @@ export default {
 			getPudding.isEaten = payload.eaten;
 			if (!getPudding.isEaten) {
 				getPudding.style.display = 'block';
+				getPudding.style.transform = 'scale(1) rotate(0deg)';
 			} else {
-				getPudding.style.display = 'none';
+				getPudding.style.transform = 'scale(0) rotate(90deg)';
+				setTimeout(() => {
+					getPudding.style.display = 'none';
+				}, 500);
 			}
 		},
 		/**
@@ -151,6 +155,22 @@ export default {
 				}
 			}
 			context.commit('setPuddingAtBorder', puddingsAtBorder);
+		},
+		/**
+		 * 检测布丁存活情况，如果全部布丁被吃掉则返回true
+		 */
+		checkPuddingLive(context) {
+			const getPuddings = context.state.puddings;
+			let isAllEaten = true;
+			for (let i = 0; i < getPuddings.length; i++) {
+				for (let j = 0; j < getPuddings[i].length; j++) {
+					if (!getPuddings[i][j].isEaten) {
+						isAllEaten = false;
+						return isAllEaten;
+					}
+				}
+			}
+			return isAllEaten;
 		},
 		/**
 		 * 移动一次所有的布丁，多次移动时，移动方向是：下->左->上->左->下...
