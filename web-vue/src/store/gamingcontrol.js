@@ -141,6 +141,12 @@ export default {
 		 */
 		saveData(context) {
 			localStorage.setItem('gameData', JSON.stringify(context.state.gameData));
+		},
+		/**
+		 * 加分，payload为一个整数表示要加的分的值
+		 */
+		addScore(context, payload) {
+
 		}
 	}
 }
