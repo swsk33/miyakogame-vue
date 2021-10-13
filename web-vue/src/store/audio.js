@@ -99,6 +99,12 @@ export default {
 		 */
 		loadAll(state) {
 			loadAudioByObject('', state.audioList);
+		},
+		/**
+		 * 释放内存
+		 */
+		releaseAll(state) {
+			state.audioList = null;
 		}
 	},
 	actions: {

@@ -96,6 +96,7 @@ export default {
 				getPudding.style.display = 'block';
 				getPudding.style.transform = 'scale(1) rotate(0deg)';
 			} else {
+				new Audio(require('@/assets/audio/score/score.mp3')).play();
 				getPudding.style.transform = 'scale(0) rotate(90deg)';
 				setTimeout(() => {
 					getPudding.style.display = 'none';
@@ -175,8 +176,14 @@ export default {
 		/**
 		 * 移动一次所有的布丁，多次移动时，移动方向是：下->左->上->左->下...
 		 */
-		moveAllPuddings(context) {
-			const rate = context.rootState.gamingcontrol.level * 2 + 1;
+		async moveAllPuddings(context) {
+			/**
+			 * 如果所有布丁被吃光了，进入下一关
+			 */
+			if (await context.dispatch('checkPuddingLive')) {
+				return;
+			}
+			const rate = context.rootState.gamingcontrol.gameData.level * 2 + 1;
 			const puddings = context.state.puddings;
 			let eachPuddingPosition;
 			const arg = {

@@ -7,18 +7,18 @@
 				<div class="count">x0</div>
 			</div>
 			<div class="weapon">
-				<div class="name">常规鬼火</div>
-				<img src="@/assets/image/bullet/normal.png" />
-				<div class="count">x无限</div>
+				<div class="name">{{ weaponList[currentWeapon].name }}</div>
+				<img :src="weaponList[currentWeapon].texture" />
+				<div class="count">x{{ bulletCount }}</div>
 			</div>
-			<div class="level">第1关</div>
+			<div class="level">第{{ gameData.level }}关</div>
 			<div class="health">
 				<img src="@/assets/image/youlStatic.png" />
-				<div class="t">x3</div>
+				<div class="t">x{{ gameData.health }}</div>
 			</div>
 			<div class="scorePanel">
-				<div class="currentScore">积分：0</div>
-				<div class="highScore">最高分数：0</div>
+				<div class="currentScore">积分：{{ gameData.currentScore }}</div>
+				<div class="highScore">最高分数：{{ gameData.highScore }}</div>
 			</div>
 		</div>
 		<div class="gameBackground">
@@ -34,10 +34,10 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: gameState, mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
-const { mapState: weaponState, mapActions: weaponActions } = createNamespacedHelpers('weapon');
+const { mapState: weaponState, mapMutations: weaponMutations, mapActions: weaponActions } = createNamespacedHelpers('weapon');
 
 export default {
 	methods: {
@@ -46,6 +46,7 @@ export default {
 		...miyakoActions(['moveMiyako']),
 		...puddingActions(['resetPuddings', 'moveAllPuddings']),
 		...weaponActions(['initializeWeapon', 'shooting']),
+		...weaponMutations(['alterWeapon']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return require('@/assets/image/pudding/p1.png');
@@ -86,9 +87,20 @@ export default {
 		},
 	},
 	computed: {
+		...gameState(['gameData']),
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
-		...weaponState(['bullets']),
+		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
+		/**
+		 * 显示武器子弹数量
+		 */
+		bulletCount() {
+			if (this.gameData.weaponCount[this.currentWeapon] == -1) {
+				return '无限';
+			} else {
+				return this.gameData.weaponCount[this.currentWeapon];
+			}
+		},
 	},
 	mounted() {
 		let gameBackground = document.querySelector('.gameBackground');

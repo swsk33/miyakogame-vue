@@ -124,12 +124,25 @@ export default {
 		}
 	},
 	mutations: {
+		/**
+		 * 加载全部图片
+		 */
 		loadAll(state) {
 			loadImageByObject('', state.pngImageList, '.png');
 			loadImageByObject('', state.gifImageList, '.gif');
+		},
+		/**
+		 * 释放资源
+		 */
+		releaseAll(state) {
+			state.pngImageList = null;
+			state.gifImageList = null;
 		}
 	},
 	actions: {
+		/**
+		 * 加载全部图片
+		 */
 		loadAllImage(context) {
 			context.commit('loadAll');
 		},

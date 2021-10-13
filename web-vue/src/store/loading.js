@@ -40,6 +40,12 @@ export default {
 				context.commit('setProcess', process.toFixed(2));
 				if (imageLoaded == context.state.imageCount && audioLoaded == context.state.audioCount) {
 					context.commit('setComplete', true);
+					context.commit('audio/releaseAll', null, {
+						root: true
+					});
+					context.commit('image/releaseAll', null, {
+						root: true
+					});
 					clearInterval(checkInterval);
 				}
 			}, 100);

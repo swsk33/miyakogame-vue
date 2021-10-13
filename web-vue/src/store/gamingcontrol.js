@@ -1,11 +1,22 @@
-// vuex-游戏主控模块
+// vuex-游戏主控模块，包含游戏主控制和数据
 export default {
 	namespaced: true,
 	state: {
 		/**
-		 * 当前关卡值
+		 * 当前游戏动态数据
 		 */
-		level: 1,
+		gameData: {
+			level: 1,
+			health: 3,
+			highScore: 0,
+			currentScore: 0,
+			propsCount: [1],
+			weaponCount: [-1]
+		},
+		/**
+		 * 是否是新游戏
+		 */
+		isNewGame: false,
 		/**
 		 * 游戏域大小，需要在游戏组件挂载时设定
 		 */
@@ -47,6 +58,24 @@ export default {
 		clearControls(state) {
 			clearInterval(state.controls.puddingMove);
 			clearInterval(state.controls.bulletFly);
+		},
+		/**
+		 * 设定游戏动态数据，payload中有两个属性：name表示要设定的gameData对象中的属性名，value表示要设定的值
+		 */
+		setGameData(state, payload) {
+			state.gameData[payload.name] = payload.value;
+		},
+		/**
+		 * 设定整体游戏数据，payload表示游戏数据gameData对象
+		 */
+		setTotalData(state, payload) {
+			state.gameData = payload;
+		},
+		/**
+		 * 设定是否是新游戏，payload为布尔值，true表示设定为新游戏
+		 */
+		setNewGame(state, payload) {
+			state.isNewGame = payload;
 		}
 	},
 	actions: {
@@ -73,6 +102,45 @@ export default {
 		 */
 		stopGameProcess(context) {
 			context.commit('clearControls', args);
+		},
+		/**
+		 * 读取游戏数据，如果用户登录，则获取云端数据，否则获取本地数据
+		 */
+		readGameData(context) {
+			let getData = localStorage.getItem('gameData');
+			if (getData == null) {
+				context.commit('setNewGame', true);
+				// 初始化基本数据
+				getData = {
+					level: 1,
+					health: 3,
+					highScore: 0,
+					currentScore: 0,
+					propsCount: [],
+					weaponCount: [-1]
+				}
+				// 初始化武器道具数量
+				const getWeapons = context.rootState.weapon.weaponList;
+				for (let i = 1; i < getWeapons.length; i++) {
+					getData.weaponCount.push(10);
+				}
+				// 初始化道具数量
+				const getProps = null;
+			} else {
+				getData = JSON.parse(getData);
+			}
+			// 执行提交数据
+			context.commit('setTotalData', getData);
+			if (context.state.isNewGame) {
+				// 保存数据
+				context.dispatch('saveData');
+			}
+		},
+		/**
+		 * 保存游戏数据，如果用户登录，则同时保存一份到云端
+		 */
+		saveData(context) {
+			localStorage.setItem('gameData', JSON.stringify(context.state.gameData));
 		}
 	}
 }

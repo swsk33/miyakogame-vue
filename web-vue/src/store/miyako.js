@@ -6,17 +6,12 @@ import {
 
 /**
  * 角色（宫子）构造对象，继承GameEntity
- * @param {Number} health 生命值
  * @param {Number} speed 移速
  * @param {Position} position 角色位置 
  * @param {Size} size 角色尺寸
  */
-function Character(health, speed, position, size) {
+function Character(speed, position, size) {
 	GameEntity.call(this, position, size);
-	/**
-	 * 生命值
-	 */
-	this.health = health;
 	/**
 	 * 移动速度
 	 */
@@ -30,7 +25,7 @@ export default {
 		/**
 		 * 表示宫子对象
 		 */
-		miyako: new Character(3, 10, new Position(0, 0), new Size(110, 108)),
+		miyako: new Character(10, new Position(0, 0), new Size(110, 108)),
 	},
 	mutations: {
 		/**
@@ -39,12 +34,6 @@ export default {
 		setMiyakoPosition(state, payload) {
 			state.miyako.style.top = payload + 'px';
 		},
-		/**
-		 * 宫子生命值减1
-		 */
-		decreaseHealth(state) {
-			state.miyako.health--;
-		}
 	},
 	actions: {
 		/**

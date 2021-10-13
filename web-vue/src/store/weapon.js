@@ -9,20 +9,22 @@ import {
  * @param {String} name 武器（魔法）名
  * @param {String} description 武器描述
  * @param {Number} price 武器价格
- * @param {Number} count 该武器子弹剩余数量，-1表示无限
  * @param {Number} interval 射击间隔（ms）
  * @param {NodeRequire} texture 子弹贴图
  * @param {Audio} sound 射击音效
  * @param {Function} shooting 子弹发射方法，用于生成子弹对象（回调函数，需要有个形参position（Position位置对象）），表示子弹初始位置，如果子弹是图片需要在style中定义background-image属性）
  */
-function Weapon(name, description, price, count, interval, texture, sound, shooting) {
+function Weapon(name, description, price, interval, texture, sound, shooting) {
 	this.name = name;
 	this.description = description;
 	this.price = price;
-	this.count = count;
 	this.interval = interval;
 	this.texture = texture;
 	this.sound = sound;
+	/**
+	 * 当前武器是否就绪
+	 */
+	this.isReady = true;
 	/**
 	 * 发射子弹，即为生成子弹对象并加入到所有子弹数组中去
 	 * @param {Position} position 子弹初始的位置
@@ -123,7 +125,7 @@ export default {
 		/**
 		 * 武器列表
 		 */
-		weaponList: undefined,
+		weaponList: [new Weapon('default', 'null', 0, 0, null, null, null)],
 		/**
 		 * 当前武器索引
 		 */
@@ -170,6 +172,30 @@ export default {
 		 */
 		setWeapons(state, payload) {
 			state.weaponList = payload;
+		},
+		/**
+		 * 设定当前武器就绪状态，payload为布尔值，true表示武器已经就绪
+		 */
+		setWeaponReady(state, payload) {
+			state.weaponList[state.currentWeapon].isReady = payload;
+		},
+		/**
+		 * 切换武器，payload为一个布尔值，true表示下一个武器，false表示上一个武器
+		 */
+		alterWeapon(state, payload) {
+			if (payload) {
+				if (state.currentWeapon == state.weaponList.length - 1) {
+					state.currentWeapon = 0;
+				} else {
+					state.currentWeapon++;
+				}
+			} else {
+				if (state.currentWeapon == 0) {
+					state.currentWeapon = state.weaponList.length - 1;
+				} else {
+					state.currentWeapon--;
+				}
+			}
 		}
 	},
 	actions: {
@@ -178,7 +204,7 @@ export default {
 		 */
 		initializeWeapon(context) {
 			// 默认武器
-			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, -1, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), function (position) {
+			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), function (position) {
 				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
 					return entityFlyX(this, 8);
 				}, function (enemy, enemies) {
@@ -210,8 +236,14 @@ export default {
 		 */
 		shooting(context, payload) {
 			const getWeapon = context.state.weaponList[context.state.currentWeapon];
-			getWeapon.shooting(payload.position);
-			getWeapon.sound.play();
+			if (getWeapon.isReady) {
+				getWeapon.shooting(payload.position);
+				getWeapon.sound.play();
+				context.commit('setWeaponReady', false);
+				setTimeout(() => {
+					context.commit('setWeaponReady', true);
+				}, getWeapon.interval);
+			}
 		},
 		/**
 		 * 将每一个子弹执行一次飞行方法
