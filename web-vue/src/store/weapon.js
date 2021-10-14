@@ -213,8 +213,7 @@ export default {
 					// 击中布丁标记为被吃掉
 					context.dispatch('pudding/setPuddingEaten', {
 						column: enemy.column,
-						line: enemy.line,
-						score: enemy.score
+						line: enemy.line
 					}, {
 						root: true
 					});

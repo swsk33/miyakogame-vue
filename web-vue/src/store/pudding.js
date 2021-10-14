@@ -284,13 +284,14 @@ export default {
 			}
 		},
 		/**
-		 * 设定布丁被吃掉了，payload指定要改变的布丁位于第几行第几列以及是否被吃掉，要有三个属性，其中column表示列数，line表示行数，score表示该布丁分值
+		 * 设定布丁被吃掉了，payload指定要改变的布丁位于第几行第几列以及是否被吃掉，要有两个属性，其中column表示列数，line表示行数
 		 */
 		setPuddingEaten(context, payload) {
 			payload.eaten = true;
 			context.commit('setPuddingEaten', payload);
 			new Audio(require('@/assets/audio/score/score.mp3')).play();
-			context.dispatch('gamingcontrol/addScore', payload.score, {
+			const getPudding = context.state.puddings[payload.column][payload.line];
+			context.dispatch('gamingcontrol/addScore', getPudding.score, {
 				root: true
 			});
 		},
