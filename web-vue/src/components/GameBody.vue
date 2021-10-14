@@ -70,24 +70,29 @@ export default {
 			}
 			return lineNumber;
 		},
+		/**
+		 * 全局键盘监听主控
+		 */
 		listenerHandle(e) {
-			if (e.keyCode == 87 || e.keyCode == 38) {
-				this.moveMiyako(true);
-			}
-			if (e.keyCode == 83 || e.keyCode == 40) {
-				this.moveMiyako(false);
-			}
-			if (e.keyCode == 32) {
-				let position = this.miyako.getPosition();
-				let size = this.miyako.getSize();
-				position.x = position.x + size.width;
-				position.y = position.y + size.height / 3;
-				this.shooting({ position });
+			if (this.isProcessing) {
+				if (e.keyCode == 87 || e.keyCode == 38) {
+					this.moveMiyako(true);
+				}
+				if (e.keyCode == 83 || e.keyCode == 40) {
+					this.moveMiyako(false);
+				}
+				if (e.keyCode == 32) {
+					let position = this.miyako.getPosition();
+					let size = this.miyako.getSize();
+					position.x = position.x + size.width;
+					position.y = position.y + size.height / 3;
+					this.shooting({ position });
+				}
 			}
 		},
 	},
 	computed: {
-		...gameState(['gameData']),
+		...gameState(['gameData', 'isProcessing', 'isOutOfGame']),
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
 		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
@@ -113,7 +118,6 @@ export default {
 		this.initializeWeapon();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
-		this.startGameProcess();
 	},
 };
 </script>

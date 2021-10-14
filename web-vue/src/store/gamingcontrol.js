@@ -36,7 +36,15 @@ export default {
 			 * 子弹飞行计时器
 			 */
 			bulletFly: undefined
-		}
+		},
+		/**
+		 * 游戏是否处于暂停状态，true表示游戏正在运行没有暂停
+		 */
+		isProcessing: false,
+		/**
+		 * 是否在游戏外面（例如在主菜单、登录注册页而非正在游戏界面时，这个值为true）
+		 */
+		isOutOfGame: true
 	},
 	mutations: {
 		/**
@@ -76,6 +84,18 @@ export default {
 		 */
 		setNewGame(state, payload) {
 			state.isNewGame = payload;
+		},
+		/**
+		 * 设定游戏是否处于暂停状态，payload为布尔值，true表示游戏正在运行没有暂停
+		 */
+		setGameProcessing(state, payload) {
+			state.isProcessing = payload;
+		},
+		/**
+		 * 设定是否在游戏外面，payload为一个布尔值，true表示在游戏外
+		 */
+		setOutOfGame(state, payload) {
+			state.isOutOfGame = payload;
 		}
 	},
 	actions: {
@@ -96,15 +116,17 @@ export default {
 				}, 16)
 			}
 			context.commit('setControls', args);
+			context.commit('setGameProcessing', true);
 		},
 		/**
 		 * 停止游戏进程
 		 */
 		stopGameProcess(context) {
 			context.commit('clearControls', args);
+			context.commit('setGameProcessing', false);
 		},
 		/**
-		 * 读取游戏数据，如果用户登录，则获取云端数据，否则获取本地数据
+		 * 读取游戏数据，如果用户登录，则获取云端数据，否则获取本地数据，需要在组件挂载时调用一次
 		 */
 		readGameData(context) {
 			let getData = localStorage.getItem('gameData');
@@ -146,7 +168,20 @@ export default {
 		 * 加分，payload为一个整数表示要加的分的值
 		 */
 		addScore(context, payload) {
-
+			const currentScore = context.state.gameData.currentScore;
+			const highScore = context.state.gameData.highScore;
+			let currentModify = {
+				name: 'currentScore',
+				value: currentScore + payload
+			}
+			context.commit('setGameData', currentModify);
+			if (currentModify.value > highScore) {
+				let highModify = {
+					name: 'highScore',
+					value: currentModify.value
+				};
+				context.commit('setGameData', highModify);
+			}
 		}
 	}
 }

@@ -211,10 +211,10 @@ export default {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
 					// 击中布丁标记为被吃掉
-					context.commit('pudding/setPuddingEaten', {
+					context.dispatch('pudding/setPuddingEaten', {
 						column: enemy.column,
 						line: enemy.line,
-						eaten: true
+						score: enemy.score
 					}, {
 						root: true
 					});

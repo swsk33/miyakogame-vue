@@ -96,7 +96,6 @@ export default {
 				getPudding.style.display = 'block';
 				getPudding.style.transform = 'scale(1) rotate(0deg)';
 			} else {
-				new Audio(require('@/assets/audio/score/score.mp3')).play();
 				getPudding.style.transform = 'scale(0) rotate(90deg)';
 				setTimeout(() => {
 					getPudding.style.display = 'none';
@@ -283,6 +282,17 @@ export default {
 					}
 				}
 			}
+		},
+		/**
+		 * 设定布丁被吃掉了，payload指定要改变的布丁位于第几行第几列以及是否被吃掉，要有三个属性，其中column表示列数，line表示行数，score表示该布丁分值
+		 */
+		setPuddingEaten(context, payload) {
+			payload.eaten = true;
+			context.commit('setPuddingEaten', payload);
+			new Audio(require('@/assets/audio/score/score.mp3')).play();
+			context.dispatch('gamingcontrol/addScore', payload.score, {
+				root: true
+			});
 		},
 		/**
 		 * 重置布丁，第一次需要在在组件挂载时调用

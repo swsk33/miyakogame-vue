@@ -11,6 +11,9 @@ import mouseffect from '@/assets/js/mouseffect.js';
 import loadingpage from '@/components/LoadingPage.vue';
 import mainmenu from '@/components/MainMenu.vue';
 import gamebody from '@/components/GameBody.vue';
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapActions } = createNamespacedHelpers('gamingcontrol');
 
 export default {
 	components: {
@@ -18,8 +21,12 @@ export default {
 		mainmenu,
 		gamebody,
 	},
+	methods: {
+		...mapActions(['readGameData']),
+	},
 	mounted() {
 		mouseffect.enableAll();
+		this.readGameData();
 	},
 };
 </script>
