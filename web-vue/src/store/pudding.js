@@ -4,6 +4,10 @@ import {
 	GameEntity
 } from '@/assets/js/constructors.js';
 
+import {
+	popUpMsg
+} from '../components/util/popupmsg.js';
+
 /**
  * 布丁（敌人）对象构造函数，继承GameEntity
  * @param {Number} score 分值
@@ -294,6 +298,7 @@ export default {
 			context.dispatch('gamingcontrol/addScore', getPudding.score, {
 				root: true
 			});
+			popUpMsg('+' + getPudding.score, getPudding.getPosition());
 		},
 		/**
 		 * 重置布丁，第一次需要在在组件挂载时调用

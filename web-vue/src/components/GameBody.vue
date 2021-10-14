@@ -118,6 +118,7 @@ export default {
 		this.initializeWeapon();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
+		//this.startGameProcess();
 	},
 };
 </script>
