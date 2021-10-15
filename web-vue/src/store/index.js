@@ -8,6 +8,8 @@ import loading from './loading.js';
 import pudding from './pudding.js';
 import miyako from './miyako.js';
 import weapon from './weapon.js';
+import userdata from './userdata.js';
+import pagecontrol from './pagecontrol.js';
 import gamingcontrol from './gamingcontrol.js';
 
 export default createStore({
@@ -21,6 +23,8 @@ export default createStore({
 		pudding,
 		weapon,
 		miyako,
+		userdata,
+		pagecontrol,
 		gamingcontrol
 	},
 });

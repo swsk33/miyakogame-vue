@@ -1,5 +1,5 @@
 <template>
-	<div v-if="!closeLoading" :class="{ loading: true, 'loading-out': complete }">
+	<div v-if="loading" :class="{ loading: true, 'loading-out': complete }">
 		<div class="loadingComponent">
 			<img class="loadingImage" src="@/assets/image/youlDynamic.gif" />
 			<div class="loadingText">游戏加载中...</div>
@@ -13,26 +13,24 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapState, mapActions } = createNamespacedHelpers('loading');
+const { mapState: loadingState, mapActions: loadingActions } = createNamespacedHelpers('loading');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 
 export default {
-	data() {
-		return {
-			closeLoading: false,
-		};
-	},
 	methods: {
-		...mapActions(['loadAll']),
+		...loadingActions(['loadAll']),
+		...pageMutations(['setLoadingPage']),
 	},
 	computed: {
-		...mapState(['process', 'complete']),
+		...loadingState(['process', 'complete']),
+		...pageState(['loading']),
 	},
 	async mounted() {
 		this.loadAll();
 		let checkComplete = setInterval(() => {
 			if (this.complete) {
 				setTimeout(() => {
-					this.closeLoading = true;
+					this.setLoadingPage(false);
 				}, 800);
 				clearInterval(checkComplete);
 			}

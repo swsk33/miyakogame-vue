@@ -15,7 +15,7 @@ import gamebody from '@/components/GameBody.vue';
 import help from '@/components/Help.vue';
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapActions } = createNamespacedHelpers('gamingcontrol');
+const { mapActions: dataActions } = createNamespacedHelpers('userdata');
 
 export default {
 	components: {
@@ -25,7 +25,7 @@ export default {
 		help,
 	},
 	methods: {
-		...mapActions(['readGameData']),
+		...dataActions(['readGameData']),
 		/**
 		 * 显示一些游戏子页面
 		 * @param {String} page 页面名，名字有：shop - 商店；rank - 排行榜；help - 帮助；succeed - 成功；failed - 失败；pause - 暂停

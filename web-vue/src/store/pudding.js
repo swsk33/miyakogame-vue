@@ -186,7 +186,7 @@ export default {
 			if (await context.dispatch('checkPuddingLive')) {
 				return;
 			}
-			const rate = context.rootState.gamingcontrol.gameData.level * 2 + 1;
+			const rate = context.rootState.userdata.gameData.level * 2 + 1;
 			const puddings = context.state.puddings;
 			let eachPuddingPosition;
 			const arg = {
@@ -281,7 +281,7 @@ export default {
 					if (!eachPudding.isEaten) {
 						if (eachPudding.getPosition().x <= 0 || eachPudding.isCollision(context.rootState.miyako.miyako)) {
 							context.dispatch('resetPuddings');
-							context.dispatch('gamingcontrol/healthDown', null, {
+							context.dispatch('userdata/healthDown', null, {
 								root: true
 							});
 							return;
@@ -298,7 +298,7 @@ export default {
 			context.commit('setPuddingEaten', payload);
 			new Audio(require('@/assets/audio/score/score.mp3')).play();
 			const getPudding = context.state.puddings[payload.column][payload.line];
-			context.dispatch('gamingcontrol/addScore', getPudding.score, {
+			context.dispatch('userdata/addScore', getPudding.score, {
 				root: true
 			});
 			const position = getPudding.getPosition();

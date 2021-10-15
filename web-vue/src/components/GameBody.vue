@@ -35,6 +35,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 const { mapState: gameState, mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: dataState } = createNamespacedHelpers('userdata');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 const { mapState: weaponState, mapMutations: weaponMutations, mapActions: weaponActions } = createNamespacedHelpers('weapon');
@@ -92,7 +93,8 @@ export default {
 		},
 	},
 	computed: {
-		...gameState(['gameData', 'isProcessing', 'isOutOfGame']),
+		...gameState(['isProcessing', 'isOutOfGame']),
+		...dataState(['gameData']),
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
 		...weaponState(['bullets', 'currentWeapon', 'weaponList']),

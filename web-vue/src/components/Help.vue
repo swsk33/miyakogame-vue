@@ -1,5 +1,5 @@
 <template>
-	<div v-if="showHelp" class="help">
+	<div v-if="help" class="help">
 		<div class="frame">
 			<div class="introduce">&ensp;&ensp;&ensp;&ensp;宫子是一个喜欢吃布丁的幽灵。现在帮助（操控）她吃（淦）掉所有布丁吧！</div>
 			<div class="t1">
@@ -10,26 +10,22 @@
 			<div class="t3">按P可以暂停/继续游戏</div>
 			<div class="t4">按E和Q切换至上一个/下一个武器（魔法）</div>
 			<div class="t5">按Z和C切换至上一个/下一个道具，V使用道具</div>
-			<div class="ok" @click="operateHelp(false)">知道了</div>
+			<div class="ok" @click="setHelpPage(false)">知道了</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+
 export default {
-	data() {
-		return {
-			showHelp: false,
-		};
+	computed: {
+		...pageState(['help']),
 	},
 	methods: {
-		/**
-		 * 控制帮助页显隐
-		 * @param {Boolean} show 是否显示窗口
-		 */
-		operateHelp(show) {
-			this.showHelp = show;
-		},
+		...pageMutations(['setHelpPage']),
 	},
 };
 </script>

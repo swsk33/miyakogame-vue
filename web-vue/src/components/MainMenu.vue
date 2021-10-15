@@ -1,5 +1,5 @@
 <template>
-	<div v-if="isMenuShow" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
+	<div v-if="mainMenu" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
 		<div class="title">
 			<img class="avatar" src="@/assets/image/avatar/excepted.png" />
 			<div class="main"></div>
@@ -9,7 +9,7 @@
 			<li @click="newGame">新游戏</li>
 			<li>魔法商店</li>
 			<li>排行榜</li>
-			<li @click="$emit('showSubPage', 'help')">帮助</li>
+			<li @click="setHelpPage(true)">帮助</li>
 		</ul>
 	</div>
 </template>
@@ -19,28 +19,32 @@ import { createNamespacedHelpers } from 'vuex';
 import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
 
-const { mapState, mapMutations, mapActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 
 export default {
 	computed: {
-		...mapState(['isNewGame']),
+		...pageState(['mainMenu', 'help']),
+		...dataState(['isNewGame']),
 	},
 	data() {
 		return {
 			isMenuOut: false,
-			isMenuShow: true,
 		};
 	},
 	methods: {
-		...mapMutations(['setOutOfGame']),
-		...mapActions(['startGameProcess', 'resetAllData']),
+		...pageMutations(['setMainMenuPage', 'setHelpPage']),
+		...gameMutations(['setOutOfGame']),
+		...gameActions(['startGameProcess']),
+		...dataActions(['resetAllData']),
 		/**
-		 * 主菜单淡出
+		 * 主菜单移出
 		 */
 		menuFadeOut() {
 			this.isMenuOut = true;
 			setTimeout(() => {
-				this.isMenuShow = false;
+				this.setMainMenuPage(false);
 			}, 800);
 		},
 		/**
