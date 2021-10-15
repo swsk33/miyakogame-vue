@@ -14,12 +14,12 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 const { mapState: loadingState, mapActions: loadingActions } = createNamespacedHelpers('loading');
-const { mapState: pageState, mapActions: pageActions } = createNamespacedHelpers('pagecontrol');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 
 export default {
 	methods: {
 		...loadingActions(['loadAll']),
-		...pageActions(['setLoadingPage']),
+		...pageMutations(['setLoadingPage']),
 	},
 	computed: {
 		...loadingState(['process', 'complete']),

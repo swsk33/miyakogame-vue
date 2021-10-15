@@ -8,6 +8,8 @@ import {
 	popUpMsg
 } from '@/components/util/popupmsg.js';
 
+import random from '@/assets/js/random.js';
+
 /**
  * 布丁（敌人）对象构造函数，继承GameEntity
  * @param {Number} score 分值
@@ -184,8 +186,18 @@ export default {
 			 * 如果所有布丁被吃光了，进入下一关
 			 */
 			if (await context.dispatch('checkPuddingLive')) {
+				// 退出游戏进程
+				context.dispatch('gamingcontrol/exitGame', null, {
+					root: true
+				});
+				// 播放成功音频
+				new Audio(require('@/assets/audio/succeed/s' + random.generateRandom(1, 2) + '.mp3')).play();
 				// 显示成功页面
 				context.commit('pagecontrol/setSuccessPage', true, {
+					root: true
+				});
+				// 执行关卡自加
+				context.dispatch('userdata/levelAdd', null, {
 					root: true
 				});
 				return;

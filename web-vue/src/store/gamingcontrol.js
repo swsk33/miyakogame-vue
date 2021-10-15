@@ -92,5 +92,31 @@ export default {
 			context.commit('clearControls');
 			context.commit('setGameProcessing', false);
 		},
+		/**
+		 * 进入游戏（例如在主菜单点击开始游戏、进行下一关时）
+		 */
+		enterGame(context) {
+			// 启动游戏进程
+			context.dispatch('startGameProcess');
+			// 设定在游戏中
+			context.commit('setOutOfGame', false);
+			// 清除屏幕上的子弹
+			context.commit('weapon/clearBullets', null, {
+				root: true
+			});
+			// 重置布丁状态
+			context.dispatch('pudding/resetPuddings', null, {
+				root: true
+			});
+		},
+		/**
+		 * 退出游戏（例如从成功/失败界面返回主菜单时）
+		 */
+		exitGame(context) {
+			// 终止游戏进程
+			context.dispatch('stopGameProcess');
+			// 设定在游戏外
+			context.commit('setOutOfGame', true);
+		}
 	}
 }

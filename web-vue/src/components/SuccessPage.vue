@@ -15,7 +15,9 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapState: pageState, mapActions: pageActions } = createNamespacedHelpers('pagecontrol');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapActions: dataActions } = createNamespacedHelpers('userdata');
 
 export default {
 	data() {
@@ -27,7 +29,9 @@ export default {
 		...pageState(['success']),
 	},
 	methods: {
-		...pageActions(['setSuccessPage', 'setMainMenuPage']),
+		...pageMutations(['setSuccessPage', 'setMainMenuPage']),
+		...gameActions(['enterGame']),
+		...dataActions(['readGameData']),
 		/**
 		 * 隐藏成功页面
 		 */
@@ -44,6 +48,8 @@ export default {
 		 */
 		nextLevel() {
 			this.closeSuccessPage();
+			// 进入游戏进程
+			this.enterGame();
 		},
 		/**
 		 * 返回主菜单按钮
@@ -52,6 +58,8 @@ export default {
 			this.closeSuccessPage();
 			// 显示主菜单
 			this.setMainMenuPage(true);
+			// 重新读取数据，刷新主菜单按钮
+			this.readGameData();
 		},
 	},
 };

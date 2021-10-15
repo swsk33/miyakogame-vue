@@ -19,8 +19,9 @@ import { createNamespacedHelpers } from 'vuex';
 import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
 
-const { mapState: pageState, mapActions: pageActions } = createNamespacedHelpers('pagecontrol');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
+const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 
 export default {
 	computed: {
@@ -33,8 +34,9 @@ export default {
 		};
 	},
 	methods: {
-		...pageActions(['setMainMenuPage', 'setHelpPage']),
+		...pageMutations(['setMainMenuPage', 'setHelpPage']),
 		...dataActions(['resetAllData']),
+		...gameActions(['enterGame']),
 		/**
 		 * 主菜单移出
 		 */
@@ -53,6 +55,8 @@ export default {
 			if (!this.isNewGame) {
 				new Audio(require('@/assets/audio/start.mp3')).play();
 				this.menuFadeOut();
+				// 开始游戏进程
+				this.enterGame();
 			}
 		},
 		/**
@@ -67,12 +71,16 @@ export default {
 						new Audio(require('@/assets/audio/start.mp3')).play();
 						this.resetAllData();
 						this.menuFadeOut();
+						// 开始游戏进程
+						this.enterGame();
 					},
 					() => {}
 				);
 			} else {
 				new Audio(require('@/assets/audio/start.mp3')).play();
 				this.menuFadeOut();
+				// 开始游戏进程
+				this.enterGame();
 			}
 		},
 	},
