@@ -18,14 +18,14 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapState: pageState, mapActions: pageActions } = createNamespacedHelpers('pagecontrol');
 
 export default {
 	computed: {
 		...pageState(['help']),
 	},
 	methods: {
-		...pageMutations(['setHelpPage']),
+		...pageActions(['setHelpPage']),
 	},
 };
 </script>

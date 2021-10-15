@@ -196,6 +196,12 @@ export default {
 					state.currentWeapon--;
 				}
 			}
+		},
+		/**
+		 * 清空屏幕上的子弹
+		 */
+		clearBullets(state) {
+			state.bullets = [];
 		}
 	},
 	actions: {

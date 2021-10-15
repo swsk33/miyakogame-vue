@@ -84,13 +84,12 @@ export default {
 			}
 			context.commit('setControls', args);
 			context.commit('setGameProcessing', true);
-			new Audio(require('@/assets/audio/start.mp3')).play();
 		},
 		/**
 		 * 停止游戏进程
 		 */
 		stopGameProcess(context) {
-			context.commit('clearControls', args);
+			context.commit('clearControls');
 			context.commit('setGameProcessing', false);
 		},
 	}

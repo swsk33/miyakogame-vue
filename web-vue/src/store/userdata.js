@@ -141,6 +141,20 @@ export default {
 			} else {
 				// 显示失败页，重设游戏进度
 			}
+		},
+		/**
+		 * 关卡数增加，每过一关，会奖励一定分数，值为当前关卡*10
+		 */
+		levelAdd(context) {
+			const level = context.state.gameData.level;
+			context.commit('setGameData', {
+				name: 'level',
+				value: level + 1
+			});
+			// 分数奖励
+			context.dispatch('addScore', level * 10);
+			// 每次过关保存数据
+			context.dispatch('saveData');
 		}
 	}
 }

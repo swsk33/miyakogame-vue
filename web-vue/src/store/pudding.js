@@ -184,6 +184,10 @@ export default {
 			 * 如果所有布丁被吃光了，进入下一关
 			 */
 			if (await context.dispatch('checkPuddingLive')) {
+				// 显示成功页面
+				context.commit('pagecontrol/setSuccessPage', true, {
+					root: true
+				});
 				return;
 			}
 			const rate = context.rootState.userdata.gameData.level * 2 + 1;
@@ -302,7 +306,7 @@ export default {
 				root: true
 			});
 			const position = getPudding.getPosition();
-			position.y = position.y - 30;
+			position.y = position.y + 50;
 			popUpMsg('+' + getPudding.score, position);
 		},
 		/**

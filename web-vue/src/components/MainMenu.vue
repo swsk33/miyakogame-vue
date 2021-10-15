@@ -19,8 +19,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
 
-const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
-const { mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: pageState, mapActions: pageActions } = createNamespacedHelpers('pagecontrol');
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 
 export default {
@@ -34,9 +33,7 @@ export default {
 		};
 	},
 	methods: {
-		...pageMutations(['setMainMenuPage', 'setHelpPage']),
-		...gameMutations(['setOutOfGame']),
-		...gameActions(['startGameProcess']),
+		...pageActions(['setMainMenuPage', 'setHelpPage']),
 		...dataActions(['resetAllData']),
 		/**
 		 * 主菜单移出
@@ -45,6 +42,8 @@ export default {
 			this.isMenuOut = true;
 			setTimeout(() => {
 				this.setMainMenuPage(false);
+				// 还原主菜单样式防止下次调用出问题
+				this.isMenuOut = false;
 			}, 800);
 		},
 		/**
@@ -52,26 +51,29 @@ export default {
 		 */
 		continueGame() {
 			if (!this.isNewGame) {
+				new Audio(require('@/assets/audio/start.mp3')).play();
 				this.menuFadeOut();
 			}
-			this.startGameProcess();
-			this.setOutOfGame(false);
 		},
 		/**
 		 * 新游戏按钮
 		 */
 		newGame() {
-			showDialog(
-				'开始新游戏将清除所有游戏进度和武器道具（最高分不会清除），是否继续？',
-				require('@/assets/image/tipicon/warn/w' + random.generateRandom(1, 5) + '.png'),
-				() => {
-					this.resetAllData();
-					this.menuFadeOut();
-					this.startGameProcess();
-					this.setOutOfGame(false);
-				},
-				() => {}
-			);
+			if (!this.isNewGame) {
+				showDialog(
+					'开始新游戏将清除所有游戏进度和武器道具（最高分不会清除），是否继续？',
+					require('@/assets/image/tipicon/warn/w' + random.generateRandom(1, 5) + '.png'),
+					() => {
+						new Audio(require('@/assets/audio/start.mp3')).play();
+						this.resetAllData();
+						this.menuFadeOut();
+					},
+					() => {}
+				);
+			} else {
+				new Audio(require('@/assets/audio/start.mp3')).play();
+				this.menuFadeOut();
+			}
 		},
 	},
 };
