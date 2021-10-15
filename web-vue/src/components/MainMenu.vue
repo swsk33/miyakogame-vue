@@ -1,21 +1,76 @@
 <template>
-	<div class="mainMenu">
+	<div v-if="isMenuShow" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
 		<div class="title">
 			<img class="avatar" src="@/assets/image/avatar/excepted.png" />
 			<div class="main"></div>
 		</div>
 		<ul class="menu">
-			<li>继续游戏</li>
-			<li>新游戏</li>
+			<li :class="{ newGameStyle: isNewGame }" @click="continueGame">继续游戏</li>
+			<li @click="newGame">新游戏</li>
 			<li>魔法商店</li>
 			<li>排行榜</li>
-			<li>帮助</li>
+			<li @click="$emit('showSubPage', 'help')">帮助</li>
 		</ul>
 	</div>
 </template>
 
 <script>
-export default {};
+import { createNamespacedHelpers } from 'vuex';
+import { showDialog } from '@/components/util/mydialog.js';
+import random from '@/assets/js/random.js';
+
+const { mapState, mapMutations, mapActions } = createNamespacedHelpers('gamingcontrol');
+
+export default {
+	computed: {
+		...mapState(['isNewGame']),
+	},
+	data() {
+		return {
+			isMenuOut: false,
+			isMenuShow: true,
+		};
+	},
+	methods: {
+		...mapMutations(['setOutOfGame']),
+		...mapActions(['startGameProcess', 'resetAllData']),
+		/**
+		 * 主菜单淡出
+		 */
+		menuFadeOut() {
+			this.isMenuOut = true;
+			setTimeout(() => {
+				this.isMenuShow = false;
+			}, 800);
+		},
+		/**
+		 * 继续游戏按钮
+		 */
+		continueGame() {
+			if (!this.isNewGame) {
+				this.menuFadeOut();
+			}
+			this.startGameProcess();
+			this.setOutOfGame(false);
+		},
+		/**
+		 * 新游戏按钮
+		 */
+		newGame() {
+			showDialog(
+				'开始新游戏将清除所有游戏进度和武器道具（最高分不会清除），是否继续？',
+				require('@/assets/image/tipicon/warn/w' + random.generateRandom(1, 5) + '.png'),
+				() => {
+					this.resetAllData();
+					this.menuFadeOut();
+					this.startGameProcess();
+					this.setOutOfGame(false);
+				},
+				() => {}
+			);
+		},
+	},
+};
 </script>
 
 <style lang="scss" scoped>
@@ -77,7 +132,16 @@ export default {};
 				background-color: #dfdeff;
 			}
 		}
+
+		.newGameStyle {
+			color: gray;
+		}
 	}
+}
+
+// 开始界面移出
+.menuFadeOut {
+	left: -100vw;
 }
 
 //开始界面-傍晚样式

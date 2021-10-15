@@ -21,14 +21,17 @@ export const tipType = {
  * @param {NodeRequire} image 提示图标（需要require）
  * @param {NodeRequire} audio 提示音（需要require）
  * @param {String} color 提示文字颜色
+ * @param {Boolean} mute 是否静音，此项为true时，audio参数将不起作用
  */
-export function showCustomTip(text, image, audio, color) {
+export function showCustomTip(text, image, audio, color, mute) {
 	let mountDom = document.createElement('div');
 	mountDom.style.position = 'absolute';
 	mountDom.style.left = 0;
 	mountDom.style.top = 0;
 	document.body.appendChild(mountDom);
-	new Audio(audio).play();
+	if (!mute) {
+		new Audio(audio).play();
+	}
 	let tipVue = createApp(Tip).mount(mountDom);
 	tipVue.setData(image, text, color);
 	setTimeout(() => {
@@ -40,8 +43,9 @@ export function showCustomTip(text, image, audio, color) {
  * 显示提示
  * @param {String} text 提示文字
  * @param {String} type 类型，有info、warn、error分别为告示、警告和错误，可以使用tipType对象中的值
+ * @param {Boolean} mute 是否静音
  */
-export function showTip(text, type) {
+export function showTip(text, type, mute = false) {
 	let image = require('@/assets/image/tipicon/info/i1.png');
 	let audio = require('@/assets/audio/tip/info.mp3');
 	let content = '[info]' + text;
@@ -63,5 +67,5 @@ export function showTip(text, type) {
 			content = '[error]' + text;
 			break;
 	}
-	showCustomTip(content, image, audio, color);
+	showCustomTip(content, image, audio, color, mute);
 }

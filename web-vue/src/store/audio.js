@@ -74,7 +74,8 @@ export default {
 			},
 			score: {
 				score: undefined,
-				boom: undefined
+				boom: undefined,
+				healthdown: undefined
 			},
 			tip: {
 				info: undefined,

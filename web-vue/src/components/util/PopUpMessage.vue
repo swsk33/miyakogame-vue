@@ -26,7 +26,8 @@ export default {
 .popupMessage {
 	position: absolute;
 	animation-name: up;
-	animation-duration: 0.5s;
+	animation-duration: 0.9s;
 	animation-timing-function: cubic-bezier(0, 0, 0, 1);
+	white-space: nowrap;
 }
 </style>

@@ -21,5 +21,5 @@ export function popUpMsg(text, position) {
 	msg.text = text;
 	setTimeout(() => {
 		mountDom.remove();
-	}, 500);
+	}, 850);
 }

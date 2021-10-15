@@ -1,3 +1,16 @@
+import {
+	Position
+} from '@/assets/js/constructors.js';
+
+import {
+	popUpMsg
+} from '@/components/util/popupmsg.js';
+
+import {
+	showTip,
+	tipType
+} from '@/components/util/tip.js';
+
 // vuex-游戏主控模块，包含游戏主控制和数据
 export default {
 	namespaced: true,
@@ -48,12 +61,6 @@ export default {
 	},
 	mutations: {
 		/**
-		 * 设定游戏域大小，payload中要有width属性表示游戏域宽度，height属性表示游戏域高度
-		 */
-		setGameArea(state, payload) {
-			state.gameArea = payload;
-		},
-		/**
 		 * 设定游戏主控，payload为一个对象，其中pudding、bullet属性都是计时器，分别表示循环调用所有布丁和子弹移动方法的计时器
 		 */
 		setControls(state, payload) {
@@ -66,6 +73,12 @@ export default {
 		clearControls(state) {
 			clearInterval(state.controls.puddingMove);
 			clearInterval(state.controls.bulletFly);
+		},
+		/**
+		 * 设定游戏域大小，payload中要有width属性表示游戏域宽度，height属性表示游戏域高度
+		 */
+		setGameArea(state, payload) {
+			state.gameArea = payload;
 		},
 		/**
 		 * 设定游戏动态数据，payload中有两个属性：name表示要设定的gameData对象中的属性名，value表示要设定的值
@@ -117,6 +130,7 @@ export default {
 			}
 			context.commit('setControls', args);
 			context.commit('setGameProcessing', true);
+			new Audio(require('@/assets/audio/start.mp3')).play();
 		},
 		/**
 		 * 停止游戏进程
@@ -150,6 +164,7 @@ export default {
 				const getProps = null;
 			} else {
 				getData = JSON.parse(getData);
+				context.commit('setNewGame', false);
 			}
 			// 执行提交数据
 			context.commit('setTotalData', getData);
@@ -163,6 +178,19 @@ export default {
 		 */
 		saveData(context) {
 			localStorage.setItem('gameData', JSON.stringify(context.state.gameData));
+			showTip('游戏数据已保存！', tipType.info, true);
+		},
+		/**
+		 * 重置全部游戏数据（但不清除最高分）
+		 */
+		resetAllData(context) {
+			let highScore = context.state.gameData.highScore;
+			localStorage.clear();
+			context.dispatch('readGameData');
+			context.commit('setGameData', {
+				name: 'highScore',
+				value: highScore
+			});
 		},
 		/**
 		 * 加分，payload为一个整数表示要加的分的值
@@ -181,6 +209,24 @@ export default {
 					value: currentModify.value
 				};
 				context.commit('setGameData', highModify);
+			}
+		},
+		/**
+		 * 生命值-1
+		 */
+		healthDown(context) {
+			let health = context.state.gameData.health;
+			new Audio(require('@/assets/audio/score/healthdown.mp3')).play();
+			const miyakoPosition = context.rootState.miyako.miyako.getPosition();
+			const miyakoSize = context.rootState.miyako.miyako.getSize();
+			popUpMsg('生命值 -1', new Position(miyakoPosition.x + miyakoSize.width, miyakoPosition.y + 65));
+			if (health > 0) {
+				context.commit('setGameData', {
+					name: 'health',
+					value: health - 1
+				});
+			} else {
+				// 显示失败页，重设游戏进度
 			}
 		}
 	}
