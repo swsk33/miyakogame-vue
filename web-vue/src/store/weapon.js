@@ -5,7 +5,7 @@ import {
 } from '@/assets/js/constructors.js';
 
 /**
- * 武器类构造函数，用于构造一个武器模板，继承GameEntity，表示一个武器的子弹模板，发射时通过深复制作为子弹实体对象
+ * 武器类构造函数，用于构造一个武器，武器会生成子弹对象
  * @param {String} name 武器（魔法）名
  * @param {String} description 武器描述
  * @param {Number} price 武器价格

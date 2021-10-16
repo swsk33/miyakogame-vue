@@ -34,6 +34,12 @@ export default {
 		setMiyakoPosition(state, payload) {
 			state.miyako.style.top = payload + 'px';
 		},
+		/**
+		 * 改变宫子移速，payload为整数表示改变后宫子移速
+		 */
+		setMiyakoSpeed(state, payload) {
+			state.miyako.speed = payload;
+		}
 	},
 	actions: {
 		/**
