@@ -11,6 +11,8 @@ import {
 	tipType
 } from '@/components/util/tip.js';
 
+import random from '@/assets/js/random.js';
+
 // vuex-游戏本地数据和云端数据管理模块
 export default {
 	namespaced: true,
@@ -139,7 +141,18 @@ export default {
 					value: health - 1
 				});
 			} else {
-				// 显示失败页，重设游戏进度
+				// 退出游戏进程
+				context.dispatch('gamingcontrol/exitGame', null, {
+					root: true
+				});
+				// 播放失败音频
+				new Audio(require('@/assets/audio/failed/f' + random.generateRandom(1, 3) + '.mp3')).play();
+				// 重置游戏数据
+				context.dispatch('resetAllData');
+				// 显示失败页面
+				context.commit('pagecontrol/setFailedPage', true, {
+					root: true
+				});
 			}
 		},
 		/**

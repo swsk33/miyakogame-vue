@@ -4,6 +4,7 @@
 		<mainmenu></mainmenu>
 		<help></help>
 		<successpage></successpage>
+		<failedpage></failedpage>
 		<loadingpage></loadingpage>
 	</div>
 </template>
@@ -15,6 +16,7 @@ import mainmenu from '@/components/MainMenu.vue';
 import gamebody from '@/components/GameBody.vue';
 import help from '@/components/Help.vue';
 import successpage from '@/components/SuccessPage.vue';
+import failedpage from '@/components/FailedPage.vue';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapActions: dataActions } = createNamespacedHelpers('userdata');
@@ -26,6 +28,7 @@ export default {
 		gamebody,
 		help,
 		successpage,
+		failedpage,
 	},
 	methods: {
 		...dataActions(['readGameData']),

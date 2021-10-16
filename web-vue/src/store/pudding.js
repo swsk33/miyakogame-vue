@@ -202,6 +202,7 @@ export default {
 				});
 				return;
 			}
+			// 移动速度
 			const rate = context.rootState.userdata.gameData.level * 2 + 1;
 			const puddings = context.state.puddings;
 			let eachPuddingPosition;
