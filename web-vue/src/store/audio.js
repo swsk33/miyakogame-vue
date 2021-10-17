@@ -1,58 +1,3 @@
-/**
- * 根据一个音频列表对象递归加载音频文件
- * @param {String} pathPrefix 音频所在路径（需要以/结尾，根目录传入空字符串''）
- * @param {Object} audioList 音频列表对象，音频列表对象中属性和音频文件夹目录结构一致，每个表示音频文件的属性先要留空为undefined
- */
-function loadAudioByObject(pathPrefix, audioList) {
-	for (let key in audioList) {
-		if (audioList[key] == undefined) {
-			let audio = new Audio();
-			audio.src = require('@/assets/audio/' + pathPrefix + key + '.mp3');
-			audio.preload = 'auto';
-			audioList[key] = audio;
-		} else {
-			let prefix = pathPrefix + key + '/';
-			loadAudioByObject(prefix, audioList[key]);
-		}
-	}
-}
-
-/**
- * 递归获取音频总数
- * @param {Object} audioList 音频列表对象，音频列表对象中属性和音频文件夹目录结构一致
- * @returns 全部音频资源数量
- */
-function getAudioCount(audioList) {
-	let total = 0;
-	for (let key in audioList) {
-		if (Object.prototype.toString.call(audioList[key]) === '[object Object]') {
-			total = total + getAudioCount(audioList[key]);
-		} else {
-			total++;
-		}
-	}
-	return total;
-}
-
-/**
- * 递归检查音频列表中已加载的音频数量
- * @param {Object} audioList 音频列表对象，音频列表对象中属性和音频文件夹目录结构一致
- * @returns 已加载音频数量
- */
-function checkAudioLoaded(audioList) {
-	let loaded = 0;
-	for (let key in audioList) {
-		if (Object.prototype.toString.call(audioList[key]) === '[object Object]') {
-			loaded = loaded + checkAudioLoaded(audioList[key]);
-		} else {
-			if (Object.prototype.toString.call(audioList[key]) === '[object HTMLAudioElement]' && audioList[key].readyState == 4) {
-				loaded++;
-			}
-		}
-	}
-	return loaded;
-}
-
 // vuex-音频资源模块
 export default {
 	namespaced: true,
@@ -102,29 +47,78 @@ export default {
 			loadAudioByObject('', state.audioList);
 		},
 		/**
-		 * 释放内存
+		 * 递归加载音频，payload表示要加载的音频列表对象路径，加载根路径传入空字符串('')即可（例如要加载上述state中succeed中的s1，那么payload为：succeed/s1）。音频列表对象中属性和音频文件夹目录结构一致，每个表示音频文件的属性先要留空为undefined
 		 */
-		releaseAll(state) {
-			state.audioList = null;
+		loadAudioList(state, payload) {
+			// 处理路径字符串
+			if (payload.indexOf('/') == 0) {
+				payload = payload.substring(1, payload.length);
+			}
+			// 检索至音频列表对象中的指定属性
+			let pathes;
+			if (payload === '') {
+				pathes = ['audioList'];
+			} else {
+				pathes = payload.split('/');
+				pathes.unshift('audioList');
+			}
+			let audioObject = state;
+			// 只索引到第n - 1个，也就是目标属性的的前一个，这样就可以引用到对象并修改其中的属性（否则会发生单类型复制导致无法赋值到对象中）
+			for (let i = 0; i < pathes.length - 1; i++) {
+				audioObject = audioObject[pathes[i]];
+			}
+			// 如果说当前索引到路径是undefined，这个属性代表音频，执行加载
+			if (audioObject[pathes[pathes.length - 1]] === undefined) {
+				let audio = new Audio();
+				audio.src = require('@/assets/audio/' + payload + '.mp3');
+				audioObject[pathes[pathes.length - 1]] = audio;
+			} else { // 否则，说明这个属性还有子属性，遍历子属性并进入递归流程加载其中的音频
+				let list = audioObject[pathes[pathes.length - 1]];
+				for (let key in list) {
+					this.commit('audio/loadAudioList', payload + '/' + key);
+				}
+			}
 		}
 	},
 	actions: {
 		loadAllAudio(context) {
-			context.commit('loadAll');
+			context.commit('loadAudioList', '');
 		},
 		/**
-		 * 获取音频资源总数
-		 * @returns 音频资源总数
+		 * 获取全部音频资源数量，payload为待获取的音频列表对象，音频列表对象中属性和音频文件夹目录结构一致
+		 * @returns 全部音频资源数
 		 */
-		getTotal(context) {
-			return getAudioCount(context.state.audioList);
+		async getTotal(context, payload) {
+			if (payload === null) {
+				payload = context.state;
+			}
+			let total = 0;
+			for (let key in payload) {
+				if (Object.prototype.toString.call(payload[key]) === '[object Object]') {
+					total = total + await context.dispatch('getTotal', payload[key]);
+				} else {
+					total++;
+				}
+			}
+			return total;
 		},
 		/**
-		 * 获取已加载音频数
-		 * @returns 已加载音频数
+		 * 检查已加载音频资源数量，payload为待检查的音频列表对象，音频列表对象中属性和音频文件夹目录结构一致
+		 * @returns 已加载音频资源数
 		 */
-		getLoaded(context) {
-			return checkAudioLoaded(context.state.audioList);
+		async getLoaded(context, payload) {
+			if (payload === null) {
+				payload = context.state;
+			}
+			let loaded = 0;
+			for (let key in payload) {
+				if (Object.prototype.toString.call(payload[key]) === '[object Object]') {
+					loaded = loaded + await context.dispatch('getLoaded', payload[key]);
+				} else if (Object.prototype.toString.call(payload[key]) === '[object HTMLAudioElement]' && payload[key].readyState == 4) {
+					loaded++;
+				}
+			}
+			return loaded;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 <template>
 	<div v-if="mainMenu" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
 		<div class="title">
-			<img class="avatar" src="@/assets/image/avatar/excepted.png" />
+			<img class="avatar" :src="imageList.png.avatar.excepted" />
 			<div class="main"></div>
 		</div>
 		<ul class="menu">
@@ -22,11 +22,13 @@ import random from '@/assets/js/random.js';
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
+const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
 	computed: {
 		...pageState(['mainMenu', 'help']),
 		...dataState(['isNewGame']),
+		...imageState(['imageList']),
 	},
 	data() {
 		return {

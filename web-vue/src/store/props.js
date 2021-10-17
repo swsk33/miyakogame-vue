@@ -20,6 +20,10 @@ function Prop(name, description, price, image, sound, interval, effect) {
 	 * 道具是否就绪
 	 */
 	this.isReady = true;
+	/**
+	 * 就绪状态，为百分比
+	 */
+	this.readyState = 100;
 }
 
 // vuex-道具
@@ -82,13 +86,26 @@ export default {
 					root: true
 				});
 			});
+			// 移速提升
 			let moveAdd = new Prop('移速提升', '在60s之内提升宫子的移速', 10, require('@/assets/image/prop/moveFaster.png'), new Audio(require('@/assets/audio/moveAdd.mp3')), 6500, function (character, enemies) {
 				context.commit('miyako/setsetMiyakoSpeed', 20, {
 					root: true
 				});
-
+				let time = 60;
+				let invalidInterval = setInterval(() => {
+					if (context.rootState.gamingcontrol.isProcessing) {
+						time--;
+					}
+					if (time <= 0) {
+						context.commit('miyako/setsetMiyakoSpeed', 10, {
+							root: true
+						});
+						clearInterval(invalidInterval);
+					}
+				}, 1000);
 			});
-
+			// 冻结吧
+			let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50);
 		},
 		/**
 		 * 使用当前道具
