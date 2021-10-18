@@ -2,7 +2,7 @@
 	<div v-if="mainMenu" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
 		<div class="title">
 			<img class="avatar" :src="imageList.png.avatar.excepted" />
-			<div class="main"></div>
+			<img class="main" :src="imageList.png.title.normal" />
 		</div>
 		<ul class="menu">
 			<li :class="{ newGameStyle: isNewGame }" @click="continueGame">继续游戏</li>
@@ -115,7 +115,6 @@ export default {
 			width: 600px;
 			height: 150px;
 			bottom: 24px;
-			background: url(../assets/image/title/normal.png) no-repeat center/cover;
 		}
 
 		.avatar {

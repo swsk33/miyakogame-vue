@@ -13,20 +13,18 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapState: loadingState, mapActions: loadingActions } = createNamespacedHelpers('loading');
+const { mapState: loadingState } = createNamespacedHelpers('loading');
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 
 export default {
 	methods: {
-		...loadingActions(['loadAll']),
 		...pageMutations(['setLoadingPage']),
 	},
 	computed: {
 		...loadingState(['process', 'complete']),
 		...pageState(['loading']),
 	},
-	async mounted() {
-		this.loadAll();
+	mounted() {
 		let checkComplete = setInterval(() => {
 			if (this.complete) {
 				setTimeout(() => {

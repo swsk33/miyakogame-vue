@@ -71,6 +71,7 @@ export default {
 			if (audioObject[pathes[pathes.length - 1]] === undefined) {
 				let audio = new Audio();
 				audio.src = require('@/assets/audio/' + payload + '.mp3');
+				audio.preload = 'auto';
 				audioObject[pathes[pathes.length - 1]] = audio;
 			} else { // 否则，说明这个属性还有子属性，遍历子属性并进入递归流程加载其中的音频
 				let list = audioObject[pathes[pathes.length - 1]];

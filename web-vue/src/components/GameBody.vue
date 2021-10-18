@@ -13,7 +13,7 @@
 			</div>
 			<div class="level">第{{ gameData.level }}关</div>
 			<div class="health">
-				<img src="@/assets/image/youlStatic.png" />
+				<img :src="imageList.png.youlStatic" />
 				<div class="t">x{{ gameData.health }}</div>
 			</div>
 			<div class="scorePanel">
@@ -39,6 +39,7 @@ const { mapState: dataState } = createNamespacedHelpers('userdata');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 const { mapState: weaponState, mapMutations: weaponMutations, mapActions: weaponActions } = createNamespacedHelpers('weapon');
+const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
 	methods: {
@@ -46,7 +47,7 @@ export default {
 		...gameActions(['startGameProcess', 'stopGameProcess']),
 		...miyakoActions(['moveMiyako']),
 		...puddingActions(['resetPuddings', 'moveAllPuddings']),
-		...weaponActions(['initializeWeapon', 'shooting']),
+		...weaponActions(['shooting']),
 		...weaponMutations(['alterWeapon']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
@@ -98,6 +99,7 @@ export default {
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
 		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
+		...imageState(['imageList']),
 		/**
 		 * 显示武器子弹数量
 		 */
@@ -117,7 +119,6 @@ export default {
 		};
 		this.setGameArea(area);
 		this.resetPuddings();
-		this.initializeWeapon();
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
 	},

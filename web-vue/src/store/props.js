@@ -76,8 +76,11 @@ export default {
 		 * 初始化全部道具，需要在组件挂载时调用
 		 */
 		initializeProps(context) {
+			// 图片和音频资源对象
+			const imageState = context.rootState.image.imageList;
+			const audioState = context.rootState.audio.audioList;
 			// 生命值+1
-			let healthAdd = new Prop('生命值+1', '生命值增加1', '80', require('@/assets/image/prop/addHealth.png'), new Audio(require('@/assets/audio/prop/healthAdd.mp3')), 6000, function (character, enemies) {
+			let healthAdd = new Prop('生命值+1', '生命值增加1', '80', imageState.png.prop.addHealth, audioState.prop.healthAdd, 6000, function (character, enemies) {
 				let health = context.rootState.userdata.gameData.health;
 				context.commit('userdata/setGameData', {
 					name: 'health',
@@ -87,7 +90,7 @@ export default {
 				});
 			});
 			// 移速提升
-			let moveAdd = new Prop('移速提升', '在60s之内提升宫子的移速', 10, require('@/assets/image/prop/moveFaster.png'), new Audio(require('@/assets/audio/moveAdd.mp3')), 6500, function (character, enemies) {
+			let moveAdd = new Prop('移速提升', '在60s之内提升宫子的移速', 10, imageState.png.prop.moveFaster, audioState.prop.moveAdd, 6500, function (character, enemies) {
 				context.commit('miyako/setsetMiyakoSpeed', 20, {
 					root: true
 				});
@@ -105,7 +108,7 @@ export default {
 				}, 1000);
 			});
 			// 冻结吧
-			let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50);
+			//let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50);
 		},
 		/**
 		 * 使用当前道具

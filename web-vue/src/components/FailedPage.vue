@@ -2,7 +2,7 @@
 	<div v-if="failed" :class="{ failed: true, failedFade: isPageOut }">
 		<div class="t1">failed!</div>
 		<div class="say">
-			<img class="avatar" src="@/assets/image/avatar/angry.png" />
+			<img class="avatar" :src="imageList.png.avatar.angry" />
 			<div class="t2">不要nano!宫子现在就要吃完nano!</div>
 		</div>
 		<ul class="menu">
@@ -18,6 +18,7 @@ import { createNamespacedHelpers } from 'vuex';
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapActions: dataActions } = createNamespacedHelpers('userdata');
+const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
 	data() {
@@ -27,6 +28,7 @@ export default {
 	},
 	computed: {
 		...pageState(['failed']),
+		...imageState(['imageList']),
 	},
 	methods: {
 		...pageMutations(['setFailedPage', 'setMainMenuPage']),

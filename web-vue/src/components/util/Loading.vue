@@ -1,11 +1,15 @@
 <template>
 	<div :style="gifPosition" class="loading">
-		<img src="../assets/image/youlDynamic.gif" />
+		<img :src="imageList.gif.youlDynamic" />
 		<div class="text">{{ text }}</div>
 	</div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapState: imageState } = createNamespacedHelpers('image');
+
 export default {
 	name: 'loading',
 	data() {
@@ -16,6 +20,9 @@ export default {
 				top: '',
 			},
 		};
+	},
+	computed: {
+		...imageState(['imageList']),
 	},
 	methods: {
 		setData(x, y, text) {

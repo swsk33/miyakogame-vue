@@ -3,7 +3,7 @@
 		<div class="frame">
 			<div class="introduce">&ensp;&ensp;&ensp;&ensp;宫子是一个喜欢吃布丁的幽灵。现在帮助（操控）她吃（淦）掉所有布丁吧！</div>
 			<div class="t1">
-				<img src="@/assets/image/youlStatic.png" />
+				<img :src="imageList.png.youlStatic" />
 				<p>表示生命值。</p>
 			</div>
 			<div class="t2">按W或者↑向上移动，S或者↓向下移动，空格开火</div>
@@ -19,10 +19,12 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
 	computed: {
 		...pageState(['help']),
+		...imageState(['imageList']),
 	},
 	methods: {
 		...pageMutations(['setHelpPage']),

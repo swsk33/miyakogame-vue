@@ -25,7 +25,10 @@ export default {
 		}
 	},
 	actions: {
-		checkTotalProcess(context) {
+		/**
+		 * 检查总进度，一些加载完成后需要初始化的函数需要在这里加载完成后执行
+		 */
+		async checkTotalProcess(context) {
 			let imageLoaded = 0;
 			let audioLoaded = 0;
 			let checkInterval = setInterval(async () => {
@@ -38,10 +41,15 @@ export default {
 				// 进行计算显示进度
 				let process = (imageLoaded / context.state.imageCount) * 50 + (audioLoaded / context.state.audioCount) * 50;
 				context.commit('setProcess', process.toFixed(2));
+				// 加载完成之后
 				if (imageLoaded == context.state.imageCount && audioLoaded == context.state.audioCount) {
 					context.commit('setComplete', true);
 					// 替换图片资源为require形式
-					context.commit('image/setImageResource', 'imageList', {
+					await context.commit('image/setImageResource', 'imageList', {
+						root: true
+					});
+					// 装载武器和道具
+					context.dispatch('weapon/initializeWeapon', null, {
 						root: true
 					});
 					clearInterval(checkInterval);

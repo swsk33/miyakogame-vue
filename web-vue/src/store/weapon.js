@@ -209,8 +209,11 @@ export default {
 		 * 初始化所有武器，需要在组件挂载时调用
 		 */
 		initializeWeapon(context) {
+			// 图片和音频资源对象
+			const imageState = context.rootState.image.imageList;
+			const audioState = context.rootState.audio.audioList;
 			// 默认武器
-			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, 600, require('@/assets/image/bullet/normal.png'), new Audio(require('@/assets/audio/weapon/normal.mp3')), function (position) {
+			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
 				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
 					return entityFlyX(this, 8);
 				}, function (enemy, enemies) {
@@ -225,7 +228,7 @@ export default {
 					});
 				});
 				// 设定子弹贴图等等
-				bullet.style.backgroundImage = 'url(' + require('@/assets/image/bullet/normal.png') + ')';
+				bullet.style.backgroundImage = 'url(' + this.texture + ')';
 				bullet.style.backgroundRepeat = 'no-repeat';
 				bullet.style.backgroundPosition = 'center';
 				bullet.style.backgroundSize = 'cover';
