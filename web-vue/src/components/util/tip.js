@@ -20,7 +20,7 @@ export const tipType = {
  * 显示自定义提示
  * @param {String} text 提示文字 
  * @param {NodeRequire} image 提示图标（需要require）
- * @param {NodeRequire} audio 提示音（需要require）
+ * @param {Audio} audio 提示音
  * @param {String} color 提示文字颜色
  * @param {Boolean} mute 是否静音，此项为true时，audio参数将不起作用
  */
@@ -31,7 +31,7 @@ export function showCustomTip(text, image, audio, color, mute) {
 	mountDom.style.top = 0;
 	document.body.appendChild(mountDom);
 	if (!mute) {
-		new Audio(audio).play();
+		audio.play();
 	}
 	let tipVue = createApp(Tip).mount(mountDom);
 	tipVue.setData(image, text, color);

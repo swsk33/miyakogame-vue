@@ -24,15 +24,12 @@ export default {
 		...loadingState(['process', 'complete']),
 		...pageState(['loading']),
 	},
-	mounted() {
-		let checkComplete = setInterval(() => {
-			if (this.complete) {
-				setTimeout(() => {
-					this.setLoadingPage(false);
-				}, 800);
-				clearInterval(checkComplete);
-			}
-		}, 100);
+	watch: {
+		complete() {
+			setTimeout(() => {
+				this.setLoadingPage(false);
+			}, 800);
+		},
 	},
 };
 </script>

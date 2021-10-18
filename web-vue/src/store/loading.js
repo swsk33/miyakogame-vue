@@ -49,7 +49,14 @@ export default {
 						root: true
 					});
 					// 装载武器和道具
-					context.dispatch('weapon/initializeWeapon', null, {
+					await context.dispatch('weapon/initializeWeapon', null, {
+						root: true
+					});
+					await context.dispatch('prop/initializeProps', null, {
+						root: true
+					});
+					// 读取本地数据
+					await context.dispatch('userdata/readGameData', null, {
 						root: true
 					});
 					clearInterval(checkInterval);

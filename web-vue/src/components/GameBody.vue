@@ -2,9 +2,9 @@
 	<div class="gameBody">
 		<div class="topBar">
 			<div class="props">
-				<div class="name">生命值+1</div>
-				<img src="@/assets/image/prop/addHealth.png" />
-				<div class="count">x0</div>
+				<div class="name">{{ propList[currentProp].name }}</div>
+				<img :src="propList[currentProp].image" />
+				<div class="count">x{{ gameData.propsCount[currentProp] }}</div>
 			</div>
 			<div class="weapon">
 				<div class="name">{{ weaponList[currentWeapon].name }}</div>
@@ -39,6 +39,7 @@ const { mapState: dataState } = createNamespacedHelpers('userdata');
 const { mapState: puddingState, mapActions: puddingActions } = createNamespacedHelpers('pudding');
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 const { mapState: weaponState, mapMutations: weaponMutations, mapActions: weaponActions } = createNamespacedHelpers('weapon');
+const { mapState: propState, mapMutations: propMutations, mapActions: propActions } = createNamespacedHelpers('prop');
 const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
@@ -47,6 +48,8 @@ export default {
 		...gameActions(['startGameProcess', 'stopGameProcess']),
 		...miyakoActions(['moveMiyako']),
 		...puddingActions(['resetPuddings', 'moveAllPuddings']),
+		...propMutations(['alterProp']),
+		...propActions(['useCurrentProp']),
 		...weaponActions(['shooting']),
 		...weaponMutations(['alterWeapon']),
 		getPuddingImage(n) {
@@ -77,18 +80,30 @@ export default {
 		 */
 		listenerHandle(e) {
 			if (this.isProcessing) {
+				// 移动宫子
 				if (e.keyCode == 87 || e.keyCode == 38) {
 					this.moveMiyako(true);
 				}
 				if (e.keyCode == 83 || e.keyCode == 40) {
 					this.moveMiyako(false);
 				}
+				// 空格射击
 				if (e.keyCode == 32) {
 					let position = this.miyako.getPosition();
 					let size = this.miyako.getSize();
 					position.x = position.x + size.width;
 					position.y = position.y + size.height / 3;
 					this.shooting({ position });
+				}
+				// 道具切换和使用
+				if (e.keyCode == 90) {
+					this.alterProp(false);
+				}
+				if (e.keyCode == 67) {
+					this.alterProp(true);
+				}
+				if (e.keyCode == 86) {
+					this.useCurrentProp();
 				}
 			}
 		},
@@ -98,6 +113,7 @@ export default {
 		...dataState(['gameData']),
 		...puddingState(['puddings']),
 		...miyakoState(['miyako']),
+		...propState(['propList', 'currentProp']),
 		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
 		...imageState(['imageList']),
 		/**

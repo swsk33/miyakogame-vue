@@ -19,7 +19,6 @@ import successpage from '@/components/SuccessPage.vue';
 import failedpage from '@/components/FailedPage.vue';
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapActions: loadingActions } = createNamespacedHelpers('loading');
 
 export default {
@@ -32,12 +31,10 @@ export default {
 		failedpage,
 	},
 	methods: {
-		...dataActions(['readGameData']),
 		...loadingActions(['loadAll']),
 	},
 	mounted() {
 		mouseffect.enableAll();
-		this.readGameData();
 		// 加载全部资源文件
 		this.loadAll();
 	},

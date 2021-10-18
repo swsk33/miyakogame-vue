@@ -76,9 +76,21 @@ export default {
 					getData.weaponCount.push(10);
 				}
 				// 初始化道具数量
-				const getProps = null;
+				const getProps = context.rootState.prop.propList;
+				for (let i = 0; i < getProps.length; i++) {
+					getData.propsCount.push(1);
+				}
 			} else {
 				getData = JSON.parse(getData);
+				//补全新增武器/道具数量
+				let weaponDiff = context.rootState.weapon.weaponList.length - getData.weaponCount.length;
+				let propDiff = context.rootState.prop.propList.length - getData.propsCount.length;
+				for (let i = 0; i < weaponDiff; i++) {
+					getData.weaponCount.push(10);
+				}
+				for (let i = 0; i < propDiff; i++) {
+					getData.propsCount.push(1);
+				}
 				context.commit('setNewGame', false);
 			}
 			// 执行提交数据

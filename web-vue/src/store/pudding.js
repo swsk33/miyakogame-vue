@@ -81,7 +81,11 @@ export default {
 		/**
 		 * 布丁移动方向，true表示向上移动
 		 */
-		isUp: false
+		isUp: false,
+		/**
+		 * 布丁移动速度，和关卡数成正比
+		 */
+		rate: 0
 	},
 	mutations: {
 		/**
@@ -120,6 +124,12 @@ export default {
 		 */
 		alterPuddingMove(state) {
 			state.isUp = !state.isUp;
+		},
+		/**
+		 * 改变布丁移动速度，payload表示整型为布丁移动速度
+		 */
+		setPuddingsRate(state, patyload) {
+			state.rate = patyload;
 		}
 	},
 	actions: {
@@ -203,7 +213,7 @@ export default {
 				return;
 			}
 			// 移动速度
-			const rate = context.rootState.userdata.gameData.level * 2 + 1;
+			const rate = context.state.rate;
 			const puddings = context.state.puddings;
 			let eachPuddingPosition;
 			const arg = {
@@ -345,6 +355,7 @@ export default {
 				}
 			}
 			context.dispatch('scanPuddingsAtBorder');
+			context.commit('setPuddingsRate', context.rootState.userdata.gameData.level * 2 + 1);
 		},
 	}
 }
