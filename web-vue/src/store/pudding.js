@@ -191,7 +191,7 @@ export default {
 					root: true
 				});
 				// 播放成功音频
-				new Audio(require('@/assets/audio/succeed/s' + random.generateRandom(1, 2) + '.mp3')).play();
+				context.rootState.audio.audioList.succeed['s' + random.generateRandom(1, 2)].play();
 				// 显示成功页面
 				context.commit('pagecontrol/setSuccessPage', true, {
 					root: true
@@ -313,7 +313,7 @@ export default {
 		setPuddingEaten(context, payload) {
 			payload.eaten = true;
 			context.commit('setPuddingEaten', payload);
-			new Audio(require('@/assets/audio/score/score.mp3')).play();
+			context.rootState.audio.audioList.score.score.play();
 			const getPudding = context.state.puddings[payload.column][payload.line];
 			context.dispatch('userdata/addScore', getPudding.score, {
 				root: true

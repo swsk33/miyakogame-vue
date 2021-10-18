@@ -131,7 +131,7 @@ export default {
 		 */
 		healthDown(context) {
 			let health = context.state.gameData.health;
-			new Audio(require('@/assets/audio/score/healthdown.mp3')).play();
+			context.rootState.audio.audioList.score.healthdown.play();
 			const miyakoPosition = context.rootState.miyako.miyako.getPosition();
 			const miyakoSize = context.rootState.miyako.miyako.getSize();
 			popUpMsg('生命值 -1', new Position(miyakoPosition.x + miyakoSize.width, miyakoPosition.y + 65));
@@ -146,7 +146,7 @@ export default {
 					root: true
 				});
 				// 播放失败音频
-				new Audio(require('@/assets/audio/failed/f' + random.generateRandom(1, 3) + '.mp3')).play();
+				context.rootState.audio.audioList.failed['f' + random.generateRandom(1, 3)].play();
 				// 重置游戏数据
 				context.dispatch('resetAllData');
 				// 显示失败页面

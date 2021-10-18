@@ -52,12 +52,8 @@ export default {
 						e5: undefined
 					}
 				},
-				title: {
-					normal: undefined
-				},
-				miyako: {
-					normal: undefined
-				},
+				title: undefined,
+				miyako: undefined,
 				youlStatic: undefined
 			},
 			gif: {

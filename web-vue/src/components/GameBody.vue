@@ -23,7 +23,7 @@
 		</div>
 		<div class="gameBackground">
 			<!--宫子-->
-			<img src="@/assets/image/miyako/normal.png" class="miyako" :style="miyako.style" />
+			<img :src="imageList.png.miyako" class="miyako" :style="miyako.style" />
 			<!--所有布丁，类名为：pudding-列-行，从0计数-->
 			<img v-for="n in 32" :key="n" :class="'pudding-' + getPuddingColumn(n) + '-' + getPuddingLine(n)" :src="getPuddingImage(n)" :style="puddings[getPuddingColumn(n)][getPuddingLine(n)].style" />
 			<!-- 所有子弹，使用v-for实现动态生成子弹dom -->
@@ -51,11 +51,11 @@ export default {
 		...weaponMutations(['alterWeapon']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
-				return require('@/assets/image/pudding/p1.png');
+				return this.imageList.png.pudding.p1;
 			} else if (n >= 17 && n <= 24) {
-				return require('@/assets/image/pudding/p2.png');
+				return this.imageList.png.pudding.p2;
 			} else {
-				return require('@/assets/image/pudding/p3.png');
+				return this.imageList.png.pudding.p3;
 			}
 		},
 		getPuddingColumn(n) {

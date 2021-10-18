@@ -2,7 +2,7 @@
 	<div v-if="mainMenu" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
 		<div class="title">
 			<img class="avatar" :src="imageList.png.avatar.excepted" />
-			<img class="main" :src="imageList.png.title.normal" />
+			<img class="main" :src="imageList.png.title" />
 		</div>
 		<ul class="menu">
 			<li :class="{ newGameStyle: isNewGame }" @click="continueGame">继续游戏</li>
@@ -23,12 +23,14 @@ const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHel
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: imageState } = createNamespacedHelpers('image');
+const { mapState: audioState } = createNamespacedHelpers('audio');
 
 export default {
 	computed: {
 		...pageState(['mainMenu', 'help']),
 		...dataState(['isNewGame']),
 		...imageState(['imageList']),
+		...audioState(['audioList']),
 	},
 	data() {
 		return {
@@ -55,7 +57,7 @@ export default {
 		 */
 		continueGame() {
 			if (!this.isNewGame) {
-				new Audio(require('@/assets/audio/start.mp3')).play();
+				this.audioList.start.play();
 				this.menuFadeOut();
 				// 开始游戏进程
 				this.enterGame();
@@ -68,9 +70,9 @@ export default {
 			if (!this.isNewGame) {
 				showDialog(
 					'开始新游戏将清除所有游戏进度和武器道具（最高分不会清除），是否继续？',
-					require('@/assets/image/tipicon/warn/w' + random.generateRandom(1, 5) + '.png'),
+					this.imageList.png.tipicon.warn['w' + random.generateRandom(1, 5)],
 					() => {
-						new Audio(require('@/assets/audio/start.mp3')).play();
+						this.audioList.start.play();
 						this.resetAllData();
 						this.menuFadeOut();
 						// 开始游戏进程
@@ -79,7 +81,7 @@ export default {
 					() => {}
 				);
 			} else {
-				new Audio(require('@/assets/audio/start.mp3')).play();
+				this.audioList.start.play();
 				this.menuFadeOut();
 				// 开始游戏进程
 				this.enterGame();
