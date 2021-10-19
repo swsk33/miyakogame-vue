@@ -31,9 +31,9 @@ function Prop(name, description, price, image, sound, interval, effect) {
 	 */
 	this.isReady = true;
 	/**
-	 * 就绪状态，为百分比
+	 * 就绪状态，为0-1的整数，1表示已经就绪
 	 */
-	this.readyState = 100;
+	this.readyState = 1;
 }
 
 // vuex-道具
@@ -63,7 +63,7 @@ export default {
 			state.propList[state.currentProp].isReady = payload;
 		},
 		/**
-		 * 设定当前道具就绪状态，payload为一个0-1之间的浮点数
+		 * 设定当前道具就绪状态，payload为一个0-1之间的浮点数表示就绪状态
 		 */
 		setPropReadyState(state, payload) {
 			state.propList[state.currentProp].readyState = payload;
@@ -153,7 +153,7 @@ export default {
 			const currentIndex = context.state.currentProp;
 			const getProp = context.state.propList[currentIndex];
 			const propCounts = context.rootState.userdata.gameData.propsCount;
-			if (propCounts[currentIndex] <= 0) {
+			if (propCounts[currentIndex] == 0) {
 				showTip('当前道具数量不足！', tipType.error);
 				return;
 			}
@@ -161,7 +161,7 @@ export default {
 			if (getProp.isReady) {
 				propCounts[currentIndex]--;
 				context.commit('userdata/setGameData', {
-					name: 'propCounts',
+					name: 'propsCount',
 					value: propCounts
 				}, {
 					root: true
@@ -170,18 +170,21 @@ export default {
 				// 执行道具
 				getProp.effect(context.rootState.miyako.miyako, context.rootState.pudding.puddings);
 				context.commit('setPropReady', false);
-				const time = getProp.interval;
+				const loadingTime = getProp.interval;
 				let elapseTime = 0;
 				let loadInterval = setInterval(() => {
 					if (context.rootState.gamingcontrol.isProcessing) {
-						elapseTime++;
-						context.commit('setPropReadyState', elapseTime / time);
+						elapseTime = elapseTime + 16;
+						context.commit('setPropReadyState', elapseTime / loadingTime);
 					}
-					if (elapseTime >= time) {
+					if (elapseTime >= loadingTime) {
 						context.commit('setPropReady', true);
 						clearInterval(loadInterval);
 					}
-				}, 1);
+				}, 16);
+			} else {
+				showTip('当前道具还处于冷却状态！', tipType.error);
+				return;
 			}
 		}
 	}

@@ -5,6 +5,7 @@
 		<help></help>
 		<successpage></successpage>
 		<failedpage></failedpage>
+		<pausepage></pausepage>
 		<loadingpage></loadingpage>
 	</div>
 </template>
@@ -17,6 +18,7 @@ import gamebody from '@/components/GameBody.vue';
 import help from '@/components/Help.vue';
 import successpage from '@/components/SuccessPage.vue';
 import failedpage from '@/components/FailedPage.vue';
+import pausepage from '@/components/PausePage.vue';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapActions: loadingActions } = createNamespacedHelpers('loading');
@@ -29,6 +31,7 @@ export default {
 		help,
 		successpage,
 		failedpage,
+		pausepage,
 	},
 	methods: {
 		...loadingActions(['loadAll']),

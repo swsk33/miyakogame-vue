@@ -43,7 +43,7 @@ export default {
 				this.setSuccessPage(false);
 				// 还原页面状态防止下次再次调用页面时出现问题
 				this.isPageOut = false;
-			}, 500);
+			}, 800);
 		},
 		/**
 		 * 下一关按钮
@@ -78,7 +78,7 @@ export default {
 	height: 100vh;
 	background-color: rgba(255, 255, 255, 0.8);
 	transition-property: transform, left, top;
-	transition-duration: 0.5s;
+	transition-duration: 0.8s;
 	transition-timing-function: ease-out;
 
 	.t1 {
@@ -138,6 +138,6 @@ export default {
 .succeedFade {
 	left: -25vw;
 	top: -25vh;
-	transform: scale(0) rotateX(3600deg);
+	transform: scale(0) rotateX(180deg);
 }
 </style>

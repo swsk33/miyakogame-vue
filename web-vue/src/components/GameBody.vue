@@ -40,9 +40,29 @@ const { mapState: puddingState, mapActions: puddingActions } = createNamespacedH
 const { mapState: miyakoState, mapActions: miyakoActions } = createNamespacedHelpers('miyako');
 const { mapState: weaponState, mapMutations: weaponMutations, mapActions: weaponActions } = createNamespacedHelpers('weapon');
 const { mapState: propState, mapMutations: propMutations, mapActions: propActions } = createNamespacedHelpers('prop');
+const { mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
+	computed: {
+		...gameState(['isProcessing', 'isOutOfGame']),
+		...dataState(['gameData']),
+		...puddingState(['puddings']),
+		...miyakoState(['miyako']),
+		...propState(['propList', 'currentProp']),
+		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
+		...imageState(['imageList']),
+		/**
+		 * 显示武器子弹数量
+		 */
+		bulletCount() {
+			if (this.gameData.weaponCount[this.currentWeapon] == -1) {
+				return '无限';
+			} else {
+				return this.gameData.weaponCount[this.currentWeapon];
+			}
+		},
+	},
 	methods: {
 		...gameMutations(['setGameArea']),
 		...gameActions(['startGameProcess', 'stopGameProcess']),
@@ -52,6 +72,7 @@ export default {
 		...propActions(['useCurrentProp']),
 		...weaponActions(['shooting']),
 		...weaponMutations(['alterWeapon']),
+		...pageMutations(['setPausePage']),
 		getPuddingImage(n) {
 			if (n >= 1 && n <= 16) {
 				return this.imageList.png.pudding.p1;
@@ -106,24 +127,17 @@ export default {
 					this.useCurrentProp();
 				}
 			}
-		},
-	},
-	computed: {
-		...gameState(['isProcessing', 'isOutOfGame']),
-		...dataState(['gameData']),
-		...puddingState(['puddings']),
-		...miyakoState(['miyako']),
-		...propState(['propList', 'currentProp']),
-		...weaponState(['bullets', 'currentWeapon', 'weaponList']),
-		...imageState(['imageList']),
-		/**
-		 * 显示武器子弹数量
-		 */
-		bulletCount() {
-			if (this.gameData.weaponCount[this.currentWeapon] == -1) {
-				return '无限';
-			} else {
-				return this.gameData.weaponCount[this.currentWeapon];
+			if (!this.isOutOfGame) {
+				// 暂停
+				if (e.keyCode == 80) {
+					if (this.isProcessing) {
+						this.setPausePage(true);
+						this.stopGameProcess();
+					} else {
+						this.setPausePage(false);
+						this.startGameProcess();
+					}
+				}
 			}
 		},
 	},

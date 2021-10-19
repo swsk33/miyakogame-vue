@@ -4,6 +4,11 @@ import {
 	GameEntity
 } from '@/assets/js/constructors.js';
 
+import {
+	tipType,
+	showTip
+} from '@/components/util/tip.js';
+
 /**
  * 武器类构造函数，用于构造一个武器，武器会生成子弹对象
  * @param {String} name 武器（魔法）名
@@ -25,6 +30,10 @@ function Weapon(name, description, price, interval, texture, sound, shooting) {
 	 * 当前武器是否就绪
 	 */
 	this.isReady = true;
+	/**
+	 * 就绪状态，为0-1的整数，1表示已经就绪
+	 */
+	this.readyState = 1;
 	/**
 	 * 发射子弹，即为生成子弹对象并加入到所有子弹数组中去
 	 * @param {Position} position 子弹初始的位置
@@ -180,6 +189,12 @@ export default {
 			state.weaponList[state.currentWeapon].isReady = payload;
 		},
 		/**
+		 * 设定当前武器就绪状态，payload为一个0-1之间的浮点数表示就绪状态
+		 */
+		setWeaponReadyState(state, payload) {
+			state.weaponList[state.currentWeapon].readyState = payload;
+		},
+		/**
 		 * 切换武器，payload为一个布尔值，true表示下一个武器，false表示上一个武器
 		 */
 		alterWeapon(state, payload) {
@@ -243,14 +258,39 @@ export default {
 		 * 当前武器射击，payload中要有position属性表示子弹初始位置
 		 */
 		shooting(context, payload) {
-			const getWeapon = context.state.weaponList[context.state.currentWeapon];
+			const currentIndex = context.state.currentWeapon;
+			const getWeapon = context.state.weaponList[currentIndex];
+			const weaponCounts = context.rootState.userdata.gameData.weaponCount;
+			if (weaponCounts[currentIndex] == 0) {
+				showTip('当前武器没有子弹！', tipType.error);
+				return;
+			}
+			// 武器开火
 			if (getWeapon.isReady) {
+				if (weaponCounts[currentIndex] != -1) {
+					weaponCounts[currentIndex]--;
+					context.commit('userdata/setGameData', {
+						name: 'weaponCount',
+						value: weaponCounts
+					}, {
+						root: true
+					});
+				}
 				getWeapon.shooting(payload.position);
 				getWeapon.sound.play();
 				context.commit('setWeaponReady', false);
-				setTimeout(() => {
-					context.commit('setWeaponReady', true);
-				}, getWeapon.interval);
+				const loadingTime = getWeapon.interval;
+				let elapseTime = 0;
+				let loadInterval = setInterval(() => {
+					if (context.rootState.gamingcontrol.isProcessing) {
+						elapseTime = elapseTime + 16;
+						context.commit('setWeaponReadyState', elapseTime / loadingTime);
+					}
+					if (elapseTime >= loadingTime) {
+						context.commit('setWeaponReady', true);
+						clearInterval(loadInterval);
+					}
+				}, 16);
 			}
 		},
 		/**

@@ -21,7 +21,11 @@ export default {
 		/**
 		 * 失败页面
 		 */
-		failed: false
+		failed: false,
+		/**
+		 * 暂停页面
+		 */
+		pause: false
 	},
 	mutations: {
 		/**
@@ -53,6 +57,12 @@ export default {
 		 */
 		setFailedPage(state, payload) {
 			state.failed = payload;
+		},
+		/**
+		 * 设置暂停页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setPausePage(state, payload) {
+			state.pause = payload;
 		}
 	}
 }
