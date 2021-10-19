@@ -54,7 +54,8 @@ export default {
 				},
 				title: undefined,
 				miyako: undefined,
-				youlStatic: undefined
+				youlStatic: undefined,
+				ready: undefined
 			},
 			gif: {
 				bullet: {

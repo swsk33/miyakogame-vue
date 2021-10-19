@@ -5,11 +5,13 @@
 				<div class="name">{{ propList[currentProp].name }}</div>
 				<img :src="propList[currentProp].image" />
 				<div class="count">x{{ gameData.propsCount[currentProp] }}</div>
+				<div class="readyStateShow" :style="propStateControl"></div>
 			</div>
 			<div class="weapon">
 				<div class="name">{{ weaponList[currentWeapon].name }}</div>
 				<img :src="weaponList[currentWeapon].texture" />
 				<div class="count">x{{ bulletCount }}</div>
+				<div class="readyStateShow" :style="weaponStateControl"></div>
 			</div>
 			<div class="level">第{{ gameData.level }}关</div>
 			<div class="health">
@@ -62,6 +64,68 @@ export default {
 				return this.gameData.weaponCount[this.currentWeapon];
 			}
 		},
+		/**
+		 * 控制当前武器装载可视化组件(.readyStateShow)的样式
+		 */
+		weaponStateControl() {
+			const getWeapon = this.weaponList[this.currentWeapon];
+			let style;
+			if (getWeapon.isReady) {
+				style = {
+					backgroundColor: 'none',
+					backgroundImage: 'url(' + this.imageList.png.ready + ')',
+					transform: 'rotate(0)',
+				};
+			} else {
+				style = {
+					backgroundColor: '#c971d4',
+					backgroundImage: 'none',
+					transform: 'rotate(45deg)',
+				};
+				const weaponReadyState = getWeapon.readyState;
+				if (weaponReadyState >= 0 && weaponReadyState <= 0.25) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, ' + weaponReadyState * 400 + '% 0%)';
+				} else if (weaponReadyState > 0.25 && weaponReadyState <= 0.5) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% ' + (weaponReadyState - 0.25) * 400 + '%)';
+				} else if (weaponReadyState > 0.5 && weaponReadyState <= 0.75) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% 100%, ' + (100 - (weaponReadyState - 0.5) * 400) + '% 100%)';
+				} else {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ' + (100 - (weaponReadyState - 0.75) * 400) + '%)';
+				}
+			}
+			return style;
+		},
+		/**
+		 * 控制当前道具冷却可视化组件(.readyStateShow)的样式
+		 */
+		propStateControl() {
+			const getProp = this.propList[this.currentProp];
+			let style;
+			if (getProp.isReady) {
+				style = {
+					backgroundColor: 'none',
+					backgroundImage: 'url(' + this.imageList.png.ready + ')',
+					transform: 'rotate(0)',
+				};
+			} else {
+				style = {
+					backgroundColor: '#3b63e7',
+					backgroundImage: 'none',
+					transform: 'rotate(45deg)',
+				};
+				const propReadyState = getProp.readyState;
+				if (propReadyState >= 0 && propReadyState <= 0.25) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, ' + propReadyState * 400 + '% 0%)';
+				} else if (propReadyState > 0.25 && propReadyState <= 0.5) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% ' + (propReadyState - 0.25) * 400 + '%)';
+				} else if (propReadyState > 0.5 && propReadyState <= 0.75) {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% 100%, ' + (100 - (propReadyState - 0.5) * 400) + '% 100%)';
+				} else {
+					style.clipPath = 'polygon(50% 50%, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ' + (100 - (propReadyState - 0.75) * 400) + '%)';
+				}
+			}
+			return style;
+		},
 	},
 	methods: {
 		...gameMutations(['setGameArea']),
@@ -108,7 +172,13 @@ export default {
 				if (e.keyCode == 83 || e.keyCode == 40) {
 					this.moveMiyako(false);
 				}
-				// 空格射击
+				// 武器的切换和射击
+				if (e.keyCode == 81) {
+					this.alterWeapon(false);
+				}
+				if (e.keyCode == 69) {
+					this.alterWeapon(true);
+				}
 				if (e.keyCode == 32) {
 					let position = this.miyako.getPosition();
 					let size = this.miyako.getSize();
@@ -181,6 +251,18 @@ export default {
 			align-items: center;
 		}
 
+		.readyStateShow {
+			position: relative;
+			width: 28px;
+			height: 28px;
+			margin-left: 8px;
+			border-radius: 50%;
+			transform: rotate(45deg);
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+		}
+
 		.props {
 			.name {
 				position: relative;
@@ -195,6 +277,10 @@ export default {
 			.count {
 				position: relative;
 				margin-left: 3px;
+			}
+
+			.readyStateShow {
+				background-color: #3b63e7;
 			}
 		}
 
@@ -211,6 +297,10 @@ export default {
 			.count {
 				position: relative;
 				margin-left: 3px;
+			}
+
+			.readyStateShow {
+				background-color: #c971d4;
 			}
 		}
 

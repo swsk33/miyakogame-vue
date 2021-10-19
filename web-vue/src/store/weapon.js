@@ -183,16 +183,16 @@ export default {
 			state.weaponList = payload;
 		},
 		/**
-		 * 设定当前武器就绪状态，payload为布尔值，true表示武器已经就绪
+		 * 设定当前武器就绪状态，payload中要有两个属性：index表示要设定的武器索引，ready为布尔值，true表示指定武器已经就绪
 		 */
 		setWeaponReady(state, payload) {
-			state.weaponList[state.currentWeapon].isReady = payload;
+			state.weaponList[payload.index].isReady = payload.ready;
 		},
 		/**
-		 * 设定当前武器就绪状态，payload为一个0-1之间的浮点数表示就绪状态
+		 * 设定当前武器就绪状态，payload中要有两个属性：index表示要设定的武器索引，readyState为一个0-1之间的浮点数表示就绪状态
 		 */
 		setWeaponReadyState(state, payload) {
-			state.weaponList[state.currentWeapon].readyState = payload;
+			state.weaponList[payload.index].readyState = payload.readyState;
 		},
 		/**
 		 * 切换武器，payload为一个布尔值，true表示下一个武器，false表示上一个武器
@@ -249,9 +249,29 @@ export default {
 				bullet.style.backgroundSize = 'cover';
 				context.commit('addBullet', bullet);
 			});
+			// 穿透鬼火
+			let penetrateWildfire = new Weapon('穿透鬼火', '可以穿透水平方向上的布丁，冷却1.5s', 10, 1500, imageState.png.bullet.penetrate, audioState.weapon.penetrate, function (position) {
+				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
+					return entityFlyX(this, 9);
+				}, function (enemy, enemies) {
+					// 穿透鬼火，击中布丁不消失
+					// 击中布丁标记为被吃掉
+					context.dispatch('pudding/setPuddingEaten', {
+						column: enemy.column,
+						line: enemy.line
+					}, {
+						root: true
+					});
+				});
+				// 设定子弹贴图等等
+				bullet.style.backgroundImage = 'url(' + this.texture + ')';
+				bullet.style.backgroundRepeat = 'no-repeat';
+				bullet.style.backgroundPosition = 'center';
+				bullet.style.backgroundSize = 'cover';
+				context.commit('addBullet', bullet);
+			});
 			// 设定武器列表
-			const weapons = [];
-			weapons.push(defaultWeapon);
+			const weapons = [defaultWeapon, penetrateWildfire];
 			context.commit('setWeapons', weapons);
 		},
 		/**
@@ -278,16 +298,25 @@ export default {
 				}
 				getWeapon.shooting(payload.position);
 				getWeapon.sound.play();
-				context.commit('setWeaponReady', false);
+				context.commit('setWeaponReady', {
+					index: currentIndex,
+					ready: false
+				});
 				const loadingTime = getWeapon.interval;
 				let elapseTime = 0;
 				let loadInterval = setInterval(() => {
 					if (context.rootState.gamingcontrol.isProcessing) {
 						elapseTime = elapseTime + 16;
-						context.commit('setWeaponReadyState', elapseTime / loadingTime);
+						context.commit('setWeaponReadyState', {
+							index: currentIndex,
+							readyState: elapseTime / loadingTime
+						});
 					}
 					if (elapseTime >= loadingTime) {
-						context.commit('setWeaponReady', true);
+						context.commit('setWeaponReady', {
+							index: currentIndex,
+							ready: true
+						});
 						clearInterval(loadInterval);
 					}
 				}, 16);

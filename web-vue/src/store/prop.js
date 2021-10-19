@@ -57,16 +57,16 @@ export default {
 			state.propList = payload;
 		},
 		/**
-		 * 设定当前道具是否装载完成，payload为布尔值表示当前道具是否就绪
+		 * 设定当前道具是否装载完成，payload中有两个属性：index表示要设定状态的道具索引，ready为布尔值表示该道具是否就绪
 		 */
 		setPropReady(state, payload) {
-			state.propList[state.currentProp].isReady = payload;
+			state.propList[payload.index].isReady = payload.ready;
 		},
 		/**
-		 * 设定当前道具就绪状态，payload为一个0-1之间的浮点数表示就绪状态
+		 * 设定当前道具就绪状态，payload中有两个属性：index表示要设定状态的道具索引，readyState为一个0-1之间的浮点数表示就绪状态
 		 */
 		setPropReadyState(state, payload) {
-			state.propList[state.currentProp].readyState = payload;
+			state.propList[payload.index].readyState = payload.readyState;
 		},
 		/**
 		 * 切换道具，payload为布尔值，true表示切换到下一个道具，否则切换到上一个
@@ -96,7 +96,7 @@ export default {
 			const imageState = context.rootState.image.imageList;
 			const audioState = context.rootState.audio.audioList;
 			// 生命值+1
-			let healthAdd = new Prop('生命值+1', '生命值增加1', '80', imageState.png.prop.addHealth, audioState.prop.healthAdd, 6000, function (character, enemies) {
+			let healthAdd = new Prop('生命值+1', '生命值增加1', '80', imageState.png.prop.addHealth, audioState.prop.healthAdd, 60000, function (character, enemies) {
 				let health = context.rootState.userdata.gameData.health;
 				context.commit('userdata/setGameData', {
 					name: 'health',
@@ -106,7 +106,7 @@ export default {
 				});
 			});
 			// 移速提升
-			let moveAdd = new Prop('移速提升', '在60s之内提升宫子的移速', 10, imageState.png.prop.moveFaster, audioState.prop.moveAdd, 6500, function (character, enemies) {
+			let moveAdd = new Prop('移速提升', '在60s之内提升宫子的移速', 10, imageState.png.prop.moveFaster, audioState.prop.moveAdd, 65000, function (character, enemies) {
 				context.commit('miyako/setMiyakoSpeed', 20, {
 					root: true
 				});
@@ -124,7 +124,7 @@ export default {
 				}, 1000);
 			});
 			// 冻结吧
-			let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50, imageState.png.prop.freezePuddings, audioState.prop.stopPuddings, 6000, function (character, enemies) {
+			let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50, imageState.png.prop.freezePuddings, audioState.prop.stopPuddings, 60000, function (character, enemies) {
 				const originRate = context.rootState.pudding.rate;
 				context.commit('pudding/setPuddingsRate', 0, {
 					root: true
@@ -169,16 +169,25 @@ export default {
 				getProp.sound.play();
 				// 执行道具
 				getProp.effect(context.rootState.miyako.miyako, context.rootState.pudding.puddings);
-				context.commit('setPropReady', false);
+				context.commit('setPropReady', {
+					index: currentIndex,
+					ready: false
+				});
 				const loadingTime = getProp.interval;
 				let elapseTime = 0;
 				let loadInterval = setInterval(() => {
 					if (context.rootState.gamingcontrol.isProcessing) {
 						elapseTime = elapseTime + 16;
-						context.commit('setPropReadyState', elapseTime / loadingTime);
+						context.commit('setPropReadyState', {
+							index: currentIndex,
+							readyState: elapseTime / loadingTime
+						});
 					}
 					if (elapseTime >= loadingTime) {
-						context.commit('setPropReady', true);
+						context.commit('setPropReady', {
+							index: currentIndex,
+							ready: true
+						});
 						clearInterval(loadInterval);
 					}
 				}, 16);
