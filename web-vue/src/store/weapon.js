@@ -69,6 +69,18 @@ function Bullet(position, size, flying, hitTrigger) {
 }
 
 /**
+ * 设定图片子弹贴图
+ * @param {Bullet} bulletEntity 子弹实体 
+ * @param {NodeRequire} image 要设定的贴图
+ */
+function setBulletEntityImage(bulletEntity, image) {
+	bulletEntity.style.backgroundImage = 'url(' + image + ')';
+	bulletEntity.style.backgroundRepeat = 'no-repeat';
+	bulletEntity.style.backgroundPosition = 'center';
+	bulletEntity.style.backgroundSize = 'cover';
+}
+
+/**
  * 实体水平方向飞行，执行一次该函数，就会获得一个实体以指定速度水平方向飞行一次后的位置，正方向为水平向右
  * @param {GameEntity} entity 传入实体
  * @param {Number} velocity 飞行速度
@@ -77,18 +89,6 @@ function Bullet(position, size, flying, hitTrigger) {
 function entityFlyX(entity, velocity) {
 	const position = entity.getPosition();
 	position.x = position.x + velocity;
-	return position;
-}
-
-/**
- * 实体垂直方向飞行，执行一次该函数，就会获得一个实体以指定速度垂直方向飞行一次后的位置，正方向为垂直向下
- * @param {GameEntity} entity 传入实体
- * @param {Number} velocity 飞行速度
- * @returns 飞行一次之后实体的位置
- */
-function entityFlyY(entity, velocity) {
-	const position = entity.getPosition();
-	position.y = position.y + velocity;
 	return position;
 }
 
@@ -228,7 +228,7 @@ export default {
 			const imageState = context.rootState.image.imageList;
 			const audioState = context.rootState.audio.audioList;
 			// 默认武器
-			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁，冷却0.6s', 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
+			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁', 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
 				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
 					return entityFlyX(this, 8);
 				}, function (enemy, enemies) {
@@ -243,14 +243,11 @@ export default {
 					});
 				});
 				// 设定子弹贴图等等
-				bullet.style.backgroundImage = 'url(' + this.texture + ')';
-				bullet.style.backgroundRepeat = 'no-repeat';
-				bullet.style.backgroundPosition = 'center';
-				bullet.style.backgroundSize = 'cover';
+				setBulletEntityImage(bullet, this.texture);
 				context.commit('addBullet', bullet);
 			});
 			// 穿透鬼火
-			let penetrateWildfire = new Weapon('穿透鬼火', '可以穿透水平方向上的布丁，冷却1.5s', 10, 1500, imageState.png.bullet.penetrate, audioState.weapon.penetrate, function (position) {
+			let penetrateWildfire = new Weapon('穿透鬼火', '可以穿透水平方向上的布丁', 10, 1500, imageState.png.bullet.penetrate, audioState.weapon.penetrate, function (position) {
 				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
 					return entityFlyX(this, 9);
 				}, function (enemy, enemies) {
@@ -264,12 +261,12 @@ export default {
 					});
 				});
 				// 设定子弹贴图等等
-				bullet.style.backgroundImage = 'url(' + this.texture + ')';
-				bullet.style.backgroundRepeat = 'no-repeat';
-				bullet.style.backgroundPosition = 'center';
-				bullet.style.backgroundSize = 'cover';
+				setBulletEntityImage(bullet, this.texture);
 				context.commit('addBullet', bullet);
 			});
+			let boomWildfire = new Weapon('爆裂之火', '遇到布丁会爆炸的鬼火，一次吃掉多个布丁', 10, 1250, imageState.gif.bullet.boom, audioState.weapon.boom, function (position) {
+				return entityFlyX(this, 7);
+			})
 			// 设定武器列表
 			const weapons = [defaultWeapon, penetrateWildfire];
 			context.commit('setWeapons', weapons);
