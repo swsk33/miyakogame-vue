@@ -58,14 +58,14 @@ function Bullet(position, size, flying, hitTrigger) {
 	this.valid = true;
 	/**
 	 * 子弹飞行一次
-	 * @param {Array} enemies 全部敌人对象数组
+	 * @param {Array} enemies 全部敌人对象二维数组
 	 * @returns 子弹飞行一次后的状态，为一个对象，其中有position属性表示飞行一次后的位置，size属性表示飞行一次后的大小，如果大小不变，那么这个size属性将为undefined
 	 */
 	this.flying = flying;
 	/**
 	 * 子弹击中敌人
 	 * @param {Pudding} enemy 被击中的敌人对象
-	 * @param {Array} enemies 全部敌人数组
+	 * @param {Array} enemies 全部敌人对象二维数组
 	 */
 	this.hitTrigger = hitTrigger;
 }
@@ -394,8 +394,90 @@ export default {
 				setBulletEntityImage(bullet, imageState.png.bullet['bounce' + random.generateRandom(1, 2)]);
 				context.commit('addBullet', bullet);
 			});
+			// 跟踪光球
+			let traceBall = new Weapon('追踪光球', '发射后能够自动追踪布丁的魔法光球', 12, 1100, imageState.png.bullet.trace, audioState.weapon.trace, function (position) {
+				let bullet = new Bullet(position, new Size(21, 21), function (enemies) {
+					// 判断这个子弹是否已经锁定敌人，如果锁定的敌人不是存活状态则重新锁定
+					if (this.targetEnemy == undefined || this.targetEnemy.isEaten) {
+						let isLocked = false;
+						for (let column = 0; column < enemies.length; column++) {
+							for (let line = 0; line < enemies[column].length; line++) {
+								if (!enemies[column][line].isEaten) {
+									this.targetEnemy = enemies[column][line];
+									isLocked = true;
+									break;
+								}
+							}
+							if (isLocked) {
+								break;
+							}
+						}
+					}
+					// 子弹飞行尾迹效果
+					let color = random.getRandomColor();
+					let dotRadius = random.generateRandomFloat(0.5, 1.5);
+					let dot = document.createElement('div');
+					dot.style.position = 'absolute';
+					dot.style.width = dotRadius + 'px';
+					dot.style.height = dotRadius + 'px';
+					dot.style.borderRadius = '50%';
+					dot.style.backgroundColor = color;
+					dot.style.boxShadow = '0px 0px 3.5px 2px ' + color;
+					dot.style.left = this.getPosition().x + this.getSize().width / 2 + 'px';
+					dot.style.top = this.getPosition().y + this.getSize().height / 2 + random.generateRandom(-2, 2) + 55 + 'px';
+					dot.style.transitionProperty = 'left, top';
+					dot.style.transitionDuration = '1s';
+					dot.style.transitionTimingFunction = 'ease-out';
+					document.body.appendChild(dot);
+					let dotFlydirect;
+					if (Math.random() < 0.5) {
+						dotFlydirect = random.generateRandom(100, 135);
+					} else {
+						dotFlydirect = random.generateRandom(225, 260);
+					}
+					dot.style.left = dot.offsetLeft + Math.cos((dotFlydirect / 180) * Math.PI) * 25 + 'px';
+					dot.style.top = dot.offsetTop - Math.sin((dotFlydirect / 180) * Math.PI) * 25 + 'px';
+					setTimeout(() => {
+						dot.remove();
+					}, 350);
+					// 如果锁敌失败则按照原方向飞行，否则计算自己和锁定敌人的角度，按照敌人方向飞行
+					if (this.flyDirect == undefined) {
+						this.flyDirect = 0;
+					}
+					let v = 10; // 飞行速度
+					if (this.targetEnemy == undefined || this.targetEnemy.isEaten) {
+						return {
+							position: entityFly(this, v, this.flyDirect)
+						};
+					} else {
+						const enemyPosition = this.targetEnemy.getPosition();
+						const enemySize = this.targetEnemy.getSize();
+						const bulletPosition = this.getPosition();
+						const bulletSize = this.getSize();
+						const xDistance = (enemyPosition.x + enemySize.width / 2) - (bulletPosition.x + bulletSize.width / 2);
+						const yDistance = (bulletPosition.y + bulletSize.height / 2) - (enemyPosition.y + enemySize.height / 2);
+						this.flyDirect = Math.atan2(yDistance, xDistance) / Math.PI * 180;
+						return {
+							position: entityFly(this, v, this.flyDirect)
+						};
+					}
+				}, function (enemy, enemies) {
+					// 标记该子弹无效
+					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+					// 击中布丁标记为被吃掉
+					context.dispatch('pudding/setPuddingEaten', {
+						column: enemy.column,
+						line: enemy.line
+					}, {
+						root: true
+					});
+				});
+				// 设定子弹贴图等等
+				setBulletEntityImage(bullet, this.texture);
+				context.commit('addBullet', bullet);
+			});
 			// 设定武器列表
-			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic, bounceMagic];
+			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic, bounceMagic, traceBall];
 			context.commit('setWeapons', weapons);
 		},
 		/**
@@ -462,7 +544,7 @@ export default {
 					continue;
 				}
 				// 飞行一次
-				let state = getBullet.flying();
+				let state = getBullet.flying(allPuddings);
 				context.commit('changeBulletOnScreen', {
 					position: state.position,
 					size: state.size,
