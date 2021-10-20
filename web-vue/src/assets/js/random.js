@@ -12,6 +12,15 @@ export default {
 		return Math.floor(Math.random() * (max - min + 1) + min);
 	},
 	/**
+	 * 生成范围是[min,max)的随机浮点数
+	 * @param {Number} min 期望最小值
+	 * @param {Number} max 期望最大值
+	 * @returns 介于min，max且包含两者的随机浮点数
+	 */
+	generateRandomFloat(min, max) {
+		return Math.random() * (max - min) + min;
+	},
+	/**
 	 * 获取一个随机颜色
 	 * @returns 一个十六进制颜色代码
 	 */

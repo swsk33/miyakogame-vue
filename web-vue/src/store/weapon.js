@@ -4,6 +4,12 @@ import {
 	GameEntity
 } from '@/assets/js/constructors.js';
 
+import random from '@/assets/js/random.js';
+
+import {
+	copyObject
+} from '@/assets/js/utils.js';
+
 import {
 	tipType,
 	showTip
@@ -45,7 +51,7 @@ function Weapon(name, description, price, interval, texture, sound, shooting) {
  * 子弹实体构造函数，继承GameEntity对象
  * @param {Position} position 子弹实体起始位置
  * @param {Size} size 子弹实体起始大小
- * @param {Function} flying 子弹飞行方法，决定子弹飞行方向速度等等，执行一次子弹就会飞行一下，需要计时器循环调用，这个方法返回一个Position对象表示子弹飞行一次后的位置（回调函数，需要有形参enemies表示敌人对象数组，若为单个敌人也放入数组作为单元素数组传入）
+ * @param {Function} flying 子弹飞行方法，决定子弹飞行方向速度等等，执行一次子弹就会飞行一下，需要计时器循环调用，这个方法返回一个对象表示子弹飞行一次后的位置和大小，返回对象中position属性为飞行一次后的位置，size表示飞行一次后的大小，size非必须（回调函数，需要有形参enemies表示敌人对象数组，若为单个敌人也放入数组作为单元素数组传入）
  * @param {Function} hitTrigger 子弹击中时触发的函数，击中敌人时发生事件，敌人消失这个事件需要写在这里（回调函数，需要有形参enemy，enemies，分别表示敌人对象和所有敌人数组）
  */
 function Bullet(position, size, flying, hitTrigger) {
@@ -230,7 +236,9 @@ export default {
 			// 默认武器
 			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁', 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
 				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
-					return entityFlyX(this, 8);
+					return {
+						position: entityFlyX(this, 8)
+					};
 				}, function (enemy, enemies) {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
@@ -248,8 +256,10 @@ export default {
 			});
 			// 穿透鬼火
 			let penetrateWildfire = new Weapon('穿透鬼火', '可以穿透水平方向上的布丁', 10, 1500, imageState.png.bullet.penetrate, audioState.weapon.penetrate, function (position) {
-				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
-					return entityFlyX(this, 9);
+				let bullet = new Bullet(position, new Size(17, 30), function (enemies) {
+					return {
+						position: entityFlyX(this, 9)
+					};
 				}, function (enemy, enemies) {
 					// 穿透鬼火，击中布丁不消失
 					// 击中布丁标记为被吃掉
@@ -264,11 +274,103 @@ export default {
 				setBulletEntityImage(bullet, this.texture);
 				context.commit('addBullet', bullet);
 			});
+			// 爆裂之火
 			let boomWildfire = new Weapon('爆裂之火', '遇到布丁会爆炸的鬼火，一次吃掉多个布丁', 10, 1250, imageState.gif.bullet.boom, audioState.weapon.boom, function (position) {
-				return entityFlyX(this, 7);
-			})
+				let bullet = new Bullet(position, new Size(19, 30), function (enemies) {
+					return {
+						position: entityFlyX(this, 7)
+					};
+				}, function (enemy, enemies) {
+					// 获取此时子弹位置
+					const currentPosition = this.getPosition();
+					// 标记该子弹无效
+					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+					// 击中布丁时产生冲击波，冲击波在这里也被视为子弹实体，不会改变位置但是会在一定时间内改变尺寸
+					let wave = new Bullet(currentPosition, new Size(1, 1), function (enemies) {
+						// 冲击波的飞行方法即为自身扩散
+						// 冲击波的存在时间为42帧（以60帧/秒来算）
+						if (this.liveTime == undefined) {
+							this.liveTime = 42;
+						}
+						// 冲击波的半径增幅为每帧5px
+						if (this.radiusAdd == undefined) {
+							this.radiusAdd = 5;
+						}
+						// 执行一次大小增大
+						let state = entitySizeChange(this, this.radiusAdd);
+						// 每执行一次，生存时间-1
+						this.liveTime--;
+						// 生存时间小于12时，增幅减少
+						if (this.liveTime <= 12 && this.radiusAdd > 0) {
+							this.radiusAdd--;
+						}
+						// 生存时间小于0，则标记自己为无效
+						if (this.liveTime < 0) {
+							context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+						}
+						return state;
+					}, function (enemy, enemies) {
+						// 被冲击波碰到的布丁标记为被吃掉
+						context.dispatch('pudding/setPuddingEaten', {
+							column: enemy.column,
+							line: enemy.line
+						}, {
+							root: true
+						});
+					});
+					// 设定冲击波样式
+					wave.style.borderColor = random.getRandomColor();
+					wave.style.borderRadius = '50%';
+					wave.style.borderStyle = 'solid';
+					wave.style.borderWidth = '5px';
+					// 加入冲击波到子弹列表
+					context.commit('addBullet', wave);
+				});
+				// 设定子弹贴图等等
+				setBulletEntityImage(bullet, this.texture);
+				context.commit('addBullet', bullet);
+			});
+			// 散布魔法
+			let scatterMagic = new Weapon('散布魔法', '一次发射8个魔法球，射角分散', 15, 2000, imageState.png.bullet.scatterIcon, audioState.weapon.scatter, function (position) {
+				console.log(position);
+				let bullet = new Bullet(position, new Size(3, 3), function (enemies) {
+					return {
+						position: entityFly(this, 8, this.flyDirect)
+					};
+				}, function (enemy) {
+					// 标记该子弹无效
+					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+					// 击中布丁标记为被吃掉
+					context.dispatch('pudding/setPuddingEaten', {
+						column: enemy.column,
+						line: enemy.line
+					}, {
+						root: true
+					});
+				});
+				// 设定通用样式
+				bullet.style.borderRadius = '50%';
+				// 将子弹复制8个并赋予随机的颜色、大小和飞行角度
+				let bulletCount = 8;
+				let shootInterval = setInterval(() => {
+					let eachBullet = copyObject(bullet);
+					const sideLength = random.generateRandomFloat(1.5, 3);
+					const color = random.getRandomColor();
+					eachBullet.style.width = sideLength;
+					eachBullet.style.height = sideLength;
+					eachBullet.style.backgroundColor = color;
+					eachBullet.style.boxShadow = '0px 0px 4px 5px ' + color;
+					eachBullet.flyDirect = random.generateRandom(-20, 20);
+					// 放入子弹数组
+					context.commit('addBullet', eachBullet);
+					bulletCount--;
+					if (bulletCount <= 0) {
+						clearInterval(shootInterval);
+					}
+				}, 60);
+			});
 			// 设定武器列表
-			const weapons = [defaultWeapon, penetrateWildfire];
+			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic];
 			context.commit('setWeapons', weapons);
 		},
 		/**
@@ -335,9 +437,10 @@ export default {
 					continue;
 				}
 				// 飞行一次
-				let position = getBullet.flying();
+				let state = getBullet.flying();
 				context.commit('changeBulletOnScreen', {
-					position: position,
+					position: state.position,
+					size: state.size,
 					index: i
 				});
 				// 然后检查这个子弹是否和布丁相碰
