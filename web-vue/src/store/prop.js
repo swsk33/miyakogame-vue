@@ -124,12 +124,12 @@ export default {
 				}, 1000);
 			});
 			// 冻结吧
-			let freeze = new Prop('冻结吧', '使全部敌人不再移动15s', 50, imageState.png.prop.freezePuddings, audioState.prop.stopPuddings, 60000, function (character, enemies) {
+			let freeze = new Prop('冻结吧', '使全部敌人不再移动30s', 50, imageState.png.prop.freezePuddings, audioState.prop.stopPuddings, 60000, function (character, enemies) {
 				const originRate = context.rootState.pudding.rate;
 				context.commit('pudding/setPuddingsRate', 0, {
 					root: true
 				});
-				let time = 15;
+				let time = 30;
 				let invalidInterval = setInterval(() => {
 					if (context.rootState.gamingcontrol.isProcessing) {
 						time--;

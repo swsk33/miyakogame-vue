@@ -7,10 +7,6 @@ import {
 import random from '@/assets/js/random.js';
 
 import {
-	copyObject
-} from '@/assets/js/utils.js';
-
-import {
 	tipType,
 	showTip
 } from '@/components/util/tip.js';
@@ -286,6 +282,7 @@ export default {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
 					// 击中布丁时产生冲击波，冲击波在这里也被视为子弹实体，不会改变位置但是会在一定时间内改变尺寸
+					audioState.score.boom.play();
 					let wave = new Bullet(currentPosition, new Size(1, 1), function (enemies) {
 						// 冲击波的飞行方法即为自身扩散
 						// 冲击波的存在时间为42帧（以60帧/秒来算）
@@ -332,12 +329,57 @@ export default {
 			});
 			// 散布魔法
 			let scatterMagic = new Weapon('散布魔法', '一次发射8个魔法球，射角分散', 15, 2000, imageState.png.bullet.scatterIcon, audioState.weapon.scatter, function (position) {
-				console.log(position);
-				let bullet = new Bullet(position, new Size(3, 3), function (enemies) {
+				// 将子弹复制8个并赋予随机的颜色、大小和飞行角度
+				let bulletCount = 8;
+				const sideLength = random.generateRandomFloat(0.5, 3.5);
+				let shootInterval = setInterval(() => {
+					let bullet = new Bullet(position, new Size(sideLength, sideLength), function (enemies) {
+						return {
+							position: entityFly(this, 8, this.flyDirect)
+						};
+					}, function (enemy) {
+						// 标记该子弹无效
+						context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+						// 击中布丁标记为被吃掉
+						context.dispatch('pudding/setPuddingEaten', {
+							column: enemy.column,
+							line: enemy.line
+						}, {
+							root: true
+						});
+					});
+					// 设定样式
+					const color = random.getRandomColor();
+					bullet.style.width = sideLength + 'px';
+					bullet.style.height = sideLength + 'px';
+					bullet.style.backgroundColor = color;
+					bullet.style.boxShadow = '0px 0px 4px 5px ' + color;
+					bullet.flyDirect = random.generateRandom(-20, 20);
+					bullet.style.borderRadius = '50%';
+					// 放入子弹数组
+					context.commit('addBullet', bullet);
+					bulletCount--;
+					if (bulletCount <= 0) {
+						clearInterval(shootInterval);
+					}
+				}, 60);
+			});
+			// 弹弹魔法
+			let bounceMagic = new Weapon('弹弹魔法', '遇到上下边界会发生反弹的魔法星星，只不过射击角度有点随机...', 5, 250, imageState.png.bullet.bounceIcon, audioState.weapon.bounceShoot, function (position) {
+				let bullet = new Bullet(position, new Size(18, 18), function (enemies) {
+					if (this.flyDirect == undefined) {
+						this.flyDirect = random.generateRandom(-60, 60);
+					}
+					let flyPosition = entityFly(this, 7, this.flyDirect);
+					// 预判下一次移动，碰到边界改变方向
+					if (flyPosition.y - 7 <= 0 || flyPosition.y + this.getSize().height + 7 >= context.rootState.gamingcontrol.gameArea.height) {
+						audioState.weapon.bounceReflect.play();
+						this.flyDirect = -this.flyDirect;
+					}
 					return {
-						position: entityFly(this, 8, this.flyDirect)
+						position: flyPosition
 					};
-				}, function (enemy) {
+				}, function (enemy, enemies) {
 					// 标记该子弹无效
 					context.commit('changeBulletValid', context.state.bullets.indexOf(this));
 					// 击中布丁标记为被吃掉
@@ -348,29 +390,12 @@ export default {
 						root: true
 					});
 				});
-				// 设定通用样式
-				bullet.style.borderRadius = '50%';
-				// 将子弹复制8个并赋予随机的颜色、大小和飞行角度
-				let bulletCount = 8;
-				let shootInterval = setInterval(() => {
-					let eachBullet = copyObject(bullet);
-					const sideLength = random.generateRandomFloat(1.5, 3);
-					const color = random.getRandomColor();
-					eachBullet.style.width = sideLength;
-					eachBullet.style.height = sideLength;
-					eachBullet.style.backgroundColor = color;
-					eachBullet.style.boxShadow = '0px 0px 4px 5px ' + color;
-					eachBullet.flyDirect = random.generateRandom(-20, 20);
-					// 放入子弹数组
-					context.commit('addBullet', eachBullet);
-					bulletCount--;
-					if (bulletCount <= 0) {
-						clearInterval(shootInterval);
-					}
-				}, 60);
+				// 设定子弹贴图等等
+				setBulletEntityImage(bullet, imageState.png.bullet['bounce' + random.generateRandom(1, 2)]);
+				context.commit('addBullet', bullet);
 			});
 			// 设定武器列表
-			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic];
+			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic, bounceMagic];
 			context.commit('setWeapons', weapons);
 		},
 		/**
@@ -471,7 +496,7 @@ export default {
 					}
 				}
 				// 如果这个子弹仍然有效，说明未击中敌人或者是击中敌人但是不消失类型，这时子弹遇到边界自动消失
-				if (getBullet.valid && (getBullet.getPosition().x + getBullet.getSize().width >= gameArea.width || getBullet.getPosition().y <= 0 || getBullet.getPosition().y + getBullet.getSize().height >= gameArea.height)) {
+				if (getBullet.valid && (getBullet.getPosition().x + getBullet.getSize().width > gameArea.width || getBullet.getPosition().y < 0 || getBullet.getPosition().y + getBullet.getSize().height > gameArea.height)) {
 					context.commit('removeBullet', i);
 					i--;
 				}

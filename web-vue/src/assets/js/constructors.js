@@ -5,7 +5,7 @@
  * @param {Number} x x坐标，即为绝对定位的left值，单位px
  * @param {Number} y y坐标，即为绝对定位的top值，单位px
  */
-function Position(x, y) {
+function Position(x = 0, y = 0) {
 	/**
 	 * x坐标
 	 */
@@ -21,7 +21,7 @@ function Position(x, y) {
  * @param {Number} width 宽度，单位px
  * @param {Number} height 高度，单位px
  */
-function Size(width, height) {
+function Size(width = 0, height = 0) {
 	/**
 	 * 实体宽度
 	 */
@@ -37,7 +37,7 @@ function Size(width, height) {
  * @param {Position} position 位置
  * @param {Size} size 大小
  */
-function GameEntity(position, size) {
+function GameEntity(position = new Position(0, 0), size = new Size(0, 0)) {
 	/**
 	 * 元素的css属性
 	 */
