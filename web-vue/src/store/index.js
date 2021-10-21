@@ -12,6 +12,7 @@ import prop from './prop.js';
 import userdata from './userdata.js';
 import pagecontrol from './pagecontrol.js';
 import gamingcontrol from './gamingcontrol.js';
+import timecontrol from './timecontrol.js';
 
 export default createStore({
 	state: {},
@@ -27,6 +28,7 @@ export default createStore({
 		miyako,
 		userdata,
 		pagecontrol,
-		gamingcontrol
+		gamingcontrol,
+		timecontrol
 	},
 });
