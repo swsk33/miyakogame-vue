@@ -82,14 +82,26 @@ export default {
 				}
 			} else {
 				getData = JSON.parse(getData);
-				//补全新增武器/道具数量
+				// 检查本地储存和游戏道具数量是否有差异
 				let weaponDiff = context.rootState.weapon.weaponList.length - getData.weaponCount.length;
 				let propDiff = context.rootState.prop.propList.length - getData.propsCount.length;
-				for (let i = 0; i < weaponDiff; i++) {
-					getData.weaponCount.push(10);
+				// 游戏中武器多于本地储存武器则补全，少于则删除
+				if (weaponDiff > 0) {
+					for (let i = 0; i < weaponDiff; i++) {
+						getData.weaponCount.push(10);
+					}
+				} else if (weaponDiff < 0) {
+					const diff = -weaponDiff;
+					getData.weaponCount.splice(context.rootState.weapon.weaponList.length, diff);
 				}
-				for (let i = 0; i < propDiff; i++) {
-					getData.propsCount.push(1);
+				// 游戏中道具多于本地数量则补全，少于则删除
+				if (propDiff > 0) {
+					for (let i = 0; i < propDiff; i++) {
+						getData.propsCount.push(1);
+					}
+				} else if (propDiff < 0) {
+					const diff = -propDiff;
+					getData.propsCount.splice(context.rootState.prop.propList.length, diff);
 				}
 				context.commit('setNewGame', false);
 			}

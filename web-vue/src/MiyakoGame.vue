@@ -7,6 +7,7 @@
 		<failedpage></failedpage>
 		<pausepage></pausepage>
 		<loadingpage></loadingpage>
+		<shop></shop>
 	</div>
 </template>
 
@@ -19,6 +20,7 @@ import help from '@/components/Help.vue';
 import successpage from '@/components/SuccessPage.vue';
 import failedpage from '@/components/FailedPage.vue';
 import pausepage from '@/components/PausePage.vue';
+import shop from '@/components/Shop.vue';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapActions: loadingActions } = createNamespacedHelpers('loading');
@@ -32,6 +34,7 @@ export default {
 		successpage,
 		failedpage,
 		pausepage,
+		shop,
 	},
 	methods: {
 		...loadingActions(['loadAll']),
