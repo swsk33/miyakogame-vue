@@ -113,11 +113,13 @@ export default {
 			}
 		},
 		/**
-		 * 保存游戏数据，如果用户登录，则同时保存一份到云端
+		 * 保存游戏数据，如果用户登录，则同时保存一份到云端，payload为布尔值表示是否显示保存提示，默认true
 		 */
-		saveData(context) {
+		saveData(context, payload = true) {
 			localStorage.setItem('gameData', JSON.stringify(context.state.gameData));
-			showTip('游戏数据已保存！', tipType.info, true);
+			if (payload) {
+				showTip('游戏数据已保存！', tipType.info, true);
+			}
 		},
 		/**
 		 * 重置全部游戏数据（但不清除最高分）

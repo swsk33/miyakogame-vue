@@ -2,7 +2,7 @@
 	<div class="shop" v-if="shop">
 		<div class="frame">
 			<div class="text">消耗积分购买更多强力的魔法吧！</div>
-			<div class="total">共消耗{{ totalPrice }}积分</div>
+			<div class="total">共需消耗{{ totalPrice }}积分</div>
 			<div class="current">当前有{{ gameData.currentScore }}积分</div>
 			<div class="item">
 				<div class="itemtext">道具</div>
@@ -41,7 +41,7 @@
 				</ul>
 			</div>
 			<div class="buttonBox">
-				<div class="ok">购买</div>
+				<div class="ok" @click="buy">购买</div>
 				<div class="cancel" @click="closeShop">取消</div>
 			</div>
 		</div>
@@ -56,15 +56,24 @@ import { showTip, tipType } from '@/components/util/tip.js';
 
 const { mapState: weaponState } = createNamespacedHelpers('weapon');
 const { mapState: propState } = createNamespacedHelpers('prop');
-const { mapState: dataState } = createNamespacedHelpers('userdata');
+const { mapState: dataState, mapMutations: dataMutations, mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 
 export default {
 	data() {
 		return {
+			/**
+			 * 暂存悬浮提示对象
+			 */
 			tipObject: undefined,
-			buyWeaponCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			buyPropCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			/**
+			 * 武器购物车（记录武器索引对应的购买数量）
+			 */
+			buyWeaponCount: [],
+			/**
+			 * 道具购物车（记录道具索引对应的购买数量）
+			 */
+			buyPropCount: [],
 		};
 	},
 	computed: {
@@ -84,8 +93,32 @@ export default {
 			return weaponPrice + propPrice;
 		},
 	},
+	watch: {
+		'weaponList.length': {
+			handler: function () {
+				let weaponCart = [];
+				for (let i = 0; i < this.weaponList.length; i++) {
+					weaponCart.push(0);
+				}
+				this.buyWeaponCount = weaponCart;
+			},
+			immediate: true,
+		},
+		'propList.length': {
+			handler: function () {
+				let propCart = [];
+				for (let i = 0; i < this.propList.length; i++) {
+					propCart.push(0);
+				}
+				this.buyPropCount = propCart;
+			},
+			immediate: true,
+		},
+	},
 	methods: {
 		...pageMutations(['setShopPage']),
+		...dataMutations(['setGameData']),
+		...dataActions(['saveData']),
 		/**
 		 * 显示某个道具的悬浮提示
 		 * @param {Number} index 道具索引
@@ -118,6 +151,13 @@ export default {
 		closeShop() {
 			mouseffect.enableAll();
 			this.setShopPage(false);
+			// 清空购物车
+			for (let i = 0; i < this.buyPropCount.length; i++) {
+				this.buyPropCount[i] = 0;
+			}
+			for (let i = 0; i < this.buyWeaponCount.length; i++) {
+				this.buyWeaponCount[i] = 0;
+			}
 		},
 		/**
 		 * 添加/删除购物车的道具
@@ -157,18 +197,33 @@ export default {
 				}
 			}
 		},
-	},
-	mounted() {
-		let propBuyCount = [];
-		for (let i = 0; i < this.propList.length; i++) {
-			propBuyCount.push(0);
-		}
-		this.buyPropCount = propBuyCount;
-		let weaponBuyCount = [];
-		for (let i = 0; i < this.weaponList.length; i++) {
-			weaponBuyCount.push(0);
-		}
-		this.buyWeaponCount = weaponBuyCount;
+		/**
+		 * 购买当前所有购物车的物品
+		 */
+		buy() {
+			if (this.totalPrice == 0) {
+				showTip('请至少购买一个物品！', tipType.error);
+				return;
+			}
+			let currentScore = this.gameData.currentScore;
+			if (this.totalPrice > currentScore) {
+				showTip('积分不足！', tipType.error);
+				return;
+			}
+			let currentPropCount = this.gameData.propsCount;
+			let currentWeaponCount = this.gameData.weaponCount;
+			for (let i = 0; i < currentPropCount.length; i++) {
+				currentPropCount[i] = currentPropCount[i] + this.buyPropCount[i];
+			}
+			for (let i = 0; i < currentWeaponCount.length; i++) {
+				currentWeaponCount[i] = currentWeaponCount[i] + this.buyWeaponCount[i];
+			}
+			this.setGameData({ name: 'propsCount', value: currentPropCount });
+			this.setGameData({ name: 'weaponCount', value: currentWeaponCount });
+			this.setGameData({ name: 'currentScore', value: currentScore - this.totalPrice });
+			this.saveData(false);
+			showTip('购买物品完成！', tipType.info);
+		},
 	},
 };
 </script>
