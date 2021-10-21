@@ -7,7 +7,7 @@
 		<ul class="menu">
 			<li :class="{ newGameStyle: isNewGame }" @click="continueGame">继续游戏</li>
 			<li @click="newGame">新游戏</li>
-			<li>魔法商店</li>
+			<li @click="showShop">魔法商店</li>
 			<li>排行榜</li>
 			<li @click="setHelpPage(true)">帮助</li>
 		</ul>
@@ -18,6 +18,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
+import mouseffect from '@/assets/js/mouseffect.js';
 
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
@@ -27,7 +28,7 @@ const { mapState: audioState } = createNamespacedHelpers('audio');
 
 export default {
 	computed: {
-		...pageState(['mainMenu', 'help']),
+		...pageState(['mainMenu']),
 		...dataState(['isNewGame']),
 		...imageState(['imageList']),
 		...audioState(['audioList']),
@@ -38,7 +39,7 @@ export default {
 		};
 	},
 	methods: {
-		...pageMutations(['setMainMenuPage', 'setHelpPage']),
+		...pageMutations(['setMainMenuPage', 'setHelpPage', 'setShopPage']),
 		...dataActions(['resetAllData']),
 		...gameActions(['enterGame']),
 		/**
@@ -86,6 +87,13 @@ export default {
 				// 开始游戏进程
 				this.enterGame();
 			}
+		},
+		/**
+		 * 显示商店
+		 */
+		showShop() {
+			mouseffect.disableAll();
+			this.setShopPage(true);
 		},
 	},
 };

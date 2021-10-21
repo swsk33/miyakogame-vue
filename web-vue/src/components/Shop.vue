@@ -1,9 +1,9 @@
 <template>
-	<div class="shop">
+	<div class="shop" v-if="shop">
 		<div class="frame">
 			<div class="text">消耗积分购买更多强力的魔法吧！</div>
-			<div class="total">共消耗0积分</div>
-			<div class="current">当前有0积分</div>
+			<div class="total">共消耗{{ totalPrice }}积分</div>
+			<div class="current">当前有{{ gameData.currentScore }}积分</div>
 			<div class="item">
 				<div class="itemtext">道具</div>
 				<ul>
@@ -11,13 +11,13 @@
 						<div class="imageBox">
 							<img :src="prop.image" />
 						</div>
-						<div class="itemNameAndPrice">{{ prop.name + ' ' + prop.price }}</div>
-						<div class="count">0</div>
+						<div class="itemNameAndPrice" @mousemove="showPropTip(index, $event)" @mouseout="closeTip">{{ prop.name + ' 价格：' + prop.price }}</div>
+						<div class="count">{{ buyPropCount[index] }}</div>
 						<div class="countButtonBox">
-							<div class="addOne">+1</div>
-							<div class="addTen">+10</div>
-							<div class="minOne">-1</div>
-							<div class="minTen">-10</div>
+							<div class="addOne" @click="managePropInCart(index, 1, true)">+1</div>
+							<div class="addTen" @click="managePropInCart(index, 10, true)">+10</div>
+							<div class="minOne" @click="managePropInCart(index, 1, false)">-1</div>
+							<div class="minTen" @click="managePropInCart(index, 10, false)">-10</div>
 						</div>
 					</li>
 				</ul>
@@ -29,20 +29,20 @@
 						<div class="imageBox">
 							<img :src="weapon.texture" />
 						</div>
-						<div class="weaponNameAndPrice">{{ weapon.name + ' ' + weapon.price }}</div>
-						<div class="count">0</div>
+						<div class="weaponNameAndPrice" @mousemove="showWeaponTip(index, $event)" @mouseout="closeTip">{{ weapon.name + ' 价格：' + weapon.price }}</div>
+						<div class="count">{{ buyWeaponCount[index] }}</div>
 						<div class="countButtonBox">
-							<div class="addOne">+1</div>
-							<div class="addTen">+10</div>
-							<div class="minOne">-1</div>
-							<div class="minTen">-10</div>
+							<div class="addOne" @click="manageWeaponInCart(index, 1, true)">+1</div>
+							<div class="addTen" @click="manageWeaponInCart(index, 10, true)">+10</div>
+							<div class="minOne" @click="manageWeaponInCart(index, 1, false)">-1</div>
+							<div class="minTen" @click="manageWeaponInCart(index, 10, false)">-10</div>
 						</div>
 					</li>
 				</ul>
 			</div>
 			<div class="buttonBox">
-				<div class="ok div-btn">购买</div>
-				<div class="cancel div-btn">取消</div>
+				<div class="ok">购买</div>
+				<div class="cancel" @click="closeShop">取消</div>
 			</div>
 		</div>
 	</div>
@@ -50,33 +50,139 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { showToolTip } from '@/components/util/tooltip.js';
+import mouseffect from '@/assets/js/mouseffect.js';
+import { showTip, tipType } from '@/components/util/tip.js';
 
 const { mapState: weaponState } = createNamespacedHelpers('weapon');
 const { mapState: propState } = createNamespacedHelpers('prop');
 const { mapState: dataState } = createNamespacedHelpers('userdata');
+const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 
 export default {
 	data() {
-		return {};
+		return {
+			tipObject: undefined,
+			buyWeaponCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			buyPropCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		};
 	},
 	computed: {
 		...weaponState(['weaponList']),
 		...propState(['propList']),
-		...dataState(['userdata']),
-		showWeaponItem() {
-			return (index) => {
-				if (index == -1) {
-					return false;
-				} else {
-					return true;
-				}
-			};
+		...dataState(['gameData']),
+		...pageState(['shop']),
+		totalPrice() {
+			let weaponPrice = 0;
+			for (let i = 0; i < this.buyWeaponCount.length; i++) {
+				weaponPrice = weaponPrice + this.buyWeaponCount[i] * this.weaponList[i].price;
+			}
+			let propPrice = 0;
+			for (let i = 0; i < this.buyPropCount.length; i++) {
+				propPrice = propPrice + this.buyPropCount[i] * this.propList[i].price;
+			}
+			return weaponPrice + propPrice;
 		},
+	},
+	methods: {
+		...pageMutations(['setShopPage']),
+		/**
+		 * 显示某个道具的悬浮提示
+		 * @param {Number} index 道具索引
+		 * @param {*} e 事件参数，vue传入组件传入$event
+		 */
+		showPropTip(index, e) {
+			this.closeTip();
+			this.tipObject = showToolTip(this.propList[index].description + ' 冷却时间：' + this.propList[index].interval / 1000 + 's', e.clientX + 5 + 'px', e.clientY - 30 + 'px');
+		},
+		/**
+		 * 显示某个武器的悬浮提示
+		 * @param {Number} index 道具索引
+		 * @param {*} e 事件参数，vue传入组件传入$event
+		 */
+		showWeaponTip(index, e) {
+			this.closeTip();
+			this.tipObject = showToolTip(this.weaponList[index].description + ' 装弹时间：' + this.weaponList[index].interval / 1000 + 's', e.clientX + 5 + 'px', e.clientY - 30 + 'px');
+		},
+		/**
+		 * 销毁悬浮提示
+		 */
+		closeTip() {
+			if (this.tipObject != undefined) {
+				this.tipObject.destroy();
+			}
+		},
+		/**
+		 * 关闭商店
+		 */
+		closeShop() {
+			mouseffect.enableAll();
+			this.setShopPage(false);
+		},
+		/**
+		 * 添加/删除购物车的道具
+		 * @param {Number} index 道具索引
+		 * @param {Number} count 加/减的数量
+		 * @param {Boolean} isAdd true为加，false为减
+		 */
+		managePropInCart(index, count, isAdd) {
+			if (isAdd) {
+				this.buyPropCount[index] = this.buyPropCount[index] + count;
+			} else {
+				if (this.buyPropCount[index] < count) {
+					this.buyPropCount[index] = 0;
+				} else {
+					this.buyPropCount[index] = this.buyPropCount[index] - count;
+				}
+			}
+		},
+		/**
+		 * 添加/删除购物车的武器
+		 * @param {Number} index 武器索引
+		 * @param {Number} count 加/减的数量
+		 * @param {Boolean} isAdd true为加，false为减
+		 */
+		manageWeaponInCart(index, count, isAdd) {
+			if (isAdd) {
+				if (this.gameData.weaponCount[index] == -1) {
+					showTip('该武器的数量是无限，不需要购买！', tipType.warn);
+				} else {
+					this.buyWeaponCount[index] = this.buyWeaponCount[index] + count;
+				}
+			} else {
+				if (this.buyWeaponCount[index] < count) {
+					this.buyWeaponCount[index] = 0;
+				} else {
+					this.buyWeaponCount[index] = this.buyWeaponCount[index] - count;
+				}
+			}
+		},
+	},
+	mounted() {
+		let propBuyCount = [];
+		for (let i = 0; i < this.propList.length; i++) {
+			propBuyCount.push(0);
+		}
+		this.buyPropCount = propBuyCount;
+		let weaponBuyCount = [];
+		for (let i = 0; i < this.weaponList.length; i++) {
+			weaponBuyCount.push(0);
+		}
+		this.buyWeaponCount = weaponBuyCount;
 	},
 };
 </script>
 
 <style lang="scss" scoped>
+@keyframes show {
+	from {
+		transform: scale(0);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
 .shop {
 	position: absolute;
 	display: flex;
@@ -99,6 +205,9 @@ export default {
 		background-color: #aaffff;
 		border-radius: 10px;
 		box-shadow: 2px 2px 2px 1px rgba(2, 2, 2, 0.3);
+		animation-name: show;
+		animation-duration: 0.3s;
+		animation-timing-function: ease-out;
 
 		.text {
 			position: absolute;
@@ -163,7 +272,7 @@ export default {
 					}
 
 					.itemNameAndPrice {
-						width: 35%;
+						width: 40%;
 						position: relative;
 						font-size: 18px;
 						text-align: center;
@@ -175,17 +284,18 @@ export default {
 					.count {
 						color: purple;
 						width: 5%;
+						text-align: center;
 					}
 
 					.countButtonBox {
 						display: flex;
-						width: 40%;
-						justify-content: center;
+						width: 35%;
+						justify-content: space-evenly;
 						align-items: center;
 						font-size: 16px;
 
 						* {
-							width: 18%;
+							width: 20%;
 							text-align: center;
 
 							&:hover {
@@ -240,7 +350,7 @@ export default {
 					}
 
 					.weaponNameAndPrice {
-						width: 35%;
+						width: 40%;
 						position: relative;
 						font-size: 18px;
 						text-align: center;
@@ -252,17 +362,18 @@ export default {
 					.count {
 						color: rgb(255, 81, 0);
 						width: 5%;
+						text-align: center;
 					}
 
 					.countButtonBox {
 						display: flex;
-						width: 40%;
-						justify-content: center;
+						width: 35%;
+						justify-content: space-evenly;
 						align-items: center;
 						font-size: 16px;
 
 						* {
-							width: 18%;
+							width: 20%;
 							text-align: center;
 
 							&:hover {

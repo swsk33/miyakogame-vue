@@ -25,7 +25,11 @@ export default {
 		/**
 		 * 暂停页面
 		 */
-		pause: false
+		pause: false,
+		/**
+		 * 商店页面
+		 */
+		shop: false
 	},
 	mutations: {
 		/**
@@ -63,6 +67,12 @@ export default {
 		 */
 		setPausePage(state, payload) {
 			state.pause = payload;
+		},
+		/**
+		 * 设置商店页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setShopPage(state, payload) {
+			state.shop = payload;
 		}
 	}
 }
