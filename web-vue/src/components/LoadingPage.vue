@@ -1,5 +1,5 @@
 <template>
-	<div v-if="loading" :class="{ loading: true, 'loading-out': complete }">
+	<div v-if="loading" :class="styleValue">
 		<div class="loadingComponent">
 			<img class="loadingImage" src="@/assets/image/youlDynamic.gif" />
 			<div class="loadingText">游戏加载中...</div>
@@ -15,20 +15,47 @@
 import { createNamespacedHelpers } from 'vuex';
 const { mapState: loadingState } = createNamespacedHelpers('loading');
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapState: timeState } = createNamespacedHelpers('timecontrol');
 
 export default {
+	data() {
+		return {
+			/**
+			 * 样式控制变量
+			 */
+			styleValue: {
+				loading: true,
+				loadingOut: false,
+				loadingNight: false,
+			},
+		};
+	},
 	methods: {
 		...pageMutations(['setLoadingPage']),
 	},
 	computed: {
 		...loadingState(['process', 'complete']),
 		...pageState(['loading']),
+		...timeState(['time']),
 	},
 	watch: {
-		complete() {
-			setTimeout(() => {
-				this.setLoadingPage(false);
-			}, 800);
+		// 样式变量监听
+		complete: {
+			handler() {
+				this.styleValue.loadingOut = this.complete;
+				if (this.complete) {
+					setTimeout(() => {
+						this.setLoadingPage(false);
+					}, 800);
+				}
+			},
+			immdeiate: true,
+		},
+		'time.night': {
+			handler() {
+				this.styleValue.loadingNight = this.time.night;
+			},
+			immdeiate: true,
 		},
 	},
 };
@@ -106,38 +133,12 @@ export default {
 }
 
 // 加载页面滑出
-.loading-out {
+.loadingOut {
 	top: -100vh;
 }
 
-//傍晚样式
-.loading-evening {
-	background-color: #1a008b;
-	background-image: linear-gradient(180deg, #1a008b 28%, #ffc03a 100%);
-
-	.loadingText {
-		color: white;
-		text-shadow: 1px 1px 3px white;
-	}
-
-	.processBar {
-		border-color: rgb(144, 214, 255);
-		box-shadow: 0 0 8px 1px #19fff8;
-
-		.processValue {
-			background-color: greenyellow;
-			box-shadow: 0 0 10px 2px rgb(90, 255, 25);
-		}
-	}
-
-	.processNum {
-		color: white;
-		text-shadow: 1px 1px 3px white;
-	}
-}
-
 //夜晚样式
-.loading-night {
+.loadingNight {
 	background-color: rgb(0, 0, 56);
 
 	.loadingText {

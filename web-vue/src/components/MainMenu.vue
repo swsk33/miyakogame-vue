@@ -1,5 +1,5 @@
 <template>
-	<div v-if="mainMenu" :class="{ mainMenu: true, menuFadeOut: isMenuOut }">
+	<div v-if="mainMenu" :class="styleValue">
 		<div class="title">
 			<img class="avatar" :src="imageList.png.avatar.excepted" />
 			<img class="main" :src="imageList.png.title" />
@@ -25,6 +25,7 @@ const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: imageState } = createNamespacedHelpers('image');
 const { mapState: audioState } = createNamespacedHelpers('audio');
+const { mapState: timeState } = createNamespacedHelpers('timecontrol');
 
 export default {
 	computed: {
@@ -32,11 +33,35 @@ export default {
 		...dataState(['isNewGame']),
 		...imageState(['imageList']),
 		...audioState(['audioList']),
+		...timeState(['time', 'festival']),
 	},
 	data() {
 		return {
-			isMenuOut: false,
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				mainMenu: true,
+				menuOut: false,
+				menuNight: false,
+				menuHelloween: false,
+			},
 		};
+	},
+	watch: {
+		// 监听样式变量
+		'time.night': {
+			handler() {
+				this.styleValue.menuNight = this.time.night;
+			},
+			immedaite: true,
+		},
+		'festival.helloween': {
+			handler() {
+				this.styleValue.menuHelloween = this.festival.helloween;
+			},
+			immedaite: true,
+		},
 	},
 	methods: {
 		...pageMutations(['setMainMenuPage', 'setHelpPage', 'setShopPage']),
@@ -46,11 +71,11 @@ export default {
 		 * 主菜单移出
 		 */
 		menuFadeOut() {
-			this.isMenuOut = true;
+			this.styleValue.menuOut = true;
 			setTimeout(() => {
 				this.setMainMenuPage(false);
 				// 还原主菜单样式防止下次调用出问题
-				this.isMenuOut = false;
+				this.styleValue.menuOut = false;
 			}, 800);
 		},
 		/**
@@ -165,28 +190,12 @@ export default {
 }
 
 // 开始界面移出
-.menuFadeOut {
+.menuOut {
 	left: -100vw;
 }
 
-//开始界面-傍晚样式
-.mainMenu-evening {
-	background-color: #1a008b;
-	background-image: linear-gradient(180deg, #1a008b 28%, #ffc03a 100%);
-
-	.menu {
-		li {
-			margin-top: 35px;
-			text-align: center;
-			font-size: 38px;
-			color: #ff0037;
-			text-shadow: 1px 1px 3px lightcoral;
-		}
-	}
-}
-
-//开始界面-夜晚样式
-.mainMenu-night {
+// 开始界面-夜晚样式
+.menuNight {
 	background-color: rgb(0, 0, 56);
 
 	.menu {
@@ -198,5 +207,9 @@ export default {
 			text-shadow: 1px 1px 3px rgb(173, 240, 128);
 		}
 	}
+}
+
+// 开始界面-万圣节
+.menuHelloween {
 }
 </style>

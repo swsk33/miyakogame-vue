@@ -365,7 +365,7 @@ export default {
 				}, 60);
 			});
 			// 弹弹魔法
-			let bounceMagic = new Weapon('弹弹魔法', '遇到上下边界会发生反弹的魔法星星，只不过射击角度有点随机...', 5, 250, imageState.png.bullet.bounceIcon, audioState.weapon.bounceShoot, function (position) {
+			let bounceMagic = new Weapon('弹弹魔法', '遇到上下边界会发生反弹的魔法星星，只不过射击角度有点随机...', 2, 250, imageState.png.bullet.bounceIcon, audioState.weapon.bounceShoot, function (position) {
 				let bullet = new Bullet(position, new Size(18, 18), function (enemies) {
 					if (this.flyDirect == undefined) {
 						this.flyDirect = random.generateRandom(-60, 60);

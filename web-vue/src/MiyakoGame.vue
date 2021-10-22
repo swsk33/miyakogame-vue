@@ -40,6 +40,7 @@ export default {
 		...loadingActions(['loadAll']),
 	},
 	mounted() {
+		// 样式管理
 		mouseffect.enableAll();
 		// 加载全部资源文件
 		this.loadAll();
