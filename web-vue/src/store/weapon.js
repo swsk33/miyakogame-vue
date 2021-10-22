@@ -395,7 +395,7 @@ export default {
 				context.commit('addBullet', bullet);
 			});
 			// 跟踪光球
-			let traceBall = new Weapon('追踪光球', '发射后能够自动追踪布丁的魔法光球', 12, 1100, imageState.png.bullet.trace, audioState.weapon.trace, function (position) {
+			let traceBall = new Weapon('追踪光球', '发射后能够自动追踪布丁的魔法光球', 7, 1100, imageState.png.bullet.trace, audioState.weapon.trace, function (position) {
 				let bullet = new Bullet(position, new Size(21, 21), function (enemies) {
 					// 判断这个子弹是否已经锁定敌人，如果锁定的敌人不是存活状态则重新锁定
 					if (this.targetEnemy == undefined || this.targetEnemy.isEaten) {

@@ -23,7 +23,7 @@
 				<div class="highScore">最高分数：{{ gameData.highScore }}</div>
 			</div>
 		</div>
-		<div class="gameBackground">
+		<div class="gameBackground" ref="gameBackground">
 			<!--宫子-->
 			<img :src="imageList.png.miyako" class="miyako" :style="miyako.style" />
 			<!--所有布丁，类名为：pudding-列-行，从0计数-->
@@ -212,13 +212,10 @@ export default {
 		},
 	},
 	mounted() {
-		let gameBackground = document.querySelector('.gameBackground');
-		let area = {
-			width: gameBackground.offsetWidth,
-			height: gameBackground.offsetHeight,
-		};
-		this.setGameArea(area);
-		this.resetPuddings();
+		this.setGameArea({
+			width: this.$refs.gameBackground.offsetWidth,
+			height: this.$refs.gameBackground.offsetHeight,
+		});
 		// 全局添加键盘事件
 		document.body.addEventListener('keydown', this.listenerHandle);
 	},

@@ -1,5 +1,5 @@
 <template>
-	<div v-if="mainMenu" :class="styleValue">
+	<div v-if="mainMenu" :class="styleValue" ref="mainMenuDom">
 		<div class="title">
 			<img class="avatar" :src="imageList.png.avatar.excepted" />
 			<img class="main" :src="imageList.png.title" />
@@ -25,7 +25,6 @@ const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: imageState } = createNamespacedHelpers('image');
 const { mapState: audioState } = createNamespacedHelpers('audio');
-const { mapState: timeState } = createNamespacedHelpers('timecontrol');
 
 export default {
 	computed: {
@@ -33,7 +32,6 @@ export default {
 		...dataState(['isNewGame']),
 		...imageState(['imageList']),
 		...audioState(['audioList']),
-		...timeState(['time', 'festival']),
 	},
 	data() {
 		return {
@@ -47,21 +45,6 @@ export default {
 				menuHelloween: false,
 			},
 		};
-	},
-	watch: {
-		// 监听样式变量
-		'time.night': {
-			handler() {
-				this.styleValue.menuNight = this.time.night;
-			},
-			immedaite: true,
-		},
-		'festival.helloween': {
-			handler() {
-				this.styleValue.menuHelloween = this.festival.helloween;
-			},
-			immedaite: true,
-		},
 	},
 	methods: {
 		...pageMutations(['setMainMenuPage', 'setHelpPage', 'setShopPage']),
@@ -210,6 +193,5 @@ export default {
 }
 
 // 开始界面-万圣节
-.menuHelloween {
-}
+//.menuHelloween {}
 </style>

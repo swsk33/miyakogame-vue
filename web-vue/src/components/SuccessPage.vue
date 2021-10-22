@@ -1,5 +1,5 @@
 <template>
-	<div v-if="success" :class="{ succeed: true, succeedFade: isPageOut }">
+	<div v-if="success" :class="styleValue">
 		<div class="t1">succeed!</div>
 		<div class="say">
 			<img class="avatar" :src="imageList.png.avatar.happy" />
@@ -23,7 +23,13 @@ const { mapState: imageState } = createNamespacedHelpers('image');
 export default {
 	data() {
 		return {
-			isPageOut: false,
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				succeed: true,
+				pageOut: false,
+			},
 		};
 	},
 	computed: {
@@ -38,11 +44,11 @@ export default {
 		 * 隐藏成功页面
 		 */
 		closeSuccessPage() {
-			this.isPageOut = true;
+			this.styleValue.pageOut = true;
 			setTimeout(() => {
 				this.setSuccessPage(false);
 				// 还原页面状态防止下次再次调用页面时出现问题
-				this.isPageOut = false;
+				this.styleValue.pageOut = false;
 			}, 800);
 		},
 		/**
@@ -135,7 +141,7 @@ export default {
 }
 
 // 成功页面消失
-.succeedFade {
+.pageOut {
 	left: -25vw;
 	top: -25vh;
 	transform: scale(0) rotateX(180deg);

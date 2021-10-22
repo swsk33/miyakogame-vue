@@ -1,5 +1,5 @@
 <template>
-	<div v-if="pause" :class="{ pause: true, pauseOut: isPageOut }">
+	<div v-if="pause" :class="styleValue">
 		<div class="banner">
 			<img :src="imageList.gif.pause" />
 			<div class="text">游戏暂停，按P继续...</div>
@@ -18,7 +18,13 @@ const { mapState: imageState } = createNamespacedHelpers('image');
 export default {
 	data() {
 		return {
-			isPageOut: false,
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				pause: true,
+				pageOut: false,
+			},
 		};
 	},
 	computed: {
@@ -32,11 +38,11 @@ export default {
 		 * 暂停页面消失
 		 */
 		pausePageOut() {
-			this.isPageOut = true;
+			this.styleValue.pageOut = true;
 			setTimeout(() => {
 				this.setPausePage(false);
 				// 还原样式
-				this.isPageOut = false;
+				this.styleValue.pageOut = false;
 			}, 800);
 		},
 		/**
@@ -104,7 +110,7 @@ export default {
 }
 
 // 暂停页面关闭样式
-.pauseOut {
+.pageOut {
 	left: -25vw;
 	top: -25vh;
 	transform: scale(0) rotateX(180deg);

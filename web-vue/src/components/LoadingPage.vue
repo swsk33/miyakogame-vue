@@ -1,5 +1,5 @@
 <template>
-	<div v-if="loading" :class="styleValue">
+	<div v-if="loading" :class="styleValue" ref="loadingPageDom">
 		<div class="loadingComponent">
 			<img class="loadingImage" src="@/assets/image/youlDynamic.gif" />
 			<div class="loadingText">游戏加载中...</div>
@@ -15,7 +15,6 @@
 import { createNamespacedHelpers } from 'vuex';
 const { mapState: loadingState } = createNamespacedHelpers('loading');
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
-const { mapState: timeState } = createNamespacedHelpers('timecontrol');
 
 export default {
 	data() {
@@ -36,7 +35,6 @@ export default {
 	computed: {
 		...loadingState(['process', 'complete']),
 		...pageState(['loading']),
-		...timeState(['time']),
 	},
 	watch: {
 		// 样式变量监听
@@ -48,12 +46,6 @@ export default {
 						this.setLoadingPage(false);
 					}, 800);
 				}
-			},
-			immdeiate: true,
-		},
-		'time.night': {
-			handler() {
-				this.styleValue.loadingNight = this.time.night;
 			},
 			immdeiate: true,
 		},
