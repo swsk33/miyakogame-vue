@@ -1,21 +1,21 @@
 <template>
 	<div :class="styleValue" ref="gameBodyDom">
 		<div class="topBar">
-			<div class="props" @mousemove="showPropLoadTip($event)" @mouseout="closeTip">
-				<div class="name">{{ propList[currentProp].name }}</div>
+			<div class="props">
+				<div class="name" @mousemove="showPropDescription($event)" @mouseout="closeTip">{{ propList[currentProp].name }}</div>
 				<img :src="propList[currentProp].image" />
 				<div class="count">x{{ gameData.propsCount[currentProp] }}</div>
-				<div class="readyStateShow" :style="propStateControl"></div>
+				<div class="readyStateShow" :style="propStateControl" @mousemove="showPropLoadTip($event)" @mouseout="closeTip"></div>
 			</div>
-			<div class="weapon" @mousemove="showWeaponLoadTip($event)" @mouseout="closeTip">
-				<div class="name">{{ weaponList[currentWeapon].name }}</div>
+			<div class="weapon">
+				<div class="name" @mousemove="showWeaponDescription($event)" @mouseout="closeTip">{{ weaponList[currentWeapon].name }}</div>
 				<img :src="weaponList[currentWeapon].texture" />
 				<div class="count">x{{ bulletCount }}</div>
-				<div class="readyStateShow" :style="weaponStateControl"></div>
+				<div class="readyStateShow" :style="weaponStateControl" @mousemove="showWeaponLoadTip($event)" @mouseout="closeTip"></div>
 			</div>
 			<div class="level">第{{ gameData.level }}关</div>
 			<div class="health">
-				<img :src="imageList.png.youlStatic" />
+				<img :src="imageList.png.youlStatic" @mousemove="showHealthIconTip($event)" @mouseout="closeTip" />
 				<div class="t">x{{ gameData.health }}</div>
 			</div>
 			<div class="scorePanel">
@@ -257,6 +257,32 @@ export default {
 			} else {
 				this.tipObject = showToolTip('当前武器正在装弹！', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
 			}
+		},
+		/**
+		 * 显示道具描述的悬浮提示
+		 * @param {*} e 传入事件参数$event
+		 */
+		showPropDescription(e) {
+			this.closeTip();
+			const getProp = this.propList[this.currentProp];
+			this.tipObject = showToolTip(getProp.name + '：' + getProp.description, e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+		},
+		/**
+		 * 显示武器描述的悬浮提示
+		 * @param {*} e 传入事件参数$event
+		 */
+		showWeaponDescription(e) {
+			this.closeTip();
+			const getWeapon = this.weaponList[this.currentWeapon];
+			this.tipObject = showToolTip(getWeapon.name + '：' + getWeapon.description, e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+		},
+		/**
+		 * 显示生命值图标的悬浮提示
+		 * @param {*} e 传入事件参数$event
+		 */
+		showHealthIconTip(e) {
+			this.closeTip();
+			this.tipObject = showToolTip('生命值', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
 		},
 	},
 	mounted() {
