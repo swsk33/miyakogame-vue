@@ -424,6 +424,11 @@ export default {
 
 	.topBar {
 		background-color: rgba(0, 255, 255, 0.8);
+		.scorePanel {
+			.currentScore {
+				color: #ff0062;
+			}
+		}
 	}
 
 	.gameBackground {

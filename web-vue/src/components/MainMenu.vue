@@ -193,5 +193,5 @@ export default {
 }
 
 // 开始界面-万圣节
-//.menuHelloween {}
+//.menuHalloween {}
 </style>

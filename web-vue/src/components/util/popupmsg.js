@@ -1,6 +1,8 @@
 import {
 	createApp
 } from 'vue';
+import store from '@/store';
+
 
 import PopUpMsg from './PopUpMessage.vue';
 
@@ -17,7 +19,7 @@ export function popUpMsg(text, position) {
 	mountDom.style.top = position.y + 'px';
 	document.body.appendChild(mountDom);
 	// 挂载组件以显示，mount函数返回vue组件实例
-	let msg = createApp(PopUpMsg).mount(mountDom);
+	let msg = createApp(PopUpMsg).use(store).mount(mountDom);
 	msg.text = text;
 	setTimeout(() => {
 		mountDom.remove();

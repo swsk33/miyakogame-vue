@@ -18,7 +18,7 @@ export default {
 			/**
 			 * 是否万圣节
 			 */
-			helloween: false
+			halloween: false
 		}
 	},
 	mutations: {
