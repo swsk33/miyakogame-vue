@@ -1,13 +1,13 @@
 <template>
-	<div class="gameBody">
+	<div :class="styleValue" ref="gameBodyDom">
 		<div class="topBar">
-			<div class="props">
+			<div class="props" @mousemove="showPropLoadTip($event)" @mouseout="closeTip">
 				<div class="name">{{ propList[currentProp].name }}</div>
 				<img :src="propList[currentProp].image" />
 				<div class="count">x{{ gameData.propsCount[currentProp] }}</div>
 				<div class="readyStateShow" :style="propStateControl"></div>
 			</div>
-			<div class="weapon">
+			<div class="weapon" @mousemove="showWeaponLoadTip($event)" @mouseout="closeTip">
 				<div class="name">{{ weaponList[currentWeapon].name }}</div>
 				<img :src="weaponList[currentWeapon].texture" />
 				<div class="count">x{{ bulletCount }}</div>
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { showToolTip } from '@/components/util/tooltip.js';
 import { createNamespacedHelpers } from 'vuex';
 const { mapState: gameState, mapMutations: gameMutations, mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
 const { mapState: dataState } = createNamespacedHelpers('userdata');
@@ -46,6 +47,21 @@ const { mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
+	data() {
+		return {
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				gameBody: true,
+				gameBodyNight: false,
+			},
+			/**
+			 * 悬浮提示对象
+			 */
+			tipObject: undefined,
+		};
+	},
 	computed: {
 		...gameState(['isProcessing', 'isOutOfGame']),
 		...dataState(['gameData']),
@@ -210,6 +226,38 @@ export default {
 				}
 			}
 		},
+		/**
+		 * 销毁悬浮提示
+		 */
+		closeTip() {
+			if (this.tipObject != undefined) {
+				this.tipObject.destroy();
+			}
+		},
+		/**
+		 * 显示道具装载状态悬浮提示
+		 * @param {*} e 传入事件参数$event
+		 */
+		showPropLoadTip(e) {
+			this.closeTip();
+			if (this.propList[this.currentProp].isReady) {
+				this.tipObject = showToolTip('当前道具冷却完成！', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+			} else {
+				this.tipObject = showToolTip('当前道具正在冷却！', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+			}
+		},
+		/**
+		 * 显示武器装载状态悬浮提示
+		 * @param {*} e 传入事件参数$event
+		 */
+		showWeaponLoadTip(e) {
+			this.closeTip();
+			if (this.weaponList[this.currentWeapon].isReady) {
+				this.tipObject = showToolTip('当前武器装弹完成！', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+			} else {
+				this.tipObject = showToolTip('当前武器正在装弹！', e.clientX + 24 + 'px', e.clientY + 16 + 'px');
+			}
+		},
 	},
 	mounted() {
 		this.setGameArea({
@@ -260,9 +308,12 @@ export default {
 			background-size: cover;
 		}
 
-		.props {
-			.name {
+		.props,
+		.weapon {
+			.name,
+			.count {
 				position: relative;
+				font-size: 19px;
 			}
 
 			img {
@@ -272,28 +323,19 @@ export default {
 			}
 
 			.count {
-				position: relative;
 				margin-left: 3px;
 			}
+		}
 
+		.props {
 			.readyStateShow {
 				background-color: #3b63e7;
 			}
 		}
 
 		.weapon {
-			.name {
-				position: relative;
-			}
-
 			img {
-				position: relative;
-				margin-left: 7px;
-			}
-
-			.count {
-				position: relative;
-				margin-left: 3px;
+				height: 23px;
 			}
 
 			.readyStateShow {
@@ -308,12 +350,11 @@ export default {
 
 		.health {
 			img {
-				width: 45px;
-				height: 46px;
+				height: 42px;
 			}
 
 			.t {
-				font-size: 30px;
+				font-size: 26px;
 				margin-left: 10px;
 			}
 		}
@@ -348,6 +389,19 @@ export default {
 				}
 			}
 		}
+	}
+}
+
+// 游戏主体-夜晚
+.gameBodyNight {
+	background-color: #000038;
+
+	.topBar {
+		background-color: rgba(0, 255, 255, 0.8);
+	}
+
+	.gameBackground {
+		background-color: rgba(0, 0, 0, 0);
 	}
 }
 </style>

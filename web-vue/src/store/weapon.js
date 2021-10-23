@@ -329,10 +329,10 @@ export default {
 			});
 			// 散布魔法
 			let scatterMagic = new Weapon('散布魔法', '一次发射8个魔法球，射角分散', 15, 2000, imageState.png.bullet.scatterIcon, audioState.weapon.scatter, function (position) {
-				// 将子弹复制8个并赋予随机的颜色、大小和飞行角度
+				// 生成8个子弹并赋予随机的颜色、大小和飞行角度
 				let bulletCount = 8;
-				const sideLength = random.generateRandomFloat(0.5, 3.5);
 				let shootInterval = setInterval(() => {
+					const sideLength = random.generateRandomFloat(0.5, 3.5);
 					let bullet = new Bullet(position, new Size(sideLength, sideLength), function (enemies) {
 						return {
 							position: entityFly(this, 8, this.flyDirect)
@@ -350,8 +350,6 @@ export default {
 					});
 					// 设定样式
 					const color = random.getRandomColor();
-					bullet.style.width = sideLength + 'px';
-					bullet.style.height = sideLength + 'px';
 					bullet.style.backgroundColor = color;
 					bullet.style.boxShadow = '0px 0px 4px 5px ' + color;
 					bullet.flyDirect = random.generateRandom(-20, 20);

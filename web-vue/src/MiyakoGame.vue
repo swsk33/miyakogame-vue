@@ -1,13 +1,13 @@
 <template>
 	<div class="miyakoGame">
-		<gamebody></gamebody>
+		<gamebody ref="gameBody"></gamebody>
 		<mainmenu ref="mainMenu"></mainmenu>
-		<help></help>
+		<help ref="helpPage"></help>
+		<shop ref="shopPage"></shop>
+		<loadingpage ref="loadingPage"></loadingpage>
 		<successpage></successpage>
 		<failedpage></failedpage>
 		<pausepage></pausepage>
-		<loadingpage ref="loadingPage"></loadingpage>
-		<shop></shop>
 	</div>
 </template>
 
@@ -65,7 +65,7 @@ export default {
 				}
 				starDiv.style.width = sideLength + 'px';
 				starDiv.style.height = sideLength + 'px';
-				dom.appendChild(starDiv);
+				dom.insertBefore(starDiv, dom.children[0]);
 			}
 		},
 		/**
@@ -74,10 +74,20 @@ export default {
 		applyStyle() {
 			// 加载页面
 			this.$refs.loadingPage.styleValue.loadingNight = this.time.night;
-			this.generateStar(this.$refs.loadingPage.$refs.loadingPageDom);
 			// 主菜单
 			this.$refs.mainMenu.styleValue.menuNight = this.time.night;
-			this.generateStar(this.$refs.mainMenu.$refs.mainMenuDom);
+			// 帮助
+			this.$refs.helpPage.styleValue.helpNight = this.time.night;
+			// 商店
+			this.$refs.shopPage.styleValue.shopNight = this.time.night;
+			// 游戏主体背景
+			this.$refs.gameBody.styleValue.gameBodyNight = this.time.night;
+			// 给部分背景生成小星星
+			if (this.time.night) {
+				this.generateStar(this.$refs.loadingPage.$refs.loadingPageDom);
+				this.generateStar(this.$refs.mainMenu.$refs.mainMenuDom);
+				this.generateStar(this.$refs.gameBody.$refs.gameBodyDom);
+			}
 		},
 	},
 	async mounted() {

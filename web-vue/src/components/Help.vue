@@ -1,5 +1,5 @@
 <template>
-	<div v-if="help" class="help">
+	<div v-if="help" :class="styleValue">
 		<div class="frame">
 			<div class="introduce">&ensp;&ensp;&ensp;&ensp;宫子是一个喜欢吃布丁的幽灵。现在帮助（操控）她吃（淦）掉所有布丁吧！</div>
 			<div class="t1">
@@ -22,6 +22,17 @@ const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHel
 const { mapState: imageState } = createNamespacedHelpers('image');
 
 export default {
+	data() {
+		return {
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				help: true,
+				helpNight: false,
+			},
+		};
+	},
 	computed: {
 		...pageState(['help']),
 		...imageState(['imageList']),
@@ -56,7 +67,7 @@ export default {
 	div {
 		position: relative;
 		width: 80%;
-		margin-top: 24px;
+		margin-top: 18px;
 	}
 
 	.frame {
@@ -79,22 +90,30 @@ export default {
 			margin-top: 28px;
 		}
 
+		.t1,
+		.t2,
+		.t3,
+		.t4,
+		.t5 {
+			font-size: 20px;
+		}
+
 		.t1 {
 			img {
 				height: 48px;
+				margin-right: 16px;
 			}
 
 			display: flex;
 			justify-content: flex-start;
 			align-items: center;
-			font-size: 20px;
 			box-sizing: border-box;
 		}
 
 		.ok {
 			position: absolute;
 			width: 100px;
-			bottom: 28px;
+			bottom: 42px;
 			font-size: 24px;
 			height: 28px;
 			line-height: 28px;
@@ -105,6 +124,29 @@ export default {
 			&:hover {
 				color: white;
 				background-color: blue;
+				border-radius: 6px;
+			}
+		}
+	}
+}
+
+// 帮助页-夜晚
+.helpNight {
+	background-color: rgba(255, 255, 255, 0.3);
+
+	.frame {
+		background-color: #000038;
+		box-shadow: 2px 2px 10px 0.5px rgb(255, 255, 255);
+
+		div {
+			color: white;
+			text-shadow: 0.3px 0.3px 3px white;
+		}
+
+		.ok {
+			&:hover {
+				color: black;
+				background-color: rgb(113, 246, 255);
 				border-radius: 6px;
 			}
 		}
