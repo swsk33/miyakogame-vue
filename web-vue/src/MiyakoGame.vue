@@ -73,14 +73,19 @@ export default {
 		 */
 		applyStyle() {
 			// 加载页面
+			this.$refs.loadingPage.styleValue.loadingHalloween = this.festival.halloween;
 			this.$refs.loadingPage.styleValue.loadingNight = this.time.night;
 			// 主菜单
+			this.$refs.mainMenu.styleValue.menuHalloween = this.festival.halloween;
 			this.$refs.mainMenu.styleValue.menuNight = this.time.night;
 			// 帮助
+			this.$refs.helpPage.styleValue.helpHalloween = this.festival.halloween;
 			this.$refs.helpPage.styleValue.helpNight = this.time.night;
 			// 商店
+			this.$refs.shopPage.styleValue.shopHalloween = this.festival.halloween;
 			this.$refs.shopPage.styleValue.shopNight = this.time.night;
 			// 游戏主体背景
+			this.$refs.gameBody.styleValue.gameBodyHalloween = this.festival.halloween;
 			this.$refs.gameBody.styleValue.gameBodyNight = this.time.night;
 			// 给部分背景生成小星星
 			if (this.time.night) {

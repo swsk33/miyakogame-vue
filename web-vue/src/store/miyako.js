@@ -35,6 +35,13 @@ export default {
 			state.miyako.style.top = payload + 'px';
 		},
 		/**
+		 * 改变宫子的大小，payload为Size对象
+		 */
+		setMiyakoSize(state, payload) {
+			state.miyako.style.width = payload.width + 'px';
+			state.miyako.style.height = payload.height + 'px';
+		},
+		/**
 		 * 改变宫子移速，payload为整数表示改变后宫子移速
 		 */
 		setMiyakoSpeed(state, payload) {

@@ -26,6 +26,7 @@ export default {
 				loading: true,
 				loadingOut: false,
 				loadingNight: false,
+				loadingHalloween: false,
 			},
 		};
 	},
@@ -104,7 +105,6 @@ export default {
 		margin-top: 16px;
 		border: 3px blue solid;
 		border-radius: 18px;
-		transition: width 0.8s cubic-bezier(0, 0, 0, 1);
 
 		.processValue {
 			position: absolute;
@@ -141,6 +141,31 @@ export default {
 	.processBar {
 		border-color: rgb(144, 214, 255);
 		box-shadow: 0 0 8px 1px #19fff8;
+
+		.processValue {
+			background-color: greenyellow;
+			box-shadow: 0 0 10px 2px rgb(90, 255, 25);
+		}
+	}
+
+	.processNum {
+		color: white;
+		text-shadow: 1px 1px 3px white;
+	}
+}
+
+// 万圣节样式
+.loadingHalloween {
+	background: url('../assets/image/festival/halloween/backgroundLoad.png') no-repeat center/cover;
+
+	.loadingText {
+		color: white;
+		text-shadow: 1px 1px 3px white;
+	}
+
+	.processBar {
+		border-color: rgb(144, 214, 255);
+		box-shadow: 0 0 9px 1px #19fff8;
 
 		.processValue {
 			background-color: greenyellow;

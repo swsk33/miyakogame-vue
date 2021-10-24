@@ -1,3 +1,7 @@
+import {
+	Size
+} from '@/assets/js/constructors.js';
+
 // vuex-时间和节日模块
 export default {
 	namespaced: true,
@@ -37,6 +41,50 @@ export default {
 	},
 	actions: {
 		/**
+		 * 修改一些需要在加载前改写的资源
+		 */
+		modifyResourcesBeforeLoad(context) {
+			// 万圣节
+			if (context.state.festival.halloween) {
+				// 标题图
+				let titleImage = new Image();
+				titleImage.src = require('@/assets/image/festival/halloween/title.png');
+				context.commit('image/modifyImage', {
+					path: 'png/title',
+					image: titleImage
+				}, {
+					root: true
+				});
+				// 宫子
+				let miyakoImage = new Image();
+				miyakoImage.src = require('@/assets/image/festival/halloween/miyako.png');
+				context.commit('image/modifyImage', {
+					path: 'png/miyako',
+					image: miyakoImage
+				}, {
+					root: true
+				});
+				context.commit('miyako/setMiyakoSize', new Size(120, 142), {
+					root: true
+				});
+				// 修改武器
+				let normalWeaponImage = new Image();
+				normalWeaponImage.src = require('@/assets/image/festival/halloween/bullet.png');
+				context.commit('image/modifyImage', {
+					path: 'png/bullet/normal',
+					image: normalWeaponImage
+				}, {
+					root: true
+				});
+			}
+		},
+		/**
+		 * 修改一些需要在加载后改写的资源
+		 */
+		modifyResourcesAfterLoad(context) {
+
+		},
+		/**
 		 * 检查时间
 		 */
 		checkTime(context) {
@@ -46,9 +94,10 @@ export default {
 			// 万圣节（设定为每年10月31日18点开始到11月3日结束）
 			if ((nowTime.getMonth() == 9 && nowTime.getDate() == 31 && nowTime.getHours() >= 18) || (nowTime.getMonth() == 10 && nowTime.getDate() <= 3)) {
 				context.commit('setFestival', {
-					name: 'helloween',
+					name: 'halloween',
 					enable: true
 				});
+				context.dispatch('modifyResourcesBeforeLoad');
 				return;
 			}
 			// 检测时间

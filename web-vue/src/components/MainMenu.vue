@@ -42,7 +42,7 @@ export default {
 				mainMenu: true,
 				menuOut: false,
 				menuNight: false,
-				menuHelloween: false,
+				menuHalloween: false,
 			},
 		};
 	},
@@ -193,5 +193,17 @@ export default {
 }
 
 // 开始界面-万圣节
-//.menuHalloween {}
+.menuHalloween {
+	background: url('../assets/image/festival/halloween/backgroundMenu.png') no-repeat center/cover;
+
+	.menu {
+		li {
+			margin-top: 35px;
+			text-align: center;
+			font-size: 38px;
+			color: #00ff95;
+			text-shadow: 1px 1px 3px rgb(173, 240, 128);
+		}
+	}
+}
 </style>

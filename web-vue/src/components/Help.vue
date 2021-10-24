@@ -30,6 +30,7 @@ export default {
 			styleValue: {
 				help: true,
 				helpNight: false,
+				helpHalloween: false,
 			},
 		};
 	},
@@ -147,6 +148,29 @@ export default {
 			&:hover {
 				color: black;
 				background-color: rgb(113, 246, 255);
+				border-radius: 6px;
+			}
+		}
+	}
+}
+
+// 帮助页-万圣节
+.helpHalloween {
+	background-color: rgba(255, 255, 255, 0.3);
+
+	.frame {
+		background-color: #463986;
+		box-shadow: 2px 2px 10px 0.3px rgb(0, 255, 255);
+
+		div {
+			color: white;
+			text-shadow: 0.2px 0.2px 2px white;
+		}
+
+		.ok {
+			&:hover {
+				color: black;
+				background-color: rgb(0, 238, 255);
 				border-radius: 6px;
 			}
 		}

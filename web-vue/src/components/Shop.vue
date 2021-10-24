@@ -80,6 +80,7 @@ export default {
 			styleValue: {
 				shop: true,
 				shopNight: false,
+				shopHalloween: false,
 			},
 		};
 	},
@@ -495,6 +496,93 @@ export default {
 	.frame {
 		background-color: #000038;
 		box-shadow: 2px 2px 10px 0.5px rgb(255, 255, 255);
+
+		div {
+			color: white;
+			text-shadow: 0.2px 0.2px 2px white;
+		}
+
+		.total {
+			color: #ffbee6;
+			text-shadow: 0.2px 0.2px 2px #ffbee6;
+		}
+
+		.current {
+			color: #8cffec;
+			text-shadow: 0.2px 0.2px 2px #8cffec;
+		}
+
+		.item {
+			border-color: #ff7dc9;
+
+			ul {
+				li {
+					border-bottom: rgb(155, 255, 155) 1px dashed;
+
+					.count {
+						color: rgb(255, 151, 238);
+					}
+
+					.countButtonBox {
+						* {
+							&:hover {
+								color: black;
+								background-color: rgb(113, 255, 243);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.weapon {
+			border: #ffbc9b 3px solid;
+
+			ul {
+				li {
+					border-bottom: rgb(155, 255, 155) 1px dashed;
+
+					.count {
+						color: rgb(255, 205, 182);
+					}
+
+					.countButtonBox {
+						* {
+							&:hover {
+								color: black;
+								background-color: rgb(152, 255, 212);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.buttonBox {
+			.ok {
+				&:hover {
+					color: black;
+					background-color: #dfafff;
+				}
+			}
+
+			.cancel {
+				&:hover {
+					color: black;
+					background-color: #ffac8b;
+				}
+			}
+		}
+	}
+}
+
+// 商店-万圣节
+.shopHalloween {
+	background-color: rgba(255, 255, 255, 0.3);
+
+	.frame {
+		background-color: #4e3c8f;
+		box-shadow: 2px 2px 10px 0.3px rgb(0, 255, 242);
 
 		div {
 			color: white;

@@ -93,7 +93,7 @@ export default {
 				let image = new Image();
 				image.src = require('@/assets/image/' + payload.path + '.' + payload.type);
 				imageObject[pathes[pathes.length - 1]] = image;
-			} else { // 否则，说明这个属性还有子属性，遍历子属性并进入递归流程加载其中的图片
+			} else if (Object.prototype.toString.call(imageObject[pathes[pathes.length - 1]]) === '[object Object]') { // 否则，说明这个属性还有子属性，遍历子属性并进入递归流程加载其中的图片
 				let list = imageObject[pathes[pathes.length - 1]];
 				for (let key in list) {
 					this.commit('image/loadImageList', {
@@ -121,6 +121,25 @@ export default {
 					this.commit('image/setImageResource', payload + '/' + key);
 				}
 			}
+		},
+		/**
+		 * 修改图片资源，建议在加载之前调用，payload中有两个属性：path表示修改路径，例如修改上述imageList.png.bullet.normal，表示为png/bullet/normal，image属性则为Image对象，路径不存在会添加
+		 */
+		modifyImage(state, payload) {
+			// 处理路径字符串
+			if (payload.path.indexOf('/') == 0) {
+				payload.path = payload.path.substring(1, payload.path.length);
+			}
+			if (payload.path === '') {
+				return;
+			}
+			const pathes = payload.path.split('/');
+			let imageObject = state.imageList;
+			// 只索引到第n - 1个，也就是目标属性的的前一个，这样就可以引用到对象并修改其中的属性（否则会发生单类型复制导致无法赋值到对象中）
+			for (let i = 0; i < pathes.length - 1; i++) {
+				imageObject = imageObject[pathes[i]];
+			}
+			imageObject[pathes[pathes.length - 1]] = payload.image;
 		}
 	},
 	actions: {

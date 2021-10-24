@@ -55,6 +55,7 @@ export default {
 			styleValue: {
 				gameBody: true,
 				gameBodyNight: false,
+				gameBodyHalloween: false,
 			},
 			/**
 			 * 悬浮提示对象
@@ -424,6 +425,24 @@ export default {
 
 	.topBar {
 		background-color: rgba(0, 255, 255, 0.8);
+		.scorePanel {
+			.currentScore {
+				color: #ff0062;
+			}
+		}
+	}
+
+	.gameBackground {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}
+
+// 游戏主体-万圣节
+.gameBodyHalloween {
+	background: url('../assets/image/festival/halloween/backgroundGame.png') no-repeat center/cover;
+
+	.topBar {
+		background-color: rgba(0, 255, 255, 0.7);
 		.scorePanel {
 			.currentScore {
 				color: #ff0062;

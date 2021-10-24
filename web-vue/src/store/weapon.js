@@ -215,6 +215,12 @@ export default {
 			}
 		},
 		/**
+		 * 修改某一个武器，payload中有两个属性：index表示要修改的武器在武器列表的索引，weapon属性表示武器对象用于替换被修改的武器
+		 */
+		modifyWeapon(state, payload) {
+			state.weaponList[payload.index] = payload.weapon;
+		},
+		/**
 		 * 清空屏幕上的子弹
 		 */
 		clearBullets(state) {
