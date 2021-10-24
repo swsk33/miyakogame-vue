@@ -81,7 +81,7 @@ export default {
 			}
 		},
 		/**
-		 * 修改音频资源，建议在加载之前调用，payload中有两个属性：path表示修改路径，例如修改上述audioList.succeed.s1，表示为succeed/s1，audio属性则为Audio对象，路径不存在会添加
+		 * 修改音频资源，建议在加载之前调用，payload中有两个属性：path表示修改路径，例如修改上述audioList.succeed.s1，表示为succeed/s1，audio属性则为Audio对象，也可以是包含多个Audio对象的大对象，路径不存在会添加
 		 */
 		modifyAudio(state, payload) {
 			// 处理路径字符串
@@ -95,6 +95,9 @@ export default {
 			let audioObject = state.audioList;
 			// 只索引到第n - 1个，也就是目标属性的的前一个，这样就可以引用到对象并修改其中的属性（否则会发生单类型复制导致无法赋值到对象中）
 			for (let i = 0; i < pathes.length - 1; i++) {
+				if (audioObject[pathes[i]] == undefined) {
+					audioObject[pathes[i]] = {};
+				}
 				audioObject = audioObject[pathes[i]];
 			}
 			audioObject[pathes[pathes.length - 1]] = payload.audio;

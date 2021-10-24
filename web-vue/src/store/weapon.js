@@ -4,6 +4,11 @@ import {
 	GameEntity
 } from '@/assets/js/constructors.js';
 
+import {
+	generateRandomParticle,
+	generateImageParticle
+} from '@/components/util/bulletparticle.js';
+
 import random from '@/assets/js/random.js';
 
 import {
@@ -421,32 +426,7 @@ export default {
 						}
 					}
 					// 子弹飞行尾迹效果
-					let color = random.getRandomColor();
-					let dotRadius = random.generateRandomFloat(0.5, 1.5);
-					let dot = document.createElement('div');
-					dot.style.position = 'absolute';
-					dot.style.width = dotRadius + 'px';
-					dot.style.height = dotRadius + 'px';
-					dot.style.borderRadius = '50%';
-					dot.style.backgroundColor = color;
-					dot.style.boxShadow = '0px 0px 3.5px 2px ' + color;
-					dot.style.left = this.getPosition().x + this.getSize().width / 2 + 'px';
-					dot.style.top = this.getPosition().y + this.getSize().height / 2 + random.generateRandom(-2, 2) + 55 + 'px';
-					dot.style.transitionProperty = 'left, top';
-					dot.style.transitionDuration = '1s';
-					dot.style.transitionTimingFunction = 'ease-out';
-					document.body.appendChild(dot);
-					let dotFlydirect;
-					if (Math.random() < 0.5) {
-						dotFlydirect = random.generateRandom(100, 135);
-					} else {
-						dotFlydirect = random.generateRandom(225, 260);
-					}
-					dot.style.left = dot.offsetLeft + Math.cos((dotFlydirect / 180) * Math.PI) * 25 + 'px';
-					dot.style.top = dot.offsetTop - Math.sin((dotFlydirect / 180) * Math.PI) * 25 + 'px';
-					setTimeout(() => {
-						dot.remove();
-					}, 350);
+					generateRandomParticle(this.getPosition().x + this.getSize().width / 2 + 'px', this.getPosition().y + this.getSize().height / 2 + random.generateRandom(-2, 2) + 55 + 'px');
 					// 如果锁敌失败则按照原方向飞行，否则计算自己和锁定敌人的角度，按照敌人方向飞行
 					if (this.flyDirect == undefined) {
 						this.flyDirect = 0;
@@ -488,39 +468,71 @@ export default {
 			// 如果是万圣节则加入特有的武器
 			if (context.rootState.timecontrol.festival.halloween) {
 				// 万圣烟火
-				let halloweenFirework = new Weapon('万圣烟花', '在寒冷的冬夜，却温暖的万圣夜，绽放最美丽的光彩！', 0, 2000, imageState.png.bullet.halloweenFirework, audioState.weapon.fireworkShoot, function (position) {
-					let bullet = new Bullet(position, new Size(30, 16), function (enemies) {
+				let halloweenFirework = new Weapon('万圣烟花', '在寒冷的冬夜，却温暖的万圣夜，绽放最美丽的光彩！', 0, 2000, imageState.png.festival.halloween.bullet.firework.halloweenFirework, audioState.festival.halloween.weapon.fireworkShoot, function (position) {
+					let bullet = new Bullet(position, new Size(23, 14), function (enemies) {
+						// 速度
+						if (this.v == undefined) {
+							this.v = 18;
+						}
+						// 每次减速，减速小于1时发生爆炸
+						this.v = this.v / 1.05;
+						if (this.v < 1) {
+							// 记录爆炸位置
+							let boomPosition = this.getPosition();
+							// 标记自身无效
+							context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+							// 爆炸动画和声音
+							audioState.festival.halloween.weapon.fireworkBoom.play();
+							let boomDom = new Image();
+							boomDom.src = imageState.gif.festival.halloween.bullet.firework.fireworkBoom;
+							boomDom.style.position = 'absolute';
+							boomDom.style.left = boomPosition.x + 'px';
+							boomDom.style.top = boomPosition.y + 45 + 'px';
+							document.body.appendChild(boomDom);
+							setTimeout(() => {
+								boomDom.remove();
+							}, 1200);
+							// 随机生成10到16个条形子弹，角度分布-75到75度
+							const startDirection = -75;
+							const diff = 150;
+							const count = random.generateRandom(10, 16);
+							for (let i = 0; i < count; i++) {
+								const thisDirection = (diff / count) * i + startDirection;
+								let subBullet = new Bullet(boomPosition, new Size(25, 1.5), function (enemies) {
+									return {
+										position: entityFly(this, 8, thisDirection)
+									};
+								}, function (enemy, enemies) {
+									// 标记该子弹无效
+									context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+									// 击中布丁标记为被吃掉
+									context.dispatch('pudding/setPuddingEaten', {
+										column: enemy.column,
+										line: enemy.line
+									}, {
+										root: true
+									});
+								});
+								// 设定子弹样式
+								const color = random.getRandomColor();
+								subBullet.style.backgroundColor = color;
+								subBullet.style.boxShadow = '0px 0px 4px 2px ' + color;
+								subBullet.style.transform = 'rotate(' + -thisDirection + 'deg)';
+								// 放入子弹数组
+								context.commit('addBullet', subBullet);
+							}
+						}
 						// 飞行尾迹效果
 						if (this.lightPoints == undefined) {
-							this.lightPoints = [imageState.png.bullet.fireworkEffect1, imageState.png.bullet.fireworkEffect2];
+							this.lightPoints = [];
+							const particles = imageState.png.festival.halloween.bullet.firework.fireworkParticle;
+							for (let key in particles) {
+								this.lightPoints.push(particles[key]);
+							}
 						}
-						let point = document.createElement('img');
-						point.src = this.lightPoints[random.generateRandom(0, this.lightPoints.length - 1)];
-						point.style.position = 'absolute';
-						point.style.left = this.getPosition().x + 'px';
-						point.style.top = this.getPosition().y + this.getSize().height / 2 + 50 + 'px';
-						point.style.transitionProperty = 'left, top';
-						point.style.transitionDuration = '1s';
-						point.style.transitionTimingFunction = 'ease-out';
-						document.body.appendChild(point);
-						let pointFlydirect;
-						if (Math.random() < 0.5) {
-							pointFlydirect = random.generateRandom(100, 135);
-						} else {
-							pointFlydirect = random.generateRandom(225, 260);
-						}
-						point.style.left = point.offsetLeft + Math.cos((pointFlydirect / 180) * Math.PI) * 25 + 'px';
-						point.style.top = point.offsetTop - Math.sin((pointFlydirect / 180) * Math.PI) * 25 + 'px';
-						setTimeout(() => {
-							point.remove();
-						}, 350);
-						// 飞行1/4屏幕宽度后发生爆炸
-						if (this.getPosition().x >= context.rootState.gamingcontrol.gameArea.width / 4) {
-							// 爆炸生成十个子弹，角度从-60到60
-							audioState.weapon.fireworkBoom.play();
-						}
+						generateImageParticle(this.getPosition().x - 5 + 'px', this.getPosition().y + this.getSize().height / 2 + 50 + 'px', this.lightPoints);
 						return {
-							position: entityFlyX(this, 7)
+							position: entityFlyX(this, this.v)
 						};
 					}, function (enemy, enemies) {
 						// 击中敌人则直接敌人消失，不发生爆炸

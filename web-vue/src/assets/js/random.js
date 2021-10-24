@@ -1,5 +1,5 @@
 // 颜色列表
-const colors = ['#ff0f26', '#ff7d0f', '#ffe72e', '#b2ff2e', '#3cff2e', '#2effd3', '#0700ff', '#c000ff'];
+const colors = ['#00ff7f', '#ff0f26', '#ff7d0f', '#ffe72e', '#b2ff2e', '#3cff2e', '#2effd3', '#0700ff', '#c000ff', '#ffffff', '#f375ff', '#ffd1e4', '#ddff57', '#ffdd8a'];
 
 export default {
 	/**

@@ -46,23 +46,7 @@ export default {
 		modifyResourcesBeforeLoad(context) {
 			// 万圣节
 			if (context.state.festival.halloween) {
-				// 添加背景图资源以加载
-				let menuBackImage = new Image();
-				menuBackImage.src = require('@/assets/image/festival/halloween/backgroundMenu.png');
-				context.commit('image/modifyImage', {
-					path: 'png/menuBackImage',
-					image: menuBackImage
-				}, {
-					root: true
-				});
-				let gameBackImage = new Image();
-				gameBackImage.src = require('@/assets/image/festival/halloween/backgroundGame.png');
-				context.commit('image/modifyImage', {
-					path: 'png/gameBackImage',
-					image: gameBackImage
-				}, {
-					root: true
-				});
+				// 执行资源修改
 				// 标题图
 				let titleImage = new Image();
 				titleImage.src = require('@/assets/image/festival/halloween/title.png');
@@ -86,61 +70,56 @@ export default {
 				});
 				// 修改默认武器贴图
 				let normalWeaponImage = new Image();
-				normalWeaponImage.src = require('@/assets/image/festival/halloween/bullet.png');
+				normalWeaponImage.src = require('@/assets/image/festival/halloween/bullet/normal.png');
 				context.commit('image/modifyImage', {
 					path: 'png/bullet/normal',
 					image: normalWeaponImage
 				}, {
 					root: true
 				});
-				// 添加万圣节武器
-				let fireworkImage = new Image();
-				fireworkImage.src = require('@/assets/image/festival/halloween/halloweenFirework.png');
+				// 执行资源添加，仅仅指定资源地址插入到image和audio模块，模块中会自行根据对象属性名寻找资源路径加载
+				// 添加背景图资源
+				const backgroundImage = {
+					backgroundGame: undefined,
+					backgroundMenu: undefined
+				}
 				context.commit('image/modifyImage', {
-					path: 'png/bullet/halloweenFirework',
-					image: fireworkImage
+					path: 'png/festival/halloween/background',
+					image: backgroundImage
 				}, {
 					root: true
 				});
-				let fireworkEffect1 = new Image();
-				fireworkEffect1.src = require('@/assets/image/festival/halloween/lightPoint1.png');
+				// 添加万圣节武器资源
+				const halloweenFirework = {
+					halloweenFirework: undefined,
+					fireworkParticle: {
+						p1: undefined,
+						p2: undefined,
+						p3: undefined,
+						p4: undefined,
+						p5: undefined,
+						p6: undefined
+					}
+				}
 				context.commit('image/modifyImage', {
-					path: 'png/bullet/fireworkEffect1',
-					image: fireworkEffect1
+					path: 'png/festival/halloween/bullet/firework',
+					image: halloweenFirework
 				}, {
 					root: true
 				});
-				let fireworkEffect2 = new Image();
-				fireworkEffect2.src = require('@/assets/image/festival/halloween/lightPoint2.png');
 				context.commit('image/modifyImage', {
-					path: 'png/bullet/fireworkEffect2',
-					image: fireworkEffect2
+					path: 'gif/festival/halloween/bullet/firework/fireworkBoom',
+					image: undefined
 				}, {
 					root: true
 				});
-				let fireworkBoomImage = new Image();
-				fireworkBoomImage.src = require('@/assets/image/festival/halloween/fireworkBoom.gif');
-				context.commit('image/modifyImage', {
-					path: 'gif/bullet/fireworkBoom',
-					image: fireworkBoomImage
-				}, {
-					root: true
-				});
-				let fireworkShootAudio = new Audio();
-				fireworkShootAudio.src = require('@/assets/audio/festival/halloween/fireworkShoot.mp3');
-				fireworkShootAudio.preload = 'auto';
+				// 万圣节武器音频资源
 				context.commit('audio/modifyAudio', {
-					path: 'weapon/fireworkShoot',
-					audio: fireworkShootAudio
-				}, {
-					root: true
-				});
-				let fireworkBoomAudio = new Audio();
-				fireworkBoomAudio.src = require('@/assets/audio/festival/halloween/fireworkBoom.mp3');
-				fireworkBoomAudio.preload = 'auto';
-				context.commit('audio/modifyAudio', {
-					path: 'weapon/fireworkBoom',
-					audio: fireworkBoomAudio
+					path: 'festival/halloween/weapon',
+					audio: {
+						fireworkBoom: undefined,
+						fireworkShoot: undefined
+					}
 				}, {
 					root: true
 				});
@@ -163,7 +142,7 @@ export default {
 			}
 			// 检测时间
 			// 晚上
-			if ((nowTime.getHours() >= 20 && nowTime.getHours() <= 23) || (nowTime.getHours() >= 0 && nowTime.getHours() <= 6)) {
+			if ((nowTime.getHours() >= 19 && nowTime.getHours() <= 23) || (nowTime.getHours() >= 0 && nowTime.getHours() <= 6)) {
 				context.commit('setTime', {
 					name: 'night',
 					enable: true

@@ -303,6 +303,7 @@ export default {
 	width: 100%;
 	height: 100%;
 	user-select: none;
+	overflow: hidden;
 
 	.topBar {
 		position: relative;
@@ -439,7 +440,7 @@ export default {
 
 // 游戏主体-万圣节
 .gameBodyHalloween {
-	background: url('../assets/image/festival/halloween/backgroundGame.png') no-repeat center/cover;
+	background: url('../assets/image/festival/halloween/background/backgroundGame.png') no-repeat center/cover;
 
 	.topBar {
 		background-color: rgba(0, 255, 255, 0.7);

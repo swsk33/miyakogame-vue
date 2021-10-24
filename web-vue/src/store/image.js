@@ -123,7 +123,7 @@ export default {
 			}
 		},
 		/**
-		 * 修改图片资源，建议在加载之前调用，payload中有两个属性：path表示修改路径，例如修改上述imageList.png.bullet.normal，表示为png/bullet/normal，image属性则为Image对象，路径不存在会添加
+		 * 修改图片资源，建议在加载之前调用，payload中有两个属性：path表示修改路径，例如修改上述imageList.png.bullet.normal，表示为png/bullet/normal，image属性则为Image对象，也可以是包含多个Image对象的大对象，路径不存在会添加
 		 */
 		modifyImage(state, payload) {
 			// 处理路径字符串
@@ -137,6 +137,9 @@ export default {
 			let imageObject = state.imageList;
 			// 只索引到第n - 1个，也就是目标属性的的前一个，这样就可以引用到对象并修改其中的属性（否则会发生单类型复制导致无法赋值到对象中）
 			for (let i = 0; i < pathes.length - 1; i++) {
+				if (imageObject[pathes[i]] == undefined) {
+					imageObject[pathes[i]] = {};
+				}
 				imageObject = imageObject[pathes[i]];
 			}
 			imageObject[pathes[pathes.length - 1]] = payload.image;

@@ -156,7 +156,7 @@ export default {
 
 // 万圣节样式
 .loadingHalloween {
-	background: url('../assets/image/festival/halloween/backgroundLoad.png') no-repeat center/cover;
+	background: url('../assets/image/festival/halloween/background/backgroundLoad.png') no-repeat center/cover;
 
 	.loadingText {
 		color: white;

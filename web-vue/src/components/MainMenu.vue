@@ -194,7 +194,7 @@ export default {
 
 // 开始界面-万圣节
 .menuHalloween {
-	background: url('../assets/image/festival/halloween/backgroundMenu.png') no-repeat center/cover;
+	background: url('../assets/image/festival/halloween/background/backgroundMenu.png') no-repeat center/cover;
 
 	.menu {
 		li {
