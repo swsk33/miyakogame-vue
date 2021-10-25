@@ -12,4 +12,9 @@ public interface AvatarService {
 	 */
 	Result<String> upload(MultipartFile file);
 
+	/**
+	 * 获取一个随机的默认头像
+	 */
+	Result<String> getRandomAvatar();
+
 }

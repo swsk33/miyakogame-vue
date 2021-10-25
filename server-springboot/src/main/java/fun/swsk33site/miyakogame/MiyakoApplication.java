@@ -42,7 +42,7 @@ public class MiyakoApplication {
 	}
 
 	public static void main(String[] args) {
-		System.setProperty("spring.config.location", "file:resources/config/");
+		System.setProperty("spring.config.location", "file:resource/config/");
 		System.setProperty("spring.config.name", "config");
 		SpringApplication.run(MiyakoApplication.class, args);
 	}

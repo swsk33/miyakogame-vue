@@ -1,11 +1,10 @@
 package fun.swsk33site.miyakogame.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
 import fun.swsk33site.miyakogame.dataobject.Player;
-import fun.swsk33site.miyakogame.dataobject.RankInfo;
 import fun.swsk33site.miyakogame.model.Result;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface PlayerService {
@@ -38,16 +37,6 @@ public interface PlayerService {
 	/**
 	 * 重置用户密码
 	 */
-	Result<Player> resetPwd(Player player, Integer code);
-
-	/**
-	 * 查询全服前十
-	 */
-	Result<List<RankInfo>> getTotalRank();
-
-	/**
-	 * 查询某用户排名信息
-	 */
-	Result<RankInfo> getPlayerRank(int id);
+	Result<Player> resetPassword(Player player, Integer code);
 
 }

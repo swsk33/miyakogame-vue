@@ -11,6 +11,11 @@ public class CommonValue {
 	public static String AVATAR_PATH;
 
 	/**
+	 * 用户头像请求路径
+	 */
+	public static String AVATAR_REQUEST_PATH;
+
+	/**
 	 * Redis排名表zSet的名称
 	 */
 	public static final String REDIS_RANK_TABLE_NAME = "rank_info";

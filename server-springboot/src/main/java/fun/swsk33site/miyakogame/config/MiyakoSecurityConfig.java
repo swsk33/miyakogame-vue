@@ -53,7 +53,7 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 				// 需要登录后才能获取用户信息
 				.antMatchers("/api/islogin").authenticated()
 				// 放行头像等等静态资源url
-				.antMatchers("/avatar/*").permitAll();
+				.antMatchers("/static-resources/**").permitAll();
 		// 自定义退出登录url和配置自定义的登出成功处理器
 		httpSecurity.logout().logoutUrl("/api/logout").logoutSuccessHandler(new MiyakoLogoutSuccessHandler());
 		// 关闭csrf

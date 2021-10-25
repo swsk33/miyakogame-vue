@@ -13,5 +13,5 @@
 /**/target/
 
 # 自定义
-/server-springboot/resources/avatars/user/
-/server-springboot/resources/config/config-dev.properties
+/server-springboot/resource/avatar/user/
+/server-springboot/resource/config/config-dev.properties
