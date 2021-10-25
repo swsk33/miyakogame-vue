@@ -14,3 +14,4 @@
 
 # 自定义
 /server-springboot/resources/avatars/user/
+/server-springboot/resources/config/config-dev.properties

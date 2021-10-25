@@ -23,12 +23,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- 加密 -->
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-
 		<!-- 实用工具 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -47,12 +41,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Spring Session -->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-core</artifactId>
-		</dependency>
-
 		<!-- Spring Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,16 +48,16 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
 		<!-- Redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-
-		<!-- Redis Session -->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-redis</artifactId>
 		</dependency>
 
 		<!-- MyBatis -->
@@ -105,6 +93,13 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.12.4</version>
+		</dependency>
+
+		<!-- fastJson JSON工具 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.73</version>
 		</dependency>
 	</dependencies>
 
