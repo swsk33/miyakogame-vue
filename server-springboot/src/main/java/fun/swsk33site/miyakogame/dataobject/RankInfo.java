@@ -1,4 +1,4 @@
-package fun.swsk33site.miyakogame.model;
+package fun.swsk33site.miyakogame.dataobject;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 /**
  * 排名信息
- *
- * @author swsk33
  */
 @Getter
 @Setter
@@ -17,24 +15,29 @@ import java.io.Serializable;
 public class RankInfo implements Serializable {
 
 	/**
-	 * 用户名id
+	 * 用户id
 	 */
-	private int userId;
+	private int id;
 
 	/**
-	 * 昵称
+	 * 用户昵称
 	 */
 	private String nickname;
 
 	/**
-	 * 头像
+	 * 用户头像
 	 */
 	private String avatar;
 
 	/**
-	 * 最高分
+	 * 用户最高分
 	 */
 	private int highScore;
+
+	/**
+	 * 用户游戏数据
+	 */
+	private String gameData;
 
 	/**
 	 * 排名

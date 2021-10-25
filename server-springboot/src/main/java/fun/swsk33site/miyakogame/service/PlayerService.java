@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import fun.swsk33site.miyakogame.dataobject.Player;
-import fun.swsk33site.miyakogame.model.RankInfo;
+import fun.swsk33site.miyakogame.dataobject.RankInfo;
 import fun.swsk33site.miyakogame.model.Result;
 
 @Service

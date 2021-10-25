@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.swsk33site.miyakogame.dao.PlayerDAO">
+	<resultMap id="playerResultMap" type="fun.swsk33site.miyakogame.dataobject.Player">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+		<result column="nickname" property="nickname"/>
+		<result column="avatar" property="avatar"/>
+		<result column="high_score" property="highScore"/>
+		<result column="email" property="email"/>
+		<result column="game_data" property="gameData"/>
+		<result column="gmt_created" property="gmtCreated"/>
+		<result column="gmt_modified" property="gmtModified"/>
+	</resultMap>
+
+	<insert id="add" parameterType="fun.swsk33site.miyakogame.dataobject.Player">
+		insert into `player` (username, password, nickname, avatar, high_score, email, game_data, gmt_created, gmt_modified)
+		values (#{username}, #{password}, #{nickname}, #{avatar}, #{highScore}, #{email}, #{gameData}, now(), now())
+	</insert>
+
+	<delete id="delete">
+		delete
+		from `player`
+		where id = #{id}
+	</delete>
+
+	<update id="update" parameterType="fun.swsk33site.miyakogame.dataobject.Player">
+		update `player`
+		set password    = #{password},
+			nickname    = #{nickname},
+			avatar      = #{avatar},
+			high_score  = #{highScore},
+			email       = #{email},
+			game_data   = #{gameData},
+			gmt_modified=now()
+		where id = #{id}
+	</update>
+
+	<select id="findById" resultMap="playerResultMap">
+		select *
+		from `player`
+		where id = #{id}
+	</select>
+
+	<select id="findByUsername" resultMap="playerResultMap">
+		select *
+		from `player`
+		where username = #{username}
+	</select>
+
+	<select id="findByEmail" resultMap="playerResultMap">
+		select *
+		from `player`
+		where email = #{email}
+	</select>
+</mapper>

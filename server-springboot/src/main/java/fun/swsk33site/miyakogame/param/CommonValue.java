@@ -6,16 +6,6 @@ package fun.swsk33site.miyakogame.param;
 public class CommonValue {
 
 	/**
-	 * API前缀
-	 */
-	public static final String API_PREFIX = "/miyakogame/api/";
-
-	/**
-	 * session用户信息字段名
-	 */
-	public static final String SESSION_NAME = "player";
-
-	/**
 	 * 玩家自定义头像存放路径
 	 */
 	public static String AVATAR_PATH;
@@ -23,12 +13,7 @@ public class CommonValue {
 	/**
 	 * Redis排名表zSet的名称
 	 */
-	public static final String REDIS_RANK_TABLE_NAME = "rankInfo";
-
-	/**
-	 * Redis玩家username -> id的映射Map名称
-	 */
-	public static final String REDIS_USERNAME_ID_TABLE_NAME = "username_id";
+	public static final String REDIS_RANK_TABLE_NAME = "rank_info";
 
 	/**
 	 * Redis无效用户名（一般是不存在的用户名）的Set名称

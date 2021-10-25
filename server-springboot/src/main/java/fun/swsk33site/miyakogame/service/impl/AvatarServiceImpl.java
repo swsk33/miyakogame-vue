@@ -13,13 +13,13 @@ import fun.swsk33site.miyakogame.service.AvatarService;
 @Component
 public class AvatarServiceImpl implements AvatarService {
 
-	private File imgDir = new File("resources" + File.separator + "avatars" + File.separator + "user");
+	private File imagePath = new File("resources" + File.separator + "avatars" + File.separator + "user");
 
 	@PostConstruct
-	public void fileinit() {
-		CommonValue.AVATAR_PATH = imgDir.getAbsolutePath();
-		if (!imgDir.exists()) {
-			imgDir.mkdirs();
+	public void fileInitialize() {
+		CommonValue.AVATAR_PATH = imagePath.getAbsolutePath();
+		if (!imagePath.exists()) {
+			imagePath.mkdirs();
 		}
 	}
 
@@ -33,7 +33,7 @@ public class AvatarServiceImpl implements AvatarService {
 		String fileFormat = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 		String fileName = UUIDUtils.generateTimeId() + fileFormat;
 		try {
-			file.transferTo(new File(imgDir.getAbsolutePath() + File.separator + fileName));
+			file.transferTo(new File(imagePath.getAbsolutePath() + File.separator + fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.setResultFailed("图片转存失败！");

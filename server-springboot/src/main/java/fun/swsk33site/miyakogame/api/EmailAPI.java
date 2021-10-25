@@ -1,7 +1,6 @@
 package fun.swsk33site.miyakogame.api;
 
 import fun.swsk33site.miyakogame.model.Result;
-import fun.swsk33site.miyakogame.param.CommonValue;
 import fun.swsk33site.miyakogame.param.MailServiceType;
 import fun.swsk33site.miyakogame.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(CommonValue.API_PREFIX + "mail")
+@RequestMapping("/api/email")
 public class EmailAPI {
 
 	@Autowired
