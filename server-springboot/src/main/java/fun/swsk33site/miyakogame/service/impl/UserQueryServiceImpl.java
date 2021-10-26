@@ -33,7 +33,7 @@ public class UserQueryServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// 先检测无效用户名防止缓存穿透
 		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username)) {
-			
+			throw new UsernameNotFoundException("请勿重复登录无效账户！");
 		}
 		Player getPlayer = null;
 		try {
@@ -44,7 +44,7 @@ public class UserQueryServiceImpl implements UserDetailsService {
 		if (getPlayer == null) {
 			// 将无效用户名存入redis防止穿透
 			redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username);
-			redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 120, TimeUnit.SECONDS);
+			redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 10, TimeUnit.MINUTES);
 			throw new UsernameNotFoundException("找不到用户！");
 		}
 		// 权限，在游戏中没有权限之分，全是玩家

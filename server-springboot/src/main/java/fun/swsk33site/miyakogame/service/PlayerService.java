@@ -22,10 +22,10 @@ public interface PlayerService {
 	/**
 	 * 用户信息更新
 	 */
-	Result update(Player player);
+	Result update(Player player) throws Exception;
 
 	/**
-	 * 重置用户密码
+	 * 重置用户密码，提供用户id和新的密码即可
 	 */
 	Result resetPassword(Player player, Integer code);
 

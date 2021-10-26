@@ -6,6 +6,7 @@ import fun.swsk33site.miyakogame.model.Result;
 import fun.swsk33site.miyakogame.param.CommonValue;
 import fun.swsk33site.miyakogame.service.AvatarService;
 import fun.swsk33site.miyakogame.service.PlayerService;
+import fun.swsk33site.miyakogame.util.ClassExamine;
 import io.lettuce.core.dynamic.annotation.CommandNaming;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -70,7 +71,7 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result update(Player player) {
+	public Result update(Player player) throws Exception {
 		Result result = new Result();
 		Player getPlayer = null;
 		try {
@@ -83,13 +84,17 @@ public class PlayerServiceImpl implements PlayerService {
 			return result;
 		}
 		// 互补信息
-
+		ClassExamine.objectOverlap(player, getPlayer);
+		playerDAO.update(player);
+		result.setResultSuccess("更新用户信息成功！");
 		return result;
 	}
 
 	@Override
 	public Result resetPassword(Player player, Integer code) {
-		return null;
+		Result result = new Result();
+		
+		return result;
 	}
 
 	@Override

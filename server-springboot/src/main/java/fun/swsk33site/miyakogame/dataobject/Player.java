@@ -21,7 +21,7 @@ public class Player implements Serializable {
 	/**
 	 * 主键id
 	 */
-	@NotEmpty(groups = ValidationGroup.PlayerUpdate.class, message = "id不能为空！")
+	@NotEmpty(groups = {ValidationGroup.PlayerUpdate.class, ValidationGroup.PlayerPasswordReset.class}, message = "id不能为空！")
 	private int id;
 
 	/**
@@ -34,7 +34,7 @@ public class Player implements Serializable {
 	/**
 	 * 密码
 	 */
-	@NotEmpty(groups = ValidationGroup.PlayerRegister.class, message = "密码不能为空！")
+	@NotEmpty(groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerPasswordReset.class}, message = "密码不能为空！")
 	private String password;
 
 	/**

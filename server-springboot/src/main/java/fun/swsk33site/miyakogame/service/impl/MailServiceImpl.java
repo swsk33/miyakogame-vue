@@ -9,8 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -23,7 +28,10 @@ public class MailServiceImpl implements MailService {
 	private JavaMailSender mailSender;
 
 	@Autowired
-	private RedisTemplate<Object, Object> redisTemplate;
+	private TemplateEngine templateEngine;
+
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	@Override
 	public void sendNotifyMail(String email, String title, String text) {
@@ -42,6 +50,31 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
+	public void sendHtmlNotifyMail(String email, String title, String content) throws MessagingException {
+		// 通过Context对象构建模板中变量需要的值
+		Context context = new Context();
+		context.setVariable("title", title);
+		context.setVariable("content", content);
+		// 传入变量渲染模板
+		String mimeString = templateEngine.process("miyakomailtemplate.html", context);
+		// 创建富文本信息对象
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		helper.setFrom(sender);
+		helper.setTo(email);
+		helper.setSubject(title);
+		// 给helper设置内容为我们渲染的模板内容，第二个参数为true表示内容是html格式
+		helper.setText(mimeString, true);
+		new Thread(() -> {
+			try {
+				mailSender.send(message);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	@Override
 	public Result sendCode(String email, Integer userId, MailServiceType type) {
 		Result result = new Result();
 		if (userId == null || StringUtils.isEmpty(email)) {
@@ -49,7 +82,7 @@ public class MailServiceImpl implements MailService {
 			return result;
 		}
 		int genCode = (int) ((Math.random() * 9 + 1) * 100000);
-		redisTemplate.opsForValue().set(type.toString() + "_" + userId, genCode, 300, TimeUnit.SECONDS);
+		redisTemplate.opsForValue().set(type.toString() + "_" + userId, genCode, 5, TimeUnit.MINUTES);
 		String serviceName;
 		String serviceDes;
 		switch (type) {

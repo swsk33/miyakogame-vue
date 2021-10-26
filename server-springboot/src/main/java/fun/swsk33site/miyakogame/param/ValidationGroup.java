@@ -19,4 +19,11 @@ public class ValidationGroup {
 
 	}
 
+	/**
+	 * 玩家密码重置
+	 */
+	public interface PlayerPasswordReset {
+
+	}
+
 }

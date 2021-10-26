@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<title>${title}</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			background-color: rgb(224, 224, 224);
+			display: flex;
+			justify-content: center;
+			align-items: flex-start;
+		}
+
+		.background {
+			position: absolute;
+			top: 5vh;
+			width: 38vw;
+			height: 450px;
+			background-color: white;
+		}
+
+		.background .head {
+			position: relative;
+			height: 10px;
+			background-color: rgb(0, 153, 255);
+		}
+
+		.background .content .title,
+		.text {
+			position: relative;
+			margin-top: 3%;
+			margin-left: 5%;
+			width: 90%;
+		}
+
+		.background .content .title {
+			color: rgb(0, 153, 255);
+			font-weight: 700;
+			font-size: 30px;
+		}
+
+		.background .content .text {
+			position: relative;
+			padding: 8px;
+			box-sizing: border-box;
+			margin-top: 3%;
+			margin-left: 5%;
+			height: 275px;
+			border: 1.5px blue solid;
+			overflow: auto;
+		}
+
+		.background .content .text p {
+			display: inline;
+			border-bottom: 1px green dashed;
+		}
+
+		.background .miyako {
+			position: absolute;
+			bottom: 14px;
+			right: 5%;
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			width: 300px;
+		}
+
+		.background .miyako .from {
+			position: relative;
+			margin-right: 16px;
+			font-size: 20px;
+			font-weight: 600;
+			color: rgb(0, 110, 255);
+		}
+
+		.background .miyako img {
+			position: relative;
+			height: 58px;
+			border: 2px solid blueviolet;
+			border-radius: 50%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="background">
+		<div class="head"></div>
+		<div class="content">
+			<div class="title" th:text="${title}"></div>
+			<div class="text">
+				<p th:text="${content}"></p>
+			</div>
+		</div>
+		<div class="miyako">
+			<div class="from">From 出云宫子</div>
+			<img src="https://file.moetu.org/images/2021/10/26/a02b8dabcfd5660d3.png" />
+		</div>
+	</div>
+</body>
+
+</html>
