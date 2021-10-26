@@ -32,6 +32,17 @@ public class Result<T> implements Serializable {
 	/**
 	 * 设定成功结果
 	 *
+	 * @param msg 消息
+	 */
+	public void setResultSuccess(String msg) {
+		this.success = true;
+		this.message = msg;
+		this.data = null;
+	}
+
+	/**
+	 * 设定成功结果
+	 *
 	 * @param msg  消息
 	 * @param data 数据体
 	 */

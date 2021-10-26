@@ -1,6 +1,7 @@
 package fun.swsk33site.miyakogame.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import fun.swsk33site.miyakogame.param.ValidationGroup;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,33 +21,31 @@ public class Player implements Serializable {
 	/**
 	 * 主键id
 	 */
+	@NotEmpty(groups = ValidationGroup.PlayerUpdate.class, message = "id不能为空！")
 	private int id;
 
 	/**
 	 * 用户名
 	 */
-	@NotEmpty(message = "用户名不能为空！")
-	@Size(max = 32, message = "用户名长度不能大于32！")
+	@NotEmpty(groups = ValidationGroup.PlayerRegister.class, message = "用户名不能为空！")
+	@Size(groups = ValidationGroup.PlayerRegister.class, max = 32, message = "用户名长度不能大于32！")
 	private String username;
 
 	/**
 	 * 密码
 	 */
-	@NotEmpty(message = "密码不能为空！")
-	@Size(min = 8, message = "密码至少要有8位长度！")
+	@NotEmpty(groups = ValidationGroup.PlayerRegister.class, message = "密码不能为空！")
 	private String password;
 
 	/**
 	 * 昵称
 	 */
-	@NotEmpty(message = "昵称不能为空！")
-	@Size(max = 32, message = "昵称长度不能大于32！")
+	@Size(groups = ValidationGroup.PlayerUpdate.class, max = 32, message = "昵称长度不能大于32！")
 	private String nickname;
 
 	/**
 	 * 头像地址
 	 */
-	@NotEmpty(message = "头像地址不能为空！")
 	private String avatar;
 
 	/**
@@ -54,12 +53,11 @@ public class Player implements Serializable {
 	 */
 	private Integer highScore;
 
-
 	/**
 	 * 邮箱
 	 */
-	@NotEmpty(message = "邮箱不能为空！")
-	@Email(message = "邮箱格式不正确！")
+	@NotEmpty(groups = ValidationGroup.PlayerRegister.class, message = "邮箱不能为空！")
+	@Email(groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerUpdate.class}, message = "邮箱格式不正确！")
 	private String email;
 
 	/**
