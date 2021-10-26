@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @CommandNaming
 public class PlayerServiceImpl implements PlayerService {
@@ -93,18 +94,49 @@ public class PlayerServiceImpl implements PlayerService {
 	@Override
 	public Result resetPassword(Player player, Integer code) {
 		Result result = new Result();
-		
+
 		return result;
 	}
 
 	@Override
 	public Result<Player> findById(int id) {
-		return null;
+		Result<Player> result = new Result();
+		Player getPlayer = null;
+		try {
+			getPlayer = playerDAO.findById(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (getPlayer == null) {
+			result.setResultFailed("找不到用户！");
+			return result;
+		}
+		result.setResultSuccess("获取用户成功！", getPlayer);
+		return result;
 	}
 
 	@Override
 	public Result<List<Player>> findByEmail(String email) {
-		return null;
+		Result<List<Player>> result = new Result<>();
+		// 检测是否在无效邮箱列表中
+		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, email)) {
+			result.setResultFailed("请勿重复输入无效邮箱！");
+			return result;
+		}
+		List<Player> getPlayers = null;
+		try {
+			getPlayers = playerDAO.findByEmail(email);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (getPlayers.size() == 0 || getPlayers == null) {
+			result.setResultFailed("找不到相关邮件下的用户！");
+			// 存入无效邮箱列表防止穿透
+			redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, email);
+			redisTemplate.expire(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, 10, TimeUnit.MINUTES);
+			return result;
+		}
+		return result;
 	}
 
 }

@@ -34,6 +34,6 @@ public interface MailService {
 	 * @param userId 待操作用户id
 	 * @param type   服务类型
 	 */
-	Result sendCode(String email, Integer userId, MailServiceType type);
+	Result sendCode(String email, Integer userId, MailServiceType type) throws MessagingException;
 
 }

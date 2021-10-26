@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,7 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
-	public Result sendCode(String email, Integer userId, MailServiceType type) {
+	public Result sendCode(String email, Integer userId, MailServiceType type) throws MessagingException {
 		Result result = new Result();
 		if (userId == null || StringUtils.isEmpty(email)) {
 			result.setResultFailed("用户id或者邮箱不能为空！");
@@ -94,7 +95,7 @@ public class MailServiceImpl implements MailService {
 				serviceName = "";
 				serviceDes = "";
 		}
-		sendNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + genCode + "，请在5分钟内完成验证。");
+		sendHtmlNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + genCode + "，请在5分钟内完成验证。");
 		result.setResultSuccess("发送验证码成功！", null);
 		return result;
 	}

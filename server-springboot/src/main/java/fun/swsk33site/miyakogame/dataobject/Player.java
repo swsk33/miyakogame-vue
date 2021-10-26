@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class Player implements Serializable {
 	/**
 	 * 主键id
 	 */
-	@NotEmpty(groups = {ValidationGroup.PlayerUpdate.class, ValidationGroup.PlayerPasswordReset.class}, message = "id不能为空！")
+	@NotNull(groups = {ValidationGroup.PlayerUpdate.class, ValidationGroup.PlayerPasswordReset.class}, message = "id不能为空！")
 	private int id;
 
 	/**
