@@ -17,7 +17,7 @@ public interface PlayerService {
 	/**
 	 * 用户销号
 	 */
-	Result delete(int id);
+	Result delete(Integer id, Integer code);
 
 	/**
 	 * 用户信息更新

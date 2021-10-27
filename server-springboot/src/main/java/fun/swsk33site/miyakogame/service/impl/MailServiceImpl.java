@@ -91,9 +91,14 @@ public class MailServiceImpl implements MailService {
 				serviceName = "密码重置";
 				serviceDes = "您的密码重置验证码为：";
 				break;
+			case USER_DELETE:
+				serviceName = "用户注销";
+				serviceDes = "您的用户注销验证码为：";
+				break;
 			default:
 				serviceName = "";
 				serviceDes = "";
+				break;
 		}
 		sendHtmlNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + genCode + "，请在5分钟内完成验证。");
 		result.setResultSuccess("发送验证码成功！", null);

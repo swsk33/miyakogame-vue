@@ -4,6 +4,7 @@ import fun.swsk33site.miyakogame.dao.PlayerDAO;
 import fun.swsk33site.miyakogame.dataobject.Player;
 import fun.swsk33site.miyakogame.model.Result;
 import fun.swsk33site.miyakogame.param.CommonValue;
+import fun.swsk33site.miyakogame.param.MailServiceType;
 import fun.swsk33site.miyakogame.service.AvatarService;
 import fun.swsk33site.miyakogame.service.PlayerService;
 import fun.swsk33site.miyakogame.util.ClassExamine;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -67,8 +69,19 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result delete(int id) {
-		return null;
+	public Result delete(Integer id, Integer code) {
+		Result result = new Result();
+		if (id == null || code == null) {
+			result.setResultFailed("验证码不能为空！");
+			return result;
+		}
+		// 校验验证码
+		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.USER_DELETE.toString() + "_" + id);
+		if (getCode != code) {
+			result.setResultFailed("验证码错误！");
+			return result;
+		}
+		return result;
 	}
 
 	@Override
@@ -86,6 +99,14 @@ public class PlayerServiceImpl implements PlayerService {
 		}
 		// 互补信息
 		ClassExamine.objectOverlap(player, getPlayer);
+		// 如果用户更换了头像且上个头像非默认头像，则删除原头像
+		if (!player.getAvatar().equals(getPlayer.getAvatar()) && !getPlayer.getAvatar().contains("default")) {
+			String originAvatarName = getPlayer.getAvatar().substring(getPlayer.getAvatar().lastIndexOf("/") + 1);
+			new File(CommonValue.AVATAR_USER_PATH + File.separator + originAvatarName).delete();
+		}
+		// 更新Redis排名表
+		redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getId());
+		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getId(), player.getHighScore());
 		playerDAO.update(player);
 		result.setResultSuccess("更新用户信息成功！");
 		return result;
@@ -136,6 +157,7 @@ public class PlayerServiceImpl implements PlayerService {
 			redisTemplate.expire(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, 10, TimeUnit.MINUTES);
 			return result;
 		}
+		result.setResultSuccess("查询用户成功！", getPlayers);
 		return result;
 	}
 

@@ -29,7 +29,7 @@ public class AvatarServiceImpl implements AvatarService {
 	@PostConstruct
 	public void fileInitialize() {
 		// 获取头像的存放绝对路径
-		CommonValue.AVATAR_PATH = imageDirectory.getPath();
+		CommonValue.AVATAR_USER_PATH = imageDirectory.getPath();
 		// 获取头像资源请求路径
 		CommonValue.AVATAR_REQUEST_PATH = staticResourcePath.substring(0, staticResourcePath.indexOf("*")) + "avatar";
 		if (!imageDirectory.exists()) {

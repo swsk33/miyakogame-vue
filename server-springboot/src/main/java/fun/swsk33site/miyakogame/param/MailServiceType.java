@@ -7,5 +7,9 @@ public enum MailServiceType {
 	/**
 	 * 密码重置
 	 */
-	PASSWORD_RESET
+	PASSWORD_RESET,
+	/**
+	 * 用户注销
+	 */
+	USER_DELETE
 }
