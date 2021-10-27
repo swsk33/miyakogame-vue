@@ -82,8 +82,8 @@ public class MailServiceImpl implements MailService {
 			result.setResultFailed("用户id或者邮箱不能为空！");
 			return result;
 		}
-		int genCode = (int) ((Math.random() * 9 + 1) * 100000);
-		redisTemplate.opsForValue().set(type.toString() + "_" + userId, genCode, 5, TimeUnit.MINUTES);
+		int generateCode = (int) ((Math.random() * 9 + 1) * 100000);
+		redisTemplate.opsForValue().set(type.toString() + "_" + userId, generateCode, 5, TimeUnit.MINUTES);
 		String serviceName;
 		String serviceDes;
 		switch (type) {
@@ -100,7 +100,7 @@ public class MailServiceImpl implements MailService {
 				serviceDes = "";
 				break;
 		}
-		sendHtmlNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + genCode + "，请在5分钟内完成验证。");
+		sendHtmlNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + generateCode + "，请在5分钟内完成验证。");
 		result.setResultSuccess("发送验证码成功！", null);
 		return result;
 	}
