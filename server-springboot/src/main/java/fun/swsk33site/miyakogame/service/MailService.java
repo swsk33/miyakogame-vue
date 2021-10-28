@@ -10,15 +10,6 @@ import javax.mail.MessagingException;
 public interface MailService {
 
 	/**
-	 * 发送普通的通知邮件，为异步方法
-	 *
-	 * @param email 收件人
-	 * @param title 邮件标题
-	 * @param text  邮件正文
-	 */
-	void sendNotifyMail(String email, String title, String text);
-
-	/**
 	 * 发送Html格式的富文本通知邮件，为异步发送
 	 *
 	 * @param email   收件人

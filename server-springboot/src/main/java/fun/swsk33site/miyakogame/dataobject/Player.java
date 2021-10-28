@@ -28,7 +28,7 @@ public class Player implements Serializable {
 	/**
 	 * 用户名
 	 */
-	@NotEmpty(groups = ValidationGroup.PlayerRegister.class, message = "用户名不能为空！")
+	@NotEmpty(groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerUpdate.class}, message = "用户名不能为空！")
 	@Size(groups = ValidationGroup.PlayerRegister.class, max = 32, message = "用户名长度不能大于32！")
 	private String username;
 

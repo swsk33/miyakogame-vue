@@ -1,13 +1,12 @@
 package fun.swsk33site.miyakogame.service.impl;
 
-import fun.swsk33site.miyakogame.service.MailService;
 import fun.swsk33site.miyakogame.model.Result;
 import fun.swsk33site.miyakogame.param.MailServiceType;
+import fun.swsk33site.miyakogame.service.MailService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -33,22 +32,6 @@ public class MailServiceImpl implements MailService {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
-
-	@Override
-	public void sendNotifyMail(String email, String title, String text) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(sender);
-		message.setTo(email);
-		message.setSubject(title);
-		message.setText(text);
-		new Thread(() -> {
-			try {
-				mailSender.send(message);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}
 
 	@Override
 	public void sendHtmlNotifyMail(String email, String title, String content) throws MessagingException {

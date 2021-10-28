@@ -6,18 +6,20 @@ import fun.swsk33site.miyakogame.model.Result;
 import fun.swsk33site.miyakogame.param.CommonValue;
 import fun.swsk33site.miyakogame.param.MailServiceType;
 import fun.swsk33site.miyakogame.service.AvatarService;
+import fun.swsk33site.miyakogame.service.MailService;
 import fun.swsk33site.miyakogame.service.PlayerService;
 import fun.swsk33site.miyakogame.util.ClassExamine;
-import io.lettuce.core.dynamic.annotation.CommandNaming;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@CommandNaming
+@Component
 public class PlayerServiceImpl implements PlayerService {
 
 	@Autowired
@@ -31,6 +33,9 @@ public class PlayerServiceImpl implements PlayerService {
 
 	@Autowired
 	private AvatarService avatarService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Override
 	public Result register(Player player) {
@@ -69,10 +74,20 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result delete(Integer id, Integer code) {
+	public Result delete(Integer id, Integer code) throws MessagingException {
 		Result result = new Result();
 		if (id == null || code == null) {
 			result.setResultFailed("验证码不能为空！");
+			return result;
+		}
+		Player getPlayer = null;
+		try {
+			getPlayer = playerDAO.findById(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (getPlayer == null) {
+			result.setResultFailed("待注销用户不存在！");
 			return result;
 		}
 		// 校验验证码
@@ -81,6 +96,9 @@ public class PlayerServiceImpl implements PlayerService {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
+		playerDAO.delete(id);
+		result.setResultSuccess("用户注销成功！");
+		mailService.sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-用户注销", "您的用户：" + getPlayer.getUsername() + "已经成功注销！");
 		return result;
 	}
 
@@ -113,9 +131,33 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result resetPassword(Player player, Integer code) {
+	public Result resetPassword(Player player, Integer code) throws MessagingException {
 		Result result = new Result();
-
+		if (code == null) {
+			result.setResultFailed("验证码不能为空！");
+			return result;
+		}
+		Player getPlayer = null;
+		try {
+			getPlayer = playerDAO.findById(player.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (getPlayer == null) {
+			result.setResultFailed("找不到相应用户！");
+			return result;
+		}
+		// 校验验证码
+		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.PASSWORD_RESET.toString() + "_" + player.getId());
+		if (getCode != code) {
+			result.setResultFailed("验证码错误！");
+			return result;
+		}
+		// 仅仅修改密码，将传入密码加密并覆盖到原用户信息上进行储存
+		getPlayer.setPassword(encoder.encode(player.getPassword()));
+		playerDAO.update(getPlayer);
+		mailService.sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-密码已重置", "您的用户：" + getPlayer.getUsername() + "的密码已经完成重置！请牢记您的新密码！");
+		result.setResultSuccess("重置密码成功！");
 		return result;
 	}
 
