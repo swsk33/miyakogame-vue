@@ -3,6 +3,7 @@
 
 <head>
 	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
 	<title th:text="${title}"></title>
 	<style>
 		* {
@@ -82,6 +83,12 @@
 			border: 2px solid blueviolet;
 			border-radius: 50%;
 		}
+
+		@media (max-width: 768px) {
+			.background {
+				width: 100%;
+			}
+		}
 	</style>
 </head>
 
@@ -89,9 +96,9 @@
 	<div class="background">
 		<div class="head"></div>
 		<div class="content">
-			<div class="title" th:text="${title}"></div>
+			<div class="title" th:text="${title}">标题</div>
 			<div class="text">
-				<p th:text="${content}"></p>
+				<p th:text="${content}">内容</p>
 			</div>
 		</div>
 		<div class="miyako">

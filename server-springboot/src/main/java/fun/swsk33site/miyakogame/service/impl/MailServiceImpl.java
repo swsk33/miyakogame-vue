@@ -33,6 +33,11 @@ public class MailServiceImpl implements MailService {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	@PostConstruct
+	public void send() throws Exception {
+		sendHtmlNotifyMail("yanhanhui2001a@163.com", "宫子恰布丁", "少时诵诗书所所所所所所所所所所所所所所所所所所所所所所所所所所所所所所所");
+	}
+
 	@Override
 	public void sendHtmlNotifyMail(String email, String title, String content) throws MessagingException {
 		// 通过Context对象构建模板中变量需要的值

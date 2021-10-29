@@ -162,22 +162,22 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result<Player> findById(int id) {
-		Result<Player> result = new Result();
+	public Result<Player> findByUsername(String username) {
+		Result<Player> result = new Result<>();
 		Player getPlayer = null;
 		try {
-			getPlayer = playerDAO.findById(id);
+			getPlayer = playerDAO.findByUsername(username);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (getPlayer == null) {
-			result.setResultFailed("找不到用户！");
+			result.setResultFailed("找不到指定用户！");
 			return result;
 		}
-		result.setResultSuccess("获取用户成功！", getPlayer);
+		result.setResultSuccess("查找用户成功！", getPlayer);
 		return result;
 	}
-
+	
 	@Override
 	public Result<List<Player>> findByEmail(String email) {
 		Result<List<Player>> result = new Result<>();

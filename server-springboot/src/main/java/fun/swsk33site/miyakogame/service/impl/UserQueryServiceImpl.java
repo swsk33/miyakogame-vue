@@ -49,7 +49,7 @@ public class UserQueryServiceImpl implements UserDetailsService {
 		}
 		// 权限，在游戏中没有权限之分，全是玩家
 		Set<GrantedAuthority> authorities = new HashSet<>();
-		authorities.add(new SimpleGrantedAuthority("player"));
+		authorities.add(new SimpleGrantedAuthority("ROLE_player"));
 		return new User(getPlayer.getUsername(), getPlayer.getPassword(), authorities);
 	}
 

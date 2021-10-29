@@ -31,9 +31,9 @@ public interface PlayerService {
 	Result resetPassword(Player player, Integer code) throws MessagingException;
 
 	/**
-	 * 根据用户id获取用户
+	 * 根据用户名获取用户
 	 */
-	Result<Player> findById(int id);
+	Result<Player> findByUsername(String username);
 
 	/**
 	 * 获取一个邮箱下的所有账户
