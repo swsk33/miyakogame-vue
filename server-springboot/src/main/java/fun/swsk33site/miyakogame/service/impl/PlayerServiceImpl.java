@@ -38,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
 	private MailService mailService;
 
 	@Override
-	public Result register(Player player) {
+	public Result register(Player player) throws MessagingException {
 		Result result = new Result();
 		// 先看看数据库中是否已经存在该用户名的用户
 		Player getPlayer = null;
@@ -69,6 +69,7 @@ public class PlayerServiceImpl implements PlayerService {
 		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, player.getEmail())) {
 			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, player.getEmail());
 		}
+		mailService.sendHtmlNotifyMail(player.getEmail(), "宫子恰布丁-账户注册", "感谢您注册宫子恰布丁小游戏！");
 		result.setResultSuccess("注册用户成功！");
 		return result;
 	}
@@ -123,8 +124,10 @@ public class PlayerServiceImpl implements PlayerService {
 			new File(CommonValue.AVATAR_USER_PATH + File.separator + originAvatarName).delete();
 		}
 		// 更新Redis排名表
-		redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getId());
-		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getId(), player.getHighScore());
+		if (player.getHighScore() != getPlayer.getHighScore()) {
+			redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getId());
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getId(), player.getHighScore());
+		}
 		playerDAO.update(player);
 		result.setResultSuccess("更新用户信息成功！");
 		return result;
@@ -177,7 +180,7 @@ public class PlayerServiceImpl implements PlayerService {
 		result.setResultSuccess("查找用户成功！", getPlayer);
 		return result;
 	}
-	
+
 	@Override
 	public Result<List<Player>> findByEmail(String email) {
 		Result<List<Player>> result = new Result<>();

@@ -13,7 +13,7 @@ public interface PlayerService {
 	/**
 	 * 用户注册
 	 */
-	Result register(Player player);
+	Result register(Player player) throws MessagingException;
 
 	/**
 	 * 用户销号

@@ -2,7 +2,7 @@ drop table if exists `player`;
 create table `player`
 (
 	`id`           int unsigned auto_increment,
-	`username`     varchar(32)  not null,
+	`username`     varchar(32)  not null unique,
 	`password`     varchar(48)  not null,
 	`nickname`     varchar(32)  not null,
 	`avatar`       varchar(256) not null,

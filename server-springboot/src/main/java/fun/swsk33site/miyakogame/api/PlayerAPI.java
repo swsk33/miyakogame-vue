@@ -22,7 +22,7 @@ public class PlayerAPI {
 	private PlayerService playerService;
 
 	@PostMapping("/register")
-	public Result register(@RequestBody @Validated(ValidationGroup.PlayerRegister.class) Player player, BindingResult errors) {
+	public Result register(@RequestBody @Validated(ValidationGroup.PlayerRegister.class) Player player, BindingResult errors) throws MessagingException {
 		Result result;
 		if (errors.hasErrors()) {
 			result = new Result();
