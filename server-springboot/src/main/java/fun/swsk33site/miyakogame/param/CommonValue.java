@@ -16,7 +16,7 @@ public class CommonValue {
 	public static String AVATAR_REQUEST_PATH;
 
 	/**
-	 * Redis排名表zSet的名称
+	 * Redis排名表zSet的名称，表中的key为用户名，值为最高分
 	 */
 	public static final String REDIS_RANK_TABLE_NAME = "rank_info";
 

@@ -25,6 +25,9 @@ public class PlayerServiceImpl implements PlayerService {
 	@Autowired
 	private PlayerDAO playerDAO;
 
+	/**
+	 * Redis中储存用户信息，key为用户名，value为用户对象
+	 */
 	@Autowired
 	private RedisTemplate redisTemplate;
 
@@ -40,13 +43,20 @@ public class PlayerServiceImpl implements PlayerService {
 	@Override
 	public Result register(Player player) throws MessagingException {
 		Result result = new Result();
-		// 先看看数据库中是否已经存在该用户名的用户
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findByUsername(player.getUsername());
-		} catch (Exception e) {
-			e.printStackTrace();
+		// 先看看Redis中有没有用户
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(player.getUsername());
+		if (getPlayer == null) {
+			// 没有则去数据库查找
+			try {
+				getPlayer = playerDAO.findByUsername(player.getUsername());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer != null) {
+				redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+			}
 		}
+		// 如果不为空说明已经注册了
 		if (getPlayer != null) {
 			result.setResultFailed("用户名已存在！");
 			return result;
@@ -58,9 +68,11 @@ public class PlayerServiceImpl implements PlayerService {
 		player.setAvatar(avatarService.getRandomAvatar().getData());
 		player.setHighScore(0);
 		player.setGameData("null");
+		// 加入到数据库和Redis
+		redisTemplate.opsForValue().set(player.getUsername(), player);
 		playerDAO.add(player);
 		// 加入Redis排名表
-		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getId(), player.getHighScore());
+		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
 		// 如果这个新注册的名字在无效用户名集合中则去掉
 		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USER_TABLE_NAME, player.getUsername())) {
 			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_USER_TABLE_NAME, player.getUsername());
@@ -92,12 +104,15 @@ public class PlayerServiceImpl implements PlayerService {
 			return result;
 		}
 		// 校验验证码
-		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.USER_DELETE.toString() + "_" + id);
+		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.USER_DELETE + "_" + id);
 		if (getCode != code) {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
 		playerDAO.delete(id);
+		// 从redis排名表、缓存用户信息移除
+		redisTemplate.delete(getPlayer.getUsername());
+		redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername());
 		result.setResultSuccess("用户注销成功！");
 		mailService.sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-用户注销", "您的用户：" + getPlayer.getUsername() + "已经成功注销！");
 		return result;
@@ -123,11 +138,17 @@ public class PlayerServiceImpl implements PlayerService {
 			String originAvatarName = getPlayer.getAvatar().substring(getPlayer.getAvatar().lastIndexOf("/") + 1);
 			new File(CommonValue.AVATAR_USER_PATH + File.separator + originAvatarName).delete();
 		}
+		// 如果用户修改了密码，则加密储存
+		if (!player.getPassword().equals(getPlayer.getPassword())) {
+			player.setPassword(encoder.encode(player.getPassword()));
+		}
 		// 更新Redis排名表
 		if (player.getHighScore() != getPlayer.getHighScore()) {
-			redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getId());
-			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getId(), player.getHighScore());
+			redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername());
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
 		}
+		// 写入数据库、Redis
+		redisTemplate.opsForValue().set(player.getUsername(), player);
 		playerDAO.update(player);
 		result.setResultSuccess("更新用户信息成功！");
 		return result;
@@ -151,13 +172,14 @@ public class PlayerServiceImpl implements PlayerService {
 			return result;
 		}
 		// 校验验证码
-		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.PASSWORD_RESET.toString() + "_" + player.getId());
+		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.PASSWORD_RESET + "_" + player.getId());
 		if (getCode != code) {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
 		// 仅仅修改密码，将传入密码加密并覆盖到原用户信息上进行储存
 		getPlayer.setPassword(encoder.encode(player.getPassword()));
+		redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
 		playerDAO.update(getPlayer);
 		mailService.sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-密码已重置", "您的用户：" + getPlayer.getUsername() + "的密码已经完成重置！请牢记您的新密码！");
 		result.setResultSuccess("重置密码成功！");
@@ -167,15 +189,20 @@ public class PlayerServiceImpl implements PlayerService {
 	@Override
 	public Result<Player> findByUsername(String username) {
 		Result<Player> result = new Result<>();
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findByUsername(username);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// 先去Redis里面查找
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(username);
 		if (getPlayer == null) {
-			result.setResultFailed("找不到指定用户！");
-			return result;
+			// 否则，再去数据库查找
+			try {
+				getPlayer = playerDAO.findByUsername(username);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer == null) {
+				result.setResultFailed("找不到指定用户！");
+				return result;
+			}
+			redisTemplate.opsForValue().set(username, getPlayer);
 		}
 		result.setResultSuccess("查找用户成功！", getPlayer);
 		return result;
