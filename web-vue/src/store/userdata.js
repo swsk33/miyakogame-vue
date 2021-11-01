@@ -68,12 +68,16 @@ export default {
 					highScore: 0,
 					currentScore: 0,
 					propsCount: [],
-					weaponCount: [-1]
+					weaponCount: []
 				}
-				// 初始化武器道具数量
+				// 初始化武器道具数量，价格为0的武器子弹无限（用-1表示）
 				const getWeapons = context.rootState.weapon.weaponList;
-				for (let i = 1; i < getWeapons.length; i++) {
-					getData.weaponCount.push(10);
+				for (let i = 0; i < getWeapons.length; i++) {
+					if (getWeapons[i].price == 0) {
+						getData.weaponCount.push(-1);
+					} else {
+						getData.weaponCount.push(10);
+					}
 				}
 				// 初始化道具数量
 				const getProps = context.rootState.prop.propList;
@@ -88,7 +92,11 @@ export default {
 				// 游戏中武器多于本地储存武器则补全，少于则删除
 				if (weaponDiff > 0) {
 					for (let i = 0; i < weaponDiff; i++) {
-						getData.weaponCount.push(10);
+						if (context.rootState.weapon.weaponList[context.rootState.weapon.weaponList.length - weaponDiff + i].price == 0) {
+							getData.weaponCount.push(-1);
+						} else {
+							getData.weaponCount.push(10);
+						}
 					}
 				} else if (weaponDiff < 0) {
 					const diff = -weaponDiff;
@@ -107,10 +115,8 @@ export default {
 			}
 			// 执行提交数据
 			context.commit('setTotalData', getData);
-			if (context.state.isNewGame) {
-				// 保存数据
-				context.dispatch('saveData');
-			}
+			// 保存数据
+			context.dispatch('saveData', false);
 		},
 		/**
 		 * 保存游戏数据，如果用户登录，则同时保存一份到云端，payload为布尔值表示是否显示保存提示，默认true

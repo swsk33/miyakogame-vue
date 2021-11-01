@@ -215,12 +215,6 @@ export default {
 			}
 		},
 		/**
-		 * 修改某一个武器，payload中有两个属性：index表示要修改的武器在武器列表的索引，weapon属性表示武器对象用于替换被修改的武器
-		 */
-		modifyWeapon(state, payload) {
-			state.weaponList[payload.index] = payload.weapon;
-		},
-		/**
 		 * 清空屏幕上的子弹
 		 */
 		clearBullets(state) {
@@ -235,9 +229,18 @@ export default {
 			// 图片和音频资源对象
 			const imageState = context.rootState.image.imageList;
 			const audioState = context.rootState.audio.audioList;
-			// 默认武器
-			let defaultWeapon = new Weapon('常规鬼火', '最普通的鬼火武器，宫子借助它吃布丁', 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
-				let bullet = new Bullet(position, new Size(15, 24), function (enemies) {
+			// 默认武器（万圣节会改变样式）
+			let defaultWeaponName = '常规鬼火';
+			let defaultWeaponDescription = '最普通的鬼火武器，宫子借助它吃布丁';
+			let defaultWeaponSize = new Size(15, 24);
+			// 如果是万圣节
+			if (context.rootState.timecontrol.festival.halloween) {
+				defaultWeaponName = '万圣鬼火';
+				defaultWeaponDescription = '万圣节特有的幽灵鬼火，宫子用它来吃布丁';
+				defaultWeaponSize = new Size(15, 25);
+			}
+			let defaultWeapon = new Weapon(defaultWeaponName, defaultWeaponDescription, 0, 600, imageState.png.bullet.normal, audioState.weapon.normal, function (position) {
+				let bullet = new Bullet(position, defaultWeaponSize, function (enemies) {
 					return {
 						position: entityFlyX(this, 8)
 					};
@@ -482,6 +485,61 @@ export default {
 			});
 			// 设定武器列表
 			const weapons = [defaultWeapon, penetrateWildfire, boomWildfire, scatterMagic, bounceMagic, traceBall];
+			// 如果是万圣节则加入特有的武器
+			if (context.rootState.timecontrol.festival.halloween) {
+				// 万圣烟火
+				let halloweenFirework = new Weapon('万圣烟花', '在寒冷的冬夜，却温暖的万圣夜，绽放最美丽的光彩！', 0, 2000, imageState.png.bullet.halloweenFirework, audioState.weapon.fireworkShoot, function (position) {
+					let bullet = new Bullet(position, new Size(30, 16), function (enemies) {
+						// 飞行尾迹效果
+						if (this.lightPoints == undefined) {
+							this.lightPoints = [imageState.png.bullet.fireworkEffect1, imageState.png.bullet.fireworkEffect2];
+						}
+						let point = document.createElement('img');
+						point.src = this.lightPoints[random.generateRandom(0, this.lightPoints.length - 1)];
+						point.style.position = 'absolute';
+						point.style.left = this.getPosition().x + 'px';
+						point.style.top = this.getPosition().y + this.getSize().height / 2 + 50 + 'px';
+						point.style.transitionProperty = 'left, top';
+						point.style.transitionDuration = '1s';
+						point.style.transitionTimingFunction = 'ease-out';
+						document.body.appendChild(point);
+						let pointFlydirect;
+						if (Math.random() < 0.5) {
+							pointFlydirect = random.generateRandom(100, 135);
+						} else {
+							pointFlydirect = random.generateRandom(225, 260);
+						}
+						point.style.left = point.offsetLeft + Math.cos((pointFlydirect / 180) * Math.PI) * 25 + 'px';
+						point.style.top = point.offsetTop - Math.sin((pointFlydirect / 180) * Math.PI) * 25 + 'px';
+						setTimeout(() => {
+							point.remove();
+						}, 350);
+						// 飞行1/4屏幕宽度后发生爆炸
+						if (this.getPosition().x >= context.rootState.gamingcontrol.gameArea.width / 4) {
+							// 爆炸生成十个子弹，角度从-60到60
+							audioState.weapon.fireworkBoom.play();
+						}
+						return {
+							position: entityFlyX(this, 7)
+						};
+					}, function (enemy, enemies) {
+						// 击中敌人则直接敌人消失，不发生爆炸
+						// 标记该子弹无效
+						context.commit('changeBulletValid', context.state.bullets.indexOf(this));
+						// 击中布丁标记为被吃掉
+						context.dispatch('pudding/setPuddingEaten', {
+							column: enemy.column,
+							line: enemy.line
+						}, {
+							root: true
+						});
+					});
+					// 设定子弹贴图等等
+					setBulletEntityImage(bullet, this.texture);
+					context.commit('addBullet', bullet);
+				});
+				weapons.push(halloweenFirework);
+			}
 			context.commit('setWeapons', weapons);
 		},
 		/**

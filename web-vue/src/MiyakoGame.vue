@@ -44,7 +44,7 @@ export default {
 	},
 	methods: {
 		...loadingActions(['loadAll']),
-		...timeActions(['checkTime']),
+		...timeActions(['modifyResourcesBeforeLoad', 'modifyResourcesAfterLoad', 'checkTime']),
 		/**
 		 * 给页面背景生成星星
 		 * @param {*} dom 页面dom对象
@@ -96,10 +96,13 @@ export default {
 		},
 	},
 	async mounted() {
+		// 节日的样式全部由根组件进行管理和修改，而数据方面分散到各个模块中进行修改
 		// 样式管理
 		mouseffect.enableAll();
 		// 时间和节日检测
 		await this.checkTime();
+		// 根据时间和节日修改部分加载前资源
+		this.modifyResourcesBeforeLoad();
 		// 应用样式
 		this.applyStyle();
 		// 加载全部资源文件

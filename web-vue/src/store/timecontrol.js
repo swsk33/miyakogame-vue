@@ -46,6 +46,23 @@ export default {
 		modifyResourcesBeforeLoad(context) {
 			// 万圣节
 			if (context.state.festival.halloween) {
+				// 添加背景图资源以加载
+				let menuBackImage = new Image();
+				menuBackImage.src = require('@/assets/image/festival/halloween/backgroundMenu.png');
+				context.commit('image/modifyImage', {
+					path: 'png/menuBackImage',
+					image: menuBackImage
+				}, {
+					root: true
+				});
+				let gameBackImage = new Image();
+				gameBackImage.src = require('@/assets/image/festival/halloween/backgroundGame.png');
+				context.commit('image/modifyImage', {
+					path: 'png/gameBackImage',
+					image: gameBackImage
+				}, {
+					root: true
+				});
 				// 标题图
 				let titleImage = new Image();
 				titleImage.src = require('@/assets/image/festival/halloween/title.png');
@@ -67,7 +84,7 @@ export default {
 				context.commit('miyako/setMiyakoSize', new Size(120, 142), {
 					root: true
 				});
-				// 修改武器
+				// 修改默认武器贴图
 				let normalWeaponImage = new Image();
 				normalWeaponImage.src = require('@/assets/image/festival/halloween/bullet.png');
 				context.commit('image/modifyImage', {
@@ -76,13 +93,58 @@ export default {
 				}, {
 					root: true
 				});
+				// 添加万圣节武器
+				let fireworkImage = new Image();
+				fireworkImage.src = require('@/assets/image/festival/halloween/halloweenFirework.png');
+				context.commit('image/modifyImage', {
+					path: 'png/bullet/halloweenFirework',
+					image: fireworkImage
+				}, {
+					root: true
+				});
+				let fireworkEffect1 = new Image();
+				fireworkEffect1.src = require('@/assets/image/festival/halloween/lightPoint1.png');
+				context.commit('image/modifyImage', {
+					path: 'png/bullet/fireworkEffect1',
+					image: fireworkEffect1
+				}, {
+					root: true
+				});
+				let fireworkEffect2 = new Image();
+				fireworkEffect2.src = require('@/assets/image/festival/halloween/lightPoint2.png');
+				context.commit('image/modifyImage', {
+					path: 'png/bullet/fireworkEffect2',
+					image: fireworkEffect2
+				}, {
+					root: true
+				});
+				let fireworkBoomImage = new Image();
+				fireworkBoomImage.src = require('@/assets/image/festival/halloween/fireworkBoom.gif');
+				context.commit('image/modifyImage', {
+					path: 'gif/bullet/fireworkBoom',
+					image: fireworkBoomImage
+				}, {
+					root: true
+				});
+				let fireworkShootAudio = new Audio();
+				fireworkShootAudio.src = require('@/assets/audio/festival/halloween/fireworkShoot.mp3');
+				fireworkShootAudio.preload = 'auto';
+				context.commit('audio/modifyAudio', {
+					path: 'weapon/fireworkShoot',
+					audio: fireworkShootAudio
+				}, {
+					root: true
+				});
+				let fireworkBoomAudio = new Audio();
+				fireworkBoomAudio.src = require('@/assets/audio/festival/halloween/fireworkBoom.mp3');
+				fireworkBoomAudio.preload = 'auto';
+				context.commit('audio/modifyAudio', {
+					path: 'weapon/fireworkBoom',
+					audio: fireworkBoomAudio
+				}, {
+					root: true
+				});
 			}
-		},
-		/**
-		 * 修改一些需要在加载后改写的资源
-		 */
-		modifyResourcesAfterLoad(context) {
-
 		},
 		/**
 		 * 检查时间
@@ -97,7 +159,6 @@ export default {
 					name: 'halloween',
 					enable: true
 				});
-				context.dispatch('modifyResourcesBeforeLoad');
 				return;
 			}
 			// 检测时间
