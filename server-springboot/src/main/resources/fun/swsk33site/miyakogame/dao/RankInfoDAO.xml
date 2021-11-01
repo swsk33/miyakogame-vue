@@ -13,13 +13,13 @@
 	<select id="findByHighScoreInTen" resultMap="rankResultMap">
 		select username, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
-			 (select * from `player` order by high_score desc limit 10) as playerinfo;
+			 (select * from `player` order by high_score desc limit 10) as playerinfo
 	</select>
 
-	<select id="findUserRankByUserId" resultMap="rankResultMap">
+	<select id="findUserRankByUsername" resultMap="rankResultMap">
 		select username, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
 			 (select * from `player` order by high_score desc limit 10) as playerinfo
-		where id = #{id};
+		where username = #{username}
 	</select>
 </mapper>

@@ -35,17 +35,23 @@ public class UserQueryServiceImpl implements UserDetailsService {
 		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username)) {
 			throw new UsernameNotFoundException("请勿重复登录无效账户！");
 		}
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findByUsername(username);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// 先去Redis查找
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(username);
 		if (getPlayer == null) {
-			// 将无效用户名存入redis防止穿透
-			redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username);
-			redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 10, TimeUnit.MINUTES);
-			throw new UsernameNotFoundException("找不到用户！");
+			// Redis没有再去数据库查找
+			try {
+				getPlayer = playerDAO.findByUsername(username);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer == null) {
+				// 将无效用户名存入redis防止穿透
+				redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username);
+				redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 10, TimeUnit.MINUTES);
+				throw new UsernameNotFoundException("找不到用户！");
+			}
+			// 数据库中存在，就把数据库中用户存入Redis
+			redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
 		}
 		// 权限，在游戏中没有权限之分，全是玩家
 		Set<GrantedAuthority> authorities = new HashSet<>();

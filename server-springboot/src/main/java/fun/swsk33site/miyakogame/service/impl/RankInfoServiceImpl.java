@@ -80,9 +80,31 @@ public class RankInfoServiceImpl implements RankInfoService {
 	}
 
 	@Override
-	public Result<RankInfo> getPlayerRank(int id) {
-		Result<RankInfo> result = new Result<>();
-		
+	public Result<Long> getPlayerRank(String username) {
+		Result<Long> result = new Result<>();
+		// 先去Redis查询排名
+		Long rank = redisTemplate.opsForZSet().reverseRank(CommonValue.REDIS_RANK_TABLE_NAME, username);
+		if (rank == null) {
+			// Redis没有则去数据库查询
+			RankInfo rankInfo = null;
+			try {
+				rankInfo = rankInfoDAO.findUserRankByUsername(username);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (rankInfo == null) {
+				result.setResultFailed("查询排名信息失败！");
+				return result;
+			}
+			// 若数据库查到则存入Redis
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, rankInfo.getUsername(), rankInfo.getHighScore());
+			result.setResultSuccess("查询排名成功！", rankInfo.getSequence());
+			return result;
+		}
+		// 若在Redis里面查到排名，则返回
+		// Redis的ZSet获取的次序从0开始，则这里加1
+		rank++;
+		result.setResultSuccess("查询排名成功！", rank);
 		return result;
 	}
 

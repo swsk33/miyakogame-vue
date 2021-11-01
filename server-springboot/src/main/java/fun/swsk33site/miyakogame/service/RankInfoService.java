@@ -17,6 +17,6 @@ public interface RankInfoService {
 	/**
 	 * 查询某用户排名信息
 	 */
-	Result<RankInfo> getPlayerRank(int id);
+	Result<Long> getPlayerRank(String username);
 
 }

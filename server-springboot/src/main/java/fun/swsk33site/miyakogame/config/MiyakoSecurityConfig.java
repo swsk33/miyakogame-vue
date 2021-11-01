@@ -35,7 +35,7 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 		// 创建自己的用户名密码拦截器实例
 		UsernamePasswordAuthenticationFilter myAuthFilter = new MiyakoUsernameAndPasswordFilter();
 		// 注意，因为是自定义登录拦截器，所以登录接口地址要在此配置！
-		myAuthFilter.setFilterProcessesUrl("/api/login");
+		myAuthFilter.setFilterProcessesUrl("/api/player/login");
 		// 设定为自定义的登录成功/失败处理器
 		myAuthFilter.setAuthenticationSuccessHandler(new MiyakoAuthSuccessHandler());
 		myAuthFilter.setAuthenticationFailureHandler(new MiyakoAuthFailureHandler());
@@ -50,12 +50,22 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// 设定认证拦截器
 		httpSecurity.authorizeRequests()
-				// 需要登录后才能获取用户信息
-				.antMatchers("/api/islogin").authenticated()
+				// 需要登录后才能获取用户信息和进行用户操作
+				.antMatchers("/api/player/**").authenticated()
+				// 放行用户注册、用户登录、密码重置、以邮箱查询用户
+				.antMatchers("/api/player/register", "/api/player/login", "/api/player/reset/**", "/api/player/getbyemail/*").permitAll()
+				// 放行全部邮箱验证码接口
+				.antMatchers("/api/email/**").permitAll()
+				// 需要登录才能上传头像或者获取随机头像
+				.antMatchers("/api/avatar/**").authenticated()
+				// 放行查询前十排名接口
+				.antMatchers("/api/rank/total").permitAll()
+				// 需要登录才能获取用户排名
+				.antMatchers("/api/rank/getmyrank").authenticated()
 				// 放行头像等等静态资源url
 				.antMatchers("/static-resources/**").permitAll();
 		// 自定义退出登录url和配置自定义的登出成功处理器
-		httpSecurity.logout().logoutUrl("/api/logout").logoutSuccessHandler(new MiyakoLogoutSuccessHandler());
+		httpSecurity.logout().logoutUrl("/api/player/logout").logoutSuccessHandler(new MiyakoLogoutSuccessHandler());
 		// 关闭csrf
 		httpSecurity.csrf().disable();
 		// 设定自己的登录认证拦截器

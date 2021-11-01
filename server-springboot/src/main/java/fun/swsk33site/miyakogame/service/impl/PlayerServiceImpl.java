@@ -69,8 +69,8 @@ public class PlayerServiceImpl implements PlayerService {
 		player.setHighScore(0);
 		player.setGameData("null");
 		// 加入到数据库和Redis
-		redisTemplate.opsForValue().set(player.getUsername(), player);
 		playerDAO.add(player);
+		redisTemplate.opsForValue().set(player.getUsername(), player);
 		// 加入Redis排名表
 		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
 		// 如果这个新注册的名字在无效用户名集合中则去掉
@@ -109,8 +109,9 @@ public class PlayerServiceImpl implements PlayerService {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
+		// 从数据库移除
 		playerDAO.delete(id);
-		// 从redis排名表、缓存用户信息移除
+		// 从Redis排名表、缓存用户信息移除
 		redisTemplate.delete(getPlayer.getUsername());
 		redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername());
 		result.setResultSuccess("用户注销成功！");
@@ -142,14 +143,12 @@ public class PlayerServiceImpl implements PlayerService {
 		if (!player.getPassword().equals(getPlayer.getPassword())) {
 			player.setPassword(encoder.encode(player.getPassword()));
 		}
-		// 更新Redis排名表
-		if (player.getHighScore() != getPlayer.getHighScore()) {
-			redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername());
-			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
-		}
 		// 写入数据库、Redis
-		redisTemplate.opsForValue().set(player.getUsername(), player);
 		playerDAO.update(player);
+		redisTemplate.opsForValue().set(player.getUsername(), player);
+		// 更新Redis排名表
+		// add方法，如果key和value存在则会执行修改操作
+		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
 		result.setResultSuccess("更新用户信息成功！");
 		return result;
 	}
@@ -179,8 +178,9 @@ public class PlayerServiceImpl implements PlayerService {
 		}
 		// 仅仅修改密码，将传入密码加密并覆盖到原用户信息上进行储存
 		getPlayer.setPassword(encoder.encode(player.getPassword()));
-		redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+		// 写入数据库和Redis
 		playerDAO.update(getPlayer);
+		redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
 		mailService.sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-密码已重置", "您的用户：" + getPlayer.getUsername() + "的密码已经完成重置！请牢记您的新密码！");
 		result.setResultSuccess("重置密码成功！");
 		return result;
