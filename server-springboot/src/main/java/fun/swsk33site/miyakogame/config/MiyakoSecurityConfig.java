@@ -54,7 +54,7 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/player/delete/**", "/api/player/update", "/api/player/islogin").authenticated()
 				// 放行用户注册、用户登录、密码重置、以邮箱查询用户
 				.antMatchers("/api/player/register", "/api/player/login", "/api/player/reset/**", "/api/player/getbyemail/*").permitAll()
-				// 放行全部邮箱验证码接口
+				// 放行邮箱验证码接口
 				.antMatchers("/api/email/**").permitAll()
 				// 需要登录才能上传头像或者获取随机头像
 				.antMatchers("/api/avatar/**").authenticated()

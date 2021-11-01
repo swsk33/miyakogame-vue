@@ -110,6 +110,8 @@ public class PlayerServiceImpl implements PlayerService {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
+		// 删除验证码缓存
+		redisTemplate.delete(MailServiceType.USER_DELETE + "_" + id);
 		// 从数据库移除
 		playerDAO.delete(id);
 		// 从Redis排名表、缓存用户信息移除
@@ -188,6 +190,8 @@ public class PlayerServiceImpl implements PlayerService {
 			result.setResultFailed("验证码错误！");
 			return result;
 		}
+		// 删除验证码缓存
+		redisTemplate.delete(MailServiceType.PASSWORD_RESET + "_" + player.getId());
 		// 仅仅修改密码，将传入密码加密并覆盖到原用户信息上进行储存
 		getPlayer.setPassword(encoder.encode(player.getPassword()));
 		// 写入数据库和Redis
