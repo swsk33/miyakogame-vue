@@ -14,7 +14,7 @@
 		<result column="gmt_modified" property="gmtModified"/>
 	</resultMap>
 
-	<insert id="add" parameterType="fun.swsk33site.miyakogame.dataobject.Player">
+	<insert id="add" parameterType="fun.swsk33site.miyakogame.dataobject.Player" useGeneratedKeys="true" keyProperty="id">
 		insert into `player` (username, password, nickname, avatar, high_score, email, game_data, gmt_created, gmt_modified)
 		values (#{username}, #{password}, #{nickname}, #{avatar}, #{highScore}, #{email}, #{gameData}, now(), now())
 	</insert>

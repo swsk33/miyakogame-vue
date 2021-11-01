@@ -69,6 +69,7 @@ public class PlayerServiceImpl implements PlayerService {
 		player.setHighScore(0);
 		player.setGameData("null");
 		// 加入到数据库和Redis
+		// 先是存到数据库，在Mapper XML中已经配置了主键回填，因为需要先插入到数据库得到自增主键的值（id），在这里存入数据库之后就会回填到player对象中，再写入Redis，保证数据一致和正确
 		playerDAO.add(player);
 		redisTemplate.opsForValue().set(player.getUsername(), player);
 		// 加入Redis排名表
@@ -122,15 +123,22 @@ public class PlayerServiceImpl implements PlayerService {
 	@Override
 	public Result update(Player player) throws Exception {
 		Result result = new Result();
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findById(player.getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// 先去Redis中获取用户信息
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(player.getUsername());
 		if (getPlayer == null) {
-			result.setResultFailed("找不到该用户！");
-			return result;
+			// Redis中找不到，就去数据库找
+			try {
+				getPlayer = playerDAO.findById(player.getId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer == null) {
+				result.setResultFailed("找不到该用户！");
+				return result;
+			}
+			// 在Redis中补上
+			redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername(), getPlayer.getHighScore());
 		}
 		// 互补信息
 		ClassExamine.objectOverlap(player, getPlayer);
@@ -160,15 +168,19 @@ public class PlayerServiceImpl implements PlayerService {
 			result.setResultFailed("验证码不能为空！");
 			return result;
 		}
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findById(player.getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(player.getUsername());
 		if (getPlayer == null) {
-			result.setResultFailed("找不到相应用户！");
-			return result;
+			try {
+				getPlayer = playerDAO.findById(player.getId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer == null) {
+				result.setResultFailed("找不到相应用户！");
+				return result;
+			}
+			redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername(), getPlayer.getHighScore());
 		}
 		// 校验验证码
 		int getCode = (Integer) redisTemplate.opsForValue().get(MailServiceType.PASSWORD_RESET + "_" + player.getId());
@@ -202,7 +214,9 @@ public class PlayerServiceImpl implements PlayerService {
 				result.setResultFailed("找不到指定用户！");
 				return result;
 			}
+			// 加入到Redis和排名表
 			redisTemplate.opsForValue().set(username, getPlayer);
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername(), getPlayer.getHighScore());
 		}
 		result.setResultSuccess("查找用户成功！", getPlayer);
 		return result;

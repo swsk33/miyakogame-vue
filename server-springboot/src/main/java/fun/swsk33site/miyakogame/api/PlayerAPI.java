@@ -47,7 +47,7 @@ public class PlayerAPI {
 			return result;
 		}
 		// 校验登录用户和当前被修改用户是否一致
-		if (((UserDetails) authentication.getPrincipal()).getUsername().equals(player.getUsername())) {
+		if (!((UserDetails) authentication.getPrincipal()).getUsername().equals(player.getUsername())) {
 			result = new Result();
 			result.setResultFailed("被修改用户和当前登录用户不一致！终止！");
 			return result;

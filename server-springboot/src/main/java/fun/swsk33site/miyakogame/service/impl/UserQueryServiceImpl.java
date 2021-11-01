@@ -50,8 +50,9 @@ public class UserQueryServiceImpl implements UserDetailsService {
 				redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 10, TimeUnit.MINUTES);
 				throw new UsernameNotFoundException("找不到用户！");
 			}
-			// 数据库中存在，就把数据库中用户存入Redis
+			// 数据库中存在，就把数据库中用户存入Redis和排名表
 			redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername(), getPlayer.getHighScore());
 		}
 		// 权限，在游戏中没有权限之分，全是玩家
 		Set<GrantedAuthority> authorities = new HashSet<>();
