@@ -1,10 +1,7 @@
 package fun.swsk33site.miyakogame.dao;
 
 import fun.swsk33site.miyakogame.dataobject.Player;
-import fun.swsk33site.miyakogame.dataobject.RankInfo;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 @Mapper
 public interface PlayerDAO {
@@ -37,6 +34,6 @@ public interface PlayerDAO {
 	/**
 	 * 根据邮件查找用户
 	 */
-	List<Player> findByEmail(String email);
+	Player findByEmail(String email);
 
 }

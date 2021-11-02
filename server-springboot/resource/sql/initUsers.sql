@@ -7,7 +7,7 @@ create table `player`
 	`nickname`     varchar(32)  not null,
 	`avatar`       varchar(256) not null,
 	`high_score`   int(8)       not null,
-	`email`        varchar(48)  not null,
+	`email`        varchar(48)  not null unique,
 	`game_data`    varchar(512),
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,

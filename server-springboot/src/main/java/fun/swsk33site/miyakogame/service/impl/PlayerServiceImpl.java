@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class PlayerServiceImpl implements PlayerService {
@@ -74,13 +72,9 @@ public class PlayerServiceImpl implements PlayerService {
 		redisTemplate.opsForValue().set(player.getUsername(), player);
 		// 加入Redis排名表
 		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
-		// 如果这个新注册的名字在无效用户名集合中则去掉
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USER_TABLE_NAME, player.getUsername())) {
-			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_USER_TABLE_NAME, player.getUsername());
-		}
-		// 如果这个新注册的账户邮箱在无效邮箱集合中则去掉
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, player.getEmail())) {
-			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, player.getEmail());
+		// 如果这个新注册的名字或者邮箱在无效用户名集合中则去掉
+		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USERNAME_SET, player.getUsername())) {
+			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_USERNAME_SET, player.getUsername());
 		}
 		mailService.sendHtmlNotifyMail(player.getEmail(), "宫子恰布丁-账户注册", "感谢您注册宫子恰布丁小游戏！");
 		result.setResultSuccess("注册用户成功！");
@@ -227,27 +221,20 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result<List<Player>> findByEmail(String email) {
-		Result<List<Player>> result = new Result<>();
-		// 检测是否在无效邮箱列表中
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, email)) {
-			result.setResultFailed("请勿重复输入无效邮箱！");
-			return result;
-		}
-		List<Player> getPlayers = null;
+	public Result<Player> findByEmail(String email) {
+		Result<Player> result = new Result<>();
+		Player getPlayer = null;
 		try {
-			getPlayers = playerDAO.findByEmail(email);
+			getPlayer = playerDAO.findByEmail(email);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (getPlayers.size() == 0 || getPlayers == null) {
+		if (getPlayer == null) {
 			result.setResultFailed("找不到相关邮件下的用户！");
 			// 存入无效邮箱列表防止穿透
-			redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, email);
-			redisTemplate.expire(CommonValue.REDIS_INVALID_EMAIL_TABLE_NAME, 10, TimeUnit.MINUTES);
 			return result;
 		}
-		result.setResultSuccess("查询用户成功！", getPlayers);
+		result.setResultSuccess("查询用户成功！", getPlayer);
 		return result;
 	}
 

@@ -29,25 +29,30 @@ public class UserQueryServiceImpl implements UserDetailsService {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	/**
+	 * 用户登录查询逻辑
+	 *
+	 * @param usernameOrEmail 用户名或者邮箱
+	 */
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		// 先检测无效用户名防止缓存穿透
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username)) {
+		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USERNAME_SET, usernameOrEmail)) {
 			throw new UsernameNotFoundException("请勿重复登录无效账户！");
 		}
 		// 先去Redis查找
-		Player getPlayer = (Player) redisTemplate.opsForValue().get(username);
+		Player getPlayer = (Player) redisTemplate.opsForValue().get(usernameOrEmail);
 		if (getPlayer == null) {
 			// Redis没有再去数据库查找
 			try {
-				getPlayer = playerDAO.findByUsername(username);
+				getPlayer = playerDAO.findByUsername(usernameOrEmail);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (getPlayer == null) {
 				// 将无效用户名存入redis防止穿透
-				redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USER_TABLE_NAME, username);
-				redisTemplate.expire(CommonValue.REDIS_INVALID_USER_TABLE_NAME, 10, TimeUnit.MINUTES);
+				redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USERNAME_SET, usernameOrEmail);
+				redisTemplate.expire(CommonValue.REDIS_INVALID_USERNAME_SET, 10, TimeUnit.MINUTES);
 				throw new UsernameNotFoundException("找不到用户！");
 			}
 			// 数据库中存在，就把数据库中用户存入Redis和排名表

@@ -21,10 +21,9 @@ public interface MailService {
 	/**
 	 * 发送验证码
 	 *
-	 * @param email  邮箱
 	 * @param userId 待操作用户id
 	 * @param type   服务类型
 	 */
-	Result sendCode(String email, Integer userId, MailServiceType type) throws MessagingException;
+	Result sendCode(Integer userId, MailServiceType type) throws MessagingException;
 
 }

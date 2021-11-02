@@ -5,7 +5,6 @@ import fun.swsk33site.miyakogame.model.Result;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.List;
 
 @Service
 public interface PlayerService {
@@ -38,6 +37,6 @@ public interface PlayerService {
 	/**
 	 * 获取一个邮箱下的所有账户
 	 */
-	Result<List<Player>> findByEmail(String email);
+	Result<Player> findByEmail(String email);
 
 }

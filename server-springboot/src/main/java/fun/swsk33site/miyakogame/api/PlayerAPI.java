@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/player")
@@ -81,7 +80,7 @@ public class PlayerAPI {
 	}
 
 	@GetMapping("/getbyemail/{email}")
-	public Result<List<Player>> getByEmail(@PathVariable("email") String email) {
+	public Result<Player> getByEmail(@PathVariable("email") String email) {
 		return playerService.findByEmail(email);
 	}
 

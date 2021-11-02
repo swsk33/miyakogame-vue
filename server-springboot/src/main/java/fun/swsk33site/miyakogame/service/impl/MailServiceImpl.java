@@ -1,5 +1,7 @@
 package fun.swsk33site.miyakogame.service.impl;
 
+import fun.swsk33site.miyakogame.dao.PlayerDAO;
+import fun.swsk33site.miyakogame.dataobject.Player;
 import fun.swsk33site.miyakogame.model.Result;
 import fun.swsk33site.miyakogame.param.MailServiceType;
 import fun.swsk33site.miyakogame.service.MailService;
@@ -33,6 +35,9 @@ public class MailServiceImpl implements MailService {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	@Autowired
+	private PlayerDAO playerDAO;
+
 	@Override
 	public void sendHtmlNotifyMail(String email, String title, String content) throws MessagingException {
 		// 通过Context对象构建模板中变量需要的值
@@ -59,33 +64,44 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
-	public Result sendCode(String email, Integer userId, MailServiceType type) throws MessagingException {
+	public Result sendCode(Integer userId, MailServiceType type) throws MessagingException {
 		Result result = new Result();
-		if (userId == null || StringUtils.isEmpty(email)) {
-			result.setResultFailed("用户id或者邮箱不能为空！");
+		if (userId == null) {
+			result.setResultFailed("用户id不能为空！");
 			return result;
 		}
-
+		// 先去查找用户得到用户邮箱
+		Player getPlayer = null;
+		try {
+			getPlayer = playerDAO.findById(userId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (getPlayer == null) {
+			result.setResultFailed("找不到指定用户以发送邮件验证码！");
+			return result;
+		}
+		// 找到用户，开始发送验证码
 		int generateCode = (int) ((Math.random() * 9 + 1) * 100000);
 		redisTemplate.opsForValue().set(type.toString() + "_" + userId, generateCode, 5, TimeUnit.MINUTES);
 		String serviceName;
-		String serviceDes;
+		String serviceDescription;
 		switch (type) {
 			case PASSWORD_RESET:
 				serviceName = "密码重置";
-				serviceDes = "您的密码重置验证码为：";
+				serviceDescription = "您的密码重置验证码为：";
 				break;
 			case USER_DELETE:
 				serviceName = "用户注销";
-				serviceDes = "您的用户注销验证码为：";
+				serviceDescription = "您的用户注销验证码为：";
 				break;
 			default:
 				serviceName = "";
-				serviceDes = "";
+				serviceDescription = "";
 				break;
 		}
-		sendHtmlNotifyMail(email, "宫子恰布丁-" + serviceName, serviceDes + generateCode + "，请在5分钟内完成验证。");
-		result.setResultSuccess("发送验证码成功！", null);
+		sendHtmlNotifyMail(getPlayer.getEmail(), "宫子恰布丁-" + serviceName, serviceDescription + generateCode + "，请在5分钟内完成验证。");
+		result.setResultSuccess("发送验证码成功！");
 		return result;
 	}
 
