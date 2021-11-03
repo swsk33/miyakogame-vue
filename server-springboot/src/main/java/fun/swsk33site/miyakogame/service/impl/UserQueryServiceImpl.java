@@ -1,10 +1,10 @@
 package fun.swsk33site.miyakogame.service.impl;
 
+import fun.swsk33site.miyakogame.cache.InvalidData;
+import fun.swsk33site.miyakogame.cache.PlayerCache;
 import fun.swsk33site.miyakogame.dao.PlayerDAO;
 import fun.swsk33site.miyakogame.dataobject.Player;
-import fun.swsk33site.miyakogame.param.CommonValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Spring Security的用户查找认证接口实现
@@ -27,7 +26,10 @@ public class UserQueryServiceImpl implements UserDetailsService {
 	private PlayerDAO playerDAO;
 
 	@Autowired
-	private RedisTemplate redisTemplate;
+	private PlayerCache playerCache;
+
+	@Autowired
+	private InvalidData invalidData;
 
 	/**
 	 * 用户登录查询逻辑
@@ -36,28 +38,36 @@ public class UserQueryServiceImpl implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-		// 先检测无效用户名防止缓存穿透
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USERNAME_SET, usernameOrEmail)) {
+		// 先检测无效用户名或者邮箱防止缓存穿透
+		if (!invalidData.isCredentialInvalid(usernameOrEmail)) {
 			throw new UsernameNotFoundException("请勿重复登录无效账户！");
 		}
-		// 先去Redis查找
-		Player getPlayer = (Player) redisTemplate.opsForValue().get(usernameOrEmail);
+		// 先去Redis以用户名查找
+		Player getPlayer = playerCache.getByUsername(usernameOrEmail);
+		// 如果没找着，就根据邮箱找
 		if (getPlayer == null) {
-			// Redis没有再去数据库查找
+			getPlayer = playerCache.getByEmail(usernameOrEmail);
+		}
+		// 如果还是没有，这说明Redis里面没有，去数据库
+		if (getPlayer == null) {
+			// Redis没有再去数据库以用户名查找
 			try {
 				getPlayer = playerDAO.findByUsername(usernameOrEmail);
+				// 根据用户名没有找到，则根据邮箱查找
+				if (getPlayer == null) {
+					getPlayer = playerDAO.findByEmail(usernameOrEmail);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			// 还是没有说明用户名不存在
 			if (getPlayer == null) {
 				// 将无效用户名存入redis防止穿透
-				redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USERNAME_SET, usernameOrEmail);
-				redisTemplate.expire(CommonValue.REDIS_INVALID_USERNAME_SET, 10, TimeUnit.MINUTES);
+				invalidData.addInvalidCredential(usernameOrEmail);
 				throw new UsernameNotFoundException("找不到用户！");
 			}
 			// 数据库中存在，就把数据库中用户存入Redis和排名表
-			redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
-			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, getPlayer.getUsername(), getPlayer.getHighScore());
+			playerCache.addOrSet(getPlayer);
 		}
 		// 权限，在游戏中没有权限之分，全是玩家
 		Set<GrantedAuthority> authorities = new HashSet<>();

@@ -13,33 +13,18 @@ public class InvalidDataImpl implements InvalidData {
 	private RedisTemplate redisTemplate;
 
 	@Override
-	public void addInvalidUsername(String username) {
-		redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_USERNAME_SET, username);
+	public void addInvalidCredential(String credential) {
+		redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, credential);
 	}
 
 	@Override
-	public void addInvalidEmail(String email) {
-		redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_EMAIL_SET, email);
+	public void deleteInvalidCredential(String credential) {
+		redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, credential);
 	}
 
 	@Override
-	public void deleteInvalidUsername(String username) {
-		redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_USERNAME_SET, username);
+	public boolean isCredentialInvalid(String credential) {
+		return redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, credential);
 	}
-
-	@Override
-	public void deleteInvalidEmail(String email) {
-		redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_EMAIL_SET, email);
-	}
-
-	@Override
-	public boolean isUsernameInvalid(String username) {
-		return redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USERNAME_SET, username);
-	}
-
-	@Override
-	public boolean isEmailInvalid(String email) {
-		return redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_EMAIL_SET, email);
-	}
-
+	
 }

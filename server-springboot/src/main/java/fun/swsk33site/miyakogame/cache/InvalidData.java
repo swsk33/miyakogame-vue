@@ -9,47 +9,25 @@ import fun.swsk33site.miyakogame.annotation.RedisCache;
 public interface InvalidData {
 
 	/**
-	 * 添加无效的用户名到缓存
+	 * 添加无效的登录凭证到缓存
 	 *
-	 * @param username 无效的用户名
+	 * @param credential 无效的用户名或者邮箱
 	 */
-	void addInvalidUsername(String username);
+	void addInvalidCredential(String credential);
 
 	/**
-	 * 添加无效有效到缓存
+	 * 从缓存移除无效登录凭证
 	 *
-	 * @param email 无效的邮箱
+	 * @param credential 用户名或者邮箱
 	 */
-	void addInvalidEmail(String email);
+	void deleteInvalidCredential(String credential);
 
 	/**
-	 * 从缓存移除无效用户名
+	 * 检测该登录凭证是否在无效登录凭证列表中
 	 *
-	 * @param username 用户名
+	 * @param credential 检测用户名或者邮箱
+	 * @return 用户名或者邮箱是否是无效的
 	 */
-	void deleteInvalidUsername(String username);
-
-	/**
-	 * 从缓存中移除无效邮箱
-	 *
-	 * @param email 邮箱
-	 */
-	void deleteInvalidEmail(String email);
-
-	/**
-	 * 检测该用户名是否在无效用户名列表中
-	 *
-	 * @param username 检测用户名
-	 * @return 邮箱是否是无效的
-	 */
-	boolean isUsernameInvalid(String username);
-
-	/**
-	 * 检测邮箱是否在无效邮箱列表中
-	 *
-	 * @param email 检测邮箱
-	 * @return 邮箱是否是无效的
-	 */
-	boolean isEmailInvalid(String email);
-
+	boolean isCredentialInvalid(String credential);
+	
 }

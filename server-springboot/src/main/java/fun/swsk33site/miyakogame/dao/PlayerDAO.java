@@ -32,8 +32,13 @@ public interface PlayerDAO {
 	Player findByUsername(String username);
 
 	/**
-	 * 根据邮件查找用户
+	 * 根据邮箱查找用户
 	 */
 	Player findByEmail(String email);
+
+	/**
+	 * 根据用户名或者邮箱查找用户
+	 */
+	Player findByUsernameOrEmail(String usernameOrEmail);
 
 }

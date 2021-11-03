@@ -36,13 +36,8 @@ public class CommonValue {
 	public static final String REDIS_RANK_TABLE_NAME = "rank_info";
 
 	/**
-	 * Redis无效用户名（一般是不存在的用户名）的Set名称
+	 * Redis无效登录凭证（一般是不存在的用户名或者邮箱）的Set名称
 	 */
-	public static final String REDIS_INVALID_USERNAME_SET = "invalid_username";
-
-	/**
-	 * Redis无效邮箱（一般是不存在的邮箱）的Set名称
-	 */
-	public static final String REDIS_INVALID_EMAIL_SET = "invalid_email";
+	public static final String REDIS_INVALID_LOGIN_CREDENTIALS_SET = "invalid_login_credentials";
 
 }

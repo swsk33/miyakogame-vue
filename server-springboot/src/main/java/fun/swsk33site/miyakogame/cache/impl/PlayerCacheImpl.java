@@ -70,4 +70,23 @@ public class PlayerCacheImpl implements PlayerCache {
 		return getPlayer;
 	}
 
+	@Override
+	public Player getByUsernameOrEmail(String usernameOrEmail) {
+		Player getPlayer;
+		try {
+			// 先根据用户名获取到用户id
+			Integer id = (Integer) redisTemplate.opsForHash().get(CommonValue.REDIS_PLAYER_USERNAME_TO_ID_HASH, usernameOrEmail);
+			// 如果获取不到，说明很可能是邮箱
+			if (id == null) {
+				id = (Integer) redisTemplate.opsForHash().get(CommonValue.REDIS_PLAYER_EMAIL_TO_ID_HASH, usernameOrEmail);
+			}
+			// 再获取用户
+			getPlayer = (Player) redisTemplate.opsForHash().get(CommonValue.REDIS_ID_TO_PLAYER_HASH, id);
+		} catch (Exception e) {
+			// 只要中间有任何一个值查得的值是空，那么在作为下一个参数查询时会抛出参数不合法异常，说明该项不存在，直接返回null
+			return null;
+		}
+		return getPlayer;
+	}
+
 }

@@ -73,8 +73,8 @@ public class PlayerServiceImpl implements PlayerService {
 		// 加入Redis排名表
 		redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, player.getUsername(), player.getHighScore());
 		// 如果这个新注册的名字或者邮箱在无效用户名集合中则去掉
-		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_USERNAME_SET, player.getUsername())) {
-			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_USERNAME_SET, player.getUsername());
+		if (redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, player.getUsername())) {
+			redisTemplate.opsForSet().remove(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, player.getUsername());
 		}
 		mailService.sendHtmlNotifyMail(player.getEmail(), "宫子恰布丁-账户注册", "感谢您注册宫子恰布丁小游戏！");
 		result.setResultSuccess("注册用户成功！");

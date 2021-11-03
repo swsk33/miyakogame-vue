@@ -54,4 +54,11 @@
 		from `player`
 		where email = #{email}
 	</select>
+
+	<select id="findByUsernameOrEmail" resultMap="playerResultMap">
+		select *
+		from `player`
+		where username = #{usernameOrEmail}
+		   or email = #{usernameOrEmail}
+	</select>
 </mapper>

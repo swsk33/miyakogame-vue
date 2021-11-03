@@ -47,4 +47,12 @@ public interface PlayerCache {
 	 */
 	Player getByEmail(String email);
 
+	/**
+	 * 通过用户名或者邮箱获取玩家
+	 *
+	 * @param usernameOrEmail 用户名或者邮箱
+	 * @return 玩家对象
+	 */
+	Player getByUsernameOrEmail(String usernameOrEmail);
+
 }
