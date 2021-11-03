@@ -11,6 +11,7 @@
 			<li>排行榜</li>
 			<li @click="setHelpPage(true)">帮助</li>
 		</ul>
+		<user class="userComponent"></user>
 	</div>
 </template>
 
@@ -20,6 +21,8 @@ import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
 import mouseffect from '@/assets/js/mouseffect.js';
 
+import user from './User.vue';
+
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapActions: gameActions } = createNamespacedHelpers('gamingcontrol');
@@ -27,6 +30,9 @@ const { mapState: imageState } = createNamespacedHelpers('image');
 const { mapState: audioState } = createNamespacedHelpers('audio');
 
 export default {
+	components: {
+		user,
+	},
 	computed: {
 		...pageState(['mainMenu']),
 		...dataState(['isNewGame']),
@@ -169,6 +175,12 @@ export default {
 		.newGameStyle {
 			color: gray;
 		}
+	}
+
+	.userComponent {
+		position: absolute;
+		top: 1.5vh;
+		right: 2.5vw;
 	}
 }
 

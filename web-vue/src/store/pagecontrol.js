@@ -29,7 +29,15 @@ export default {
 		/**
 		 * 商店页面
 		 */
-		shop: false
+		shop: false,
+		/**
+		 * 用户登录页面
+		 */
+		login: false,
+		/**
+		 * 重置密码页面
+		 */
+		resetPassword: false
 	},
 	mutations: {
 		/**
@@ -73,6 +81,18 @@ export default {
 		 */
 		setShopPage(state, payload) {
 			state.shop = payload;
+		},
+		/**
+		 * 设置登录页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setLoginPage(state, payload) {
+			state.login = payload;
+		},
+		/**
+		 * 设置重置密码页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setResetPasswordPage(state, payload) {
+			state.resetPassword = payload;
 		}
 	}
 }

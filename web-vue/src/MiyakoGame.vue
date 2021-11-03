@@ -4,6 +4,8 @@
 		<mainmenu ref="mainMenu"></mainmenu>
 		<help ref="helpPage"></help>
 		<shop ref="shopPage"></shop>
+		<loginpage></loginpage>
+		<resetpasswordpage></resetpasswordpage>
 		<loadingpage ref="loadingPage"></loadingpage>
 		<successpage></successpage>
 		<failedpage></failedpage>
@@ -12,7 +14,6 @@
 </template>
 
 <script>
-import mouseffect from '@/assets/js/mouseffect.js';
 import loadingpage from '@/components/LoadingPage.vue';
 import mainmenu from '@/components/MainMenu.vue';
 import gamebody from '@/components/GameBody.vue';
@@ -21,7 +22,10 @@ import successpage from '@/components/SuccessPage.vue';
 import failedpage from '@/components/FailedPage.vue';
 import pausepage from '@/components/PausePage.vue';
 import shop from '@/components/Shop.vue';
+import loginpage from '@/components/LoginPage.vue';
+import resetpasswordpage from '@/components/ResetPasswordPage.vue';
 
+import mouseffect from '@/assets/js/mouseffect.js';
 import random from '@/assets/js/random.js';
 import { createNamespacedHelpers } from 'vuex';
 
@@ -39,6 +43,8 @@ export default {
 		failedpage,
 		pausepage,
 		shop,
+		loginpage,
+		resetpasswordpage,
 	},
 	computed: {
 		...timeState(['time', 'festival']),
@@ -99,7 +105,7 @@ export default {
 	},
 	async mounted() {
 		// 节日的样式全部由根组件进行管理和修改，而数据方面分散到各个模块中进行修改
-		// 样式管理
+		// 打开鼠标效果
 		mouseffect.enableAll();
 		// 时间和节日检测
 		await this.checkTime();

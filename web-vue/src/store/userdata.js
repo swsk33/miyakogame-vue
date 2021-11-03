@@ -85,6 +85,7 @@ export default {
 	actions: {
 		/**
 		 * 用户登录，payload为一个对象，里面要有credential属性表示登录凭据（用户名或者邮箱），password为密码
+		 * @returns 是否登录成功
 		 */
 		async userLogin(context, payload) {
 			try {
@@ -95,13 +96,16 @@ export default {
 				});
 				if (!response.data.success) {
 					showTip('登录失败！' + response.data.message, tipType.error);
+					return false;
 				} else {
 					showTip('登录成功！', tipType.info);
 					// 获取用户信息
 					context.dispatch('checkUserLogin');
+					return true;
 				}
 			} catch (error) {
 				showTip('登录失败！请检查网络！', tipType.error);
+				return false;
 			}
 		},
 		/**
@@ -226,7 +230,7 @@ export default {
 				try {
 					const response = await axios({
 						method: 'PATCH',
-						url: '/api/update',
+						url: '/api/player/update',
 						data: userData
 					});
 					if (!response.data.success) {
