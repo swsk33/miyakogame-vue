@@ -12,6 +12,7 @@ import {
 } from '@/components/util/tip.js';
 
 import random from '@/assets/js/random.js';
+import axios from 'axios';
 
 // vuex-游戏本地数据和云端数据管理模块
 export default {
@@ -29,9 +30,25 @@ export default {
 			weaponCount: [-1]
 		},
 		/**
+		 * 在线用户信息
+		 */
+		onlineUserData: {
+			id: undefined,
+			username: undefined,
+			nickname: undefined,
+			avatar: undefined,
+			highScore: undefined,
+			email: undefined,
+			gameData: undefined
+		},
+		/**
 		 * 是否是新游戏
 		 */
 		isNewGame: false,
+		/**
+		 * 用户是否登录
+		 */
+		isLogin: false
 	},
 	mutations: {
 		/**
@@ -52,14 +69,89 @@ export default {
 		setNewGame(state, payload) {
 			state.isNewGame = payload;
 		},
+		/**
+		 * 设定用户是否登录，payload为布尔值表示用户是否登录
+		 */
+		setUserLogin(state, payload) {
+			state.isLogin = payload;
+		},
+		/**
+		 * 设定在线用户数据，payload为获取的在线用户对象
+		 */
+		setOnlineUserData(state, payload) {
+			state.onlineUserData = payload;
+		}
 	},
 	actions: {
+		/**
+		 * 用户登录，payload为一个对象，里面要有credential属性表示登录凭据（用户名或者邮箱），password为密码
+		 */
+		async userLogin(context, payload) {
+			try {
+				const response = await axios({
+					method: 'POST',
+					url: '/api/player/login',
+					data: payload
+				});
+				if (!response.data.success) {
+					showTip('登录失败！' + response.data.message, tipType.error);
+				} else {
+					showTip('登录成功！', tipType.info);
+					// 获取用户信息
+					context.dispatch('checkUserLogin');
+				}
+			} catch (error) {
+				showTip('登录失败！请检查网络！', tipType.error);
+			}
+		},
+		/**
+		 * 检测用户是否登录
+		 */
+		async checkUserLogin(context) {
+			try {
+				const response = await axios.get('/api/player/islogin');
+				if (!response.data.success) {
+					context.commit('setUserLogin', false);
+				} else {
+					// 设定为已登录
+					context.commit('setUserLogin', true);
+					// 把在线的用户信息设定为游戏数据
+					context.commit('setOnlineUserData', response.data.data);
+				}
+			} catch (error) {
+				context.commit('setUserLogin', false);
+			}
+		},
+		/**
+		 * 用户退出登录
+		 */
+		async userLogout(context) {
+			try {
+				const response = await axios.get('/api/player/logout');
+				if (!response.data.success) {
+					showTip('退出登录失败！', tipType.error);
+				} else {
+					showTip('退出登录成功！', tipType.info);
+					// 设定用户未登录
+					context.commit('setUserLogin', false);
+					context.commit('setOnlineUserData', undefined);
+				}
+			} catch (error) {
+				showTip('退出登录失败！', tipType.error);
+			}
+		},
 		/**
 		 * 读取游戏数据，如果用户登录，则获取云端数据，否则获取本地数据，需要在组件挂载时调用一次
 		 */
 		readGameData(context) {
-			let getData = localStorage.getItem('gameData');
-			if (getData == null) {
+			let getData;
+			// 如果用户已登录则获取云端数据，否则获取本地数据
+			if (context.state.isLogin) {
+				getData = context.state.onlineUserData.gameData;
+			} else {
+				getData = localStorage.getItem('gameData');
+			}
+			if (getData == null || getData === 'null') {
 				context.commit('setNewGame', true);
 				// 初始化基本数据
 				getData = {
@@ -121,8 +213,29 @@ export default {
 		/**
 		 * 保存游戏数据，如果用户登录，则同时保存一份到云端，payload为布尔值表示是否显示保存提示，默认true
 		 */
-		saveData(context, payload = true) {
+		async saveData(context, payload = true) {
 			localStorage.setItem('gameData', JSON.stringify(context.state.gameData));
+			// 如果用户登录，则同时保存至云端
+			if (context.state.isLogin) {
+				// 组装数据
+				const userData = {
+					id: context.state.onlineUserData.id,
+					username: context.state.onlineUserData.username,
+					gameData: JSON.stringify(context.state.gameData)
+				};
+				try {
+					const response = await axios({
+						method: 'PATCH',
+						url: '/api/update',
+						data: userData
+					});
+					if (!response.data.success) {
+						showTip('保存数据至云端失败！请检查网络或者是否登录！', tipType.error);
+					}
+				} catch (error) {
+					showTip('保存数据至云端失败！请检查网络或者是否登录！', tipType.error);
+				}
+			}
 			if (payload) {
 				showTip('游戏数据已保存！', tipType.info, true);
 			}

@@ -1,6 +1,7 @@
 package fun.swsk33site.miyakogame.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NoArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import java.util.Map;
 /**
  * 自定义的认证过滤器，实现前后端分离的json格式登录请求解析
  */
+@NoArgsConstructor
 public class MiyakoUsernameAndPasswordFilter extends UsernamePasswordAuthenticationFilter {
 
 	/**
@@ -25,13 +27,6 @@ public class MiyakoUsernameAndPasswordFilter extends UsernamePasswordAuthenticat
 	 * 请求体中的密码字段名
 	 */
 	private String passwordParameter = "password";
-
-	/**
-	 * 创建自定义认证过滤器
-	 */
-	public MiyakoUsernameAndPasswordFilter() {
-
-	}
 
 	/**
 	 * 创建自定义认证过滤器，并自定义用户名、密码字段名

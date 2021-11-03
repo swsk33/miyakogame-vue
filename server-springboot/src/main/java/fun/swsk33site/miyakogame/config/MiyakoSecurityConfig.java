@@ -33,7 +33,8 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public UsernamePasswordAuthenticationFilter createMiyakoAuthFilter() throws Exception {
 		// 创建自己的用户名密码拦截器实例
-		UsernamePasswordAuthenticationFilter myAuthFilter = new MiyakoUsernameAndPasswordFilter();
+		// 登录请求参数，credential属性表示登录凭据，为用户名或者邮箱；password即为密码
+		UsernamePasswordAuthenticationFilter myAuthFilter = new MiyakoUsernameAndPasswordFilter("credential", "password");
 		// 注意，因为是自定义登录拦截器，所以登录接口地址要在此配置！
 		myAuthFilter.setFilterProcessesUrl("/api/player/login");
 		// 设定为自定义的登录成功/失败处理器

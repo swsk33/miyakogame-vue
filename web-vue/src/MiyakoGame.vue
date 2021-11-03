@@ -26,6 +26,7 @@ import random from '@/assets/js/random.js';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapActions: loadingActions } = createNamespacedHelpers('loading');
+const { mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapState: timeState, mapActions: timeActions } = createNamespacedHelpers('timecontrol');
 
 export default {
@@ -44,6 +45,7 @@ export default {
 	},
 	methods: {
 		...loadingActions(['loadAll']),
+		...dataActions(['checkUserLogin']),
 		...timeActions(['modifyResourcesBeforeLoad', 'modifyResourcesAfterLoad', 'checkTime']),
 		/**
 		 * 给页面背景生成星星
@@ -107,6 +109,8 @@ export default {
 		this.applyStyle();
 		// 加载全部资源文件
 		await this.loadAll();
+		// 判断用户是否登录
+		this.checkUserLogin();
 	},
 };
 </script>
