@@ -25,7 +25,7 @@ public class Player implements Serializable {
 	/**
 	 * 用户名
 	 */
-	@NotEmpty(groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerUpdate.class, ValidationGroup.PlayerPasswordReset.class}, message = "用户名不能为空！")
+	@NotEmpty(groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerUpdate.class}, message = "用户名不能为空！")
 	@Size(groups = ValidationGroup.PlayerRegister.class, max = 32, message = "用户名长度不能大于32！")
 	@Pattern(regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "用户名只能是由中文、英文、数字或者下划线组成！", groups = {ValidationGroup.PlayerRegister.class, ValidationGroup.PlayerUpdate.class})
 	private String username;

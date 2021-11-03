@@ -14,8 +14,8 @@ public interface RankInfoDAO {
 	List<RankInfo> findByHighScoreInTen();
 
 	/**
-	 * 通过用户名查询用户排名
+	 * 通过用户id查询用户排名
 	 */
-	RankInfo findUserRankByUsername(String username);
+	RankInfo findUserRankById(int id);
 
 }

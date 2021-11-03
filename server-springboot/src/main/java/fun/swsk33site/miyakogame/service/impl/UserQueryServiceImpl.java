@@ -39,24 +39,15 @@ public class UserQueryServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		// 先检测无效用户名或者邮箱防止缓存穿透
-		if (!invalidData.isCredentialInvalid(usernameOrEmail)) {
+		if (invalidData.isCredentialInvalid(usernameOrEmail)) {
 			throw new UsernameNotFoundException("请勿重复登录无效账户！");
 		}
-		// 先去Redis以用户名查找
-		Player getPlayer = playerCache.getByUsername(usernameOrEmail);
-		// 如果没找着，就根据邮箱找
-		if (getPlayer == null) {
-			getPlayer = playerCache.getByEmail(usernameOrEmail);
-		}
-		// 如果还是没有，这说明Redis里面没有，去数据库
+		// 先去Redis查找
+		Player getPlayer = playerCache.getByUsernameOrEmail(usernameOrEmail);
 		if (getPlayer == null) {
 			// Redis没有再去数据库以用户名查找
 			try {
-				getPlayer = playerDAO.findByUsername(usernameOrEmail);
-				// 根据用户名没有找到，则根据邮箱查找
-				if (getPlayer == null) {
-					getPlayer = playerDAO.findByEmail(usernameOrEmail);
-				}
+				getPlayer = playerDAO.findByUsernameOrEmail(usernameOrEmail);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

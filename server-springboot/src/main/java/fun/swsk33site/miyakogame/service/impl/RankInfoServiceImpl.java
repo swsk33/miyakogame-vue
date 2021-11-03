@@ -1,5 +1,6 @@
 package fun.swsk33site.miyakogame.service.impl;
 
+import fun.swsk33site.miyakogame.cache.PlayerCache;
 import fun.swsk33site.miyakogame.dao.PlayerDAO;
 import fun.swsk33site.miyakogame.dao.RankInfoDAO;
 import fun.swsk33site.miyakogame.dataobject.Player;
@@ -25,15 +26,18 @@ public class RankInfoServiceImpl implements RankInfoService {
 	private PlayerDAO playerDAO;
 
 	@Autowired
+	private PlayerCache playerCache;
+
+	@Autowired
 	private RedisTemplate redisTemplate;
 
 	@Override
 	public Result<List<RankInfo>> getTotalRank() {
 		Result<List<RankInfo>> result = new Result<>();
 		List<RankInfo> rankInfos = null;
-		// 先读取redis排名表
-		Set<Object> usernames = redisTemplate.opsForZSet().reverseRange(CommonValue.REDIS_RANK_TABLE_NAME, 0, 9);
-		if (usernames.size() == 0 || usernames == null) {
+		// 先读取Redis排名表
+		Set<Object> userIds = redisTemplate.opsForZSet().reverseRange(CommonValue.REDIS_RANK_TABLE_NAME, 0, 9);
+		if (userIds.size() == 0 || userIds == null) {
 			// Redis里面没有，就去数据库获取
 			try {
 				rankInfos = rankInfoDAO.findByHighScoreInTen();
@@ -43,7 +47,7 @@ public class RankInfoServiceImpl implements RankInfoService {
 			// 在此补上Redis中缓存排名数据
 			if (rankInfos.size() != 0) {
 				for (RankInfo rankInfo : rankInfos) {
-					redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, rankInfo.getUsername(), rankInfo.getHighScore());
+					redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, rankInfo.getId(), rankInfo.getHighScore());
 				}
 			}
 		} else {
@@ -51,23 +55,24 @@ public class RankInfoServiceImpl implements RankInfoService {
 			rankInfos = new ArrayList<>();
 			// 名次
 			long rank = 1;
-			for (Object username : usernames) {
-				String usernameString = (String) username;
+			for (Object userId : userIds) {
+				int id = (Integer) userId;
 				// 先去Redis里面查找用户
-				Player getPlayer = (Player) redisTemplate.opsForValue().get(usernameString);
+				Player getPlayer = playerCache.getById(id);
 				if (getPlayer == null) {
 					// 否则就去数据库查找
 					try {
-						getPlayer = playerDAO.findByUsername(usernameString);
+						getPlayer = playerDAO.findById(id);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					// 如果这个用户在数据库也不存在，那么就从排名表移除
 					if (getPlayer == null) {
-						redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, usernameString);
+						redisTemplate.opsForZSet().remove(CommonValue.REDIS_RANK_TABLE_NAME, id);
 						continue;
 					}
-					redisTemplate.opsForValue().set(getPlayer.getUsername(), getPlayer);
+					// 存在补上
+					playerCache.addOrSet(getPlayer);
 				}
 				// 组装
 				RankInfo rankInfo = new RankInfo(getPlayer, rank);
@@ -80,15 +85,15 @@ public class RankInfoServiceImpl implements RankInfoService {
 	}
 
 	@Override
-	public Result<Long> getPlayerRank(String username) {
+	public Result<Long> getPlayerRank(int id) {
 		Result<Long> result = new Result<>();
 		// 先去Redis查询排名
-		Long rank = redisTemplate.opsForZSet().reverseRank(CommonValue.REDIS_RANK_TABLE_NAME, username);
+		Long rank = redisTemplate.opsForZSet().reverseRank(CommonValue.REDIS_RANK_TABLE_NAME, id);
 		if (rank == null) {
 			// Redis没有则去数据库查询
 			RankInfo rankInfo = null;
 			try {
-				rankInfo = rankInfoDAO.findUserRankByUsername(username);
+				rankInfo = rankInfoDAO.findUserRankById(id);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -97,7 +102,7 @@ public class RankInfoServiceImpl implements RankInfoService {
 				return result;
 			}
 			// 若数据库查到则存入Redis
-			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, rankInfo.getUsername(), rankInfo.getHighScore());
+			redisTemplate.opsForZSet().add(CommonValue.REDIS_RANK_TABLE_NAME, rankInfo.getId(), rankInfo.getHighScore());
 			result.setResultSuccess("查询排名成功！", rankInfo.getSequence());
 			return result;
 		}

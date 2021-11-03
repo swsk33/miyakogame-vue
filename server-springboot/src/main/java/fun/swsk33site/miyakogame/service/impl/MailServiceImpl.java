@@ -1,5 +1,7 @@
 package fun.swsk33site.miyakogame.service.impl;
 
+import fun.swsk33site.miyakogame.cache.MailCodeCache;
+import fun.swsk33site.miyakogame.cache.PlayerCache;
 import fun.swsk33site.miyakogame.dao.PlayerDAO;
 import fun.swsk33site.miyakogame.dataobject.Player;
 import fun.swsk33site.miyakogame.model.Result;
@@ -33,7 +35,10 @@ public class MailServiceImpl implements MailService {
 	private TemplateEngine templateEngine;
 
 	@Autowired
-	private RedisTemplate redisTemplate;
+	private PlayerCache playerCache;
+
+	@Autowired
+	private MailCodeCache mailCodeCache;
 
 	@Autowired
 	private PlayerDAO playerDAO;
@@ -71,19 +76,22 @@ public class MailServiceImpl implements MailService {
 			return result;
 		}
 		// 先去查找用户得到用户邮箱
-		Player getPlayer = null;
-		try {
-			getPlayer = playerDAO.findById(userId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Player getPlayer = playerCache.getById(userId);
 		if (getPlayer == null) {
-			result.setResultFailed("找不到指定用户以发送邮件验证码！");
-			return result;
+			try {
+				getPlayer = playerDAO.findById(userId);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (getPlayer == null) {
+				result.setResultFailed("找不到指定用户以发送邮件验证码！");
+				return result;
+			}
+			playerCache.addOrSet(getPlayer);
 		}
-		// 找到用户，开始发送验证码
-		int generateCode = (int) ((Math.random() * 9 + 1) * 100000);
-		redisTemplate.opsForValue().set(type.toString() + "_" + userId, generateCode, 5, TimeUnit.MINUTES);
+		// 找到用户，生成验证码
+		int generateCode = mailCodeCache.generateCodeToCache(getPlayer.getId(), type);
+		// 设置消息内容
 		String serviceName;
 		String serviceDescription;
 		switch (type) {

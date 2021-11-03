@@ -15,9 +15,9 @@ import java.io.Serializable;
 public class RankInfo implements Serializable {
 
 	/**
-	 * 用户名
+	 * 用户id
 	 */
-	private String username;
+	private int id;
 
 	/**
 	 * 用户昵称
@@ -51,7 +51,7 @@ public class RankInfo implements Serializable {
 	 * @param sequence 名次
 	 */
 	public RankInfo(Player player, long sequence) {
-		username = player.getUsername();
+		id = player.getId();
 		nickname = player.getNickname();
 		avatar = player.getAvatar();
 		highScore = player.getHighScore();

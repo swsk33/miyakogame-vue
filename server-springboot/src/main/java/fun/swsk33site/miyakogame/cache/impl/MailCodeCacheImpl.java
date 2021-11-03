@@ -1,7 +1,7 @@
 package fun.swsk33site.miyakogame.cache.impl;
 
 import fun.swsk33site.miyakogame.annotation.RedisCache;
-import fun.swsk33site.miyakogame.cache.MailCode;
+import fun.swsk33site.miyakogame.cache.MailCodeCache;
 import fun.swsk33site.miyakogame.param.MailServiceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.concurrent.TimeUnit;
 
 @RedisCache
-public class MailCodeImpl implements MailCode {
+public class MailCodeCacheImpl implements MailCodeCache {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
@@ -33,8 +33,12 @@ public class MailCodeImpl implements MailCode {
 	}
 
 	@Override
-	public void removeCodeInCache(int id, MailServiceType type) {
-		redisTemplate.delete(type.toString() + "_" + id);
+	public boolean checkCodeInCache(int id, MailServiceType type, int code) {
+		if (code == (Integer) redisTemplate.opsForValue().get(type.toString() + "_" + id)) {
+			redisTemplate.delete(type + "_" + id);
+			return true;
+		}
+		return false;
 	}
 
 }

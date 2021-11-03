@@ -54,14 +54,16 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/player/delete/**", "/api/player/update", "/api/player/islogin").authenticated()
 				// 放行用户注册、用户登录、密码重置、以邮箱查询用户
 				.antMatchers("/api/player/register", "/api/player/login", "/api/player/reset/**", "/api/player/getbyemail/*").permitAll()
-				// 放行邮箱验证码接口
-				.antMatchers("/api/email/**").permitAll()
+				// 放行密码重置邮箱验证码接口
+				.antMatchers("/api/email/reset/*").permitAll()
+				// 需要登录才能请求用户注销验证码
+				.antMatchers("/api/email/delete/*").authenticated()
 				// 需要登录才能上传头像或者获取随机头像
 				.antMatchers("/api/avatar/**").authenticated()
 				// 放行查询前十排名接口
 				.antMatchers("/api/rank/total").permitAll()
 				// 需要登录才能获取用户排名
-				.antMatchers("/api/rank/getmyrank").authenticated()
+				.antMatchers("/api/rank/getmine/*").authenticated()
 				// 放行头像等等静态资源url
 				.antMatchers("/static-resources/**").permitAll();
 		// 自定义退出登录url和配置自定义的登出成功处理器

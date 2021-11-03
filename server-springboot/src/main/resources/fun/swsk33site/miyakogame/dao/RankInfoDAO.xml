@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fun.swsk33site.miyakogame.dao.RankInfoDAO">
 	<resultMap id="rankResultMap" type="fun.swsk33site.miyakogame.dataobject.RankInfo">
-		<id column="username" property="username"/>
+		<id column="id" property="id"/>
 		<result column="nickname" property="nickname"/>
 		<result column="avatar" property="avatar"/>
 		<result column="high_score" property="highScore"/>
@@ -11,15 +11,15 @@
 	</resultMap>
 
 	<select id="findByHighScoreInTen" resultMap="rankResultMap">
-		select username, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
+		select id, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
 			 (select * from `player` order by high_score desc limit 10) as playerinfo
 	</select>
 
-	<select id="findUserRankByUsername" resultMap="rankResultMap">
-		select username, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
+	<select id="findUserRankById" resultMap="rankResultMap">
+		select id, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
-			 (select * from `player` order by high_score desc limit 10) as playerinfo
-		where username = #{username}
+			 (select * from `player` order by high_score desc) as playerinfo
+		where id = #{id}
 	</select>
 </mapper>

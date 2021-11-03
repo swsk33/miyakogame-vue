@@ -3,8 +3,11 @@ package fun.swsk33site.miyakogame.cache;
 import fun.swsk33site.miyakogame.annotation.RedisCache;
 import fun.swsk33site.miyakogame.param.MailServiceType;
 
+/**
+ * 封装的邮箱验证码缓存操作
+ */
 @RedisCache
-public interface MailCode {
+public interface MailCodeCache {
 
 	/**
 	 * 生成邮件验证码，并存入Redis缓存
@@ -16,11 +19,13 @@ public interface MailCode {
 	int generateCodeToCache(int id, MailServiceType type);
 
 	/**
-	 * 从缓存移除邮件验证码
+	 * 校验验证码
 	 *
 	 * @param id   发送给的用户id
 	 * @param type 验证码的服务类型
+	 * @param code 用户提交的验证码
+	 * @return 是否正确，若校验通过，则会删除该验证码缓存
 	 */
-	void removeCodeInCache(int id, MailServiceType type);
+	boolean checkCodeInCache(int id, MailServiceType type, int code);
 
 }

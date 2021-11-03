@@ -6,6 +6,8 @@ import fun.swsk33site.miyakogame.param.CommonValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.concurrent.TimeUnit;
+
 @RedisCache
 public class InvalidDataImpl implements InvalidData {
 
@@ -15,6 +17,7 @@ public class InvalidDataImpl implements InvalidData {
 	@Override
 	public void addInvalidCredential(String credential) {
 		redisTemplate.opsForSet().add(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, credential);
+		redisTemplate.expire(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, 10, TimeUnit.MINUTES);
 	}
 
 	@Override
@@ -26,5 +29,5 @@ public class InvalidDataImpl implements InvalidData {
 	public boolean isCredentialInvalid(String credential) {
 		return redisTemplate.opsForSet().isMember(CommonValue.REDIS_INVALID_LOGIN_CREDENTIALS_SET, credential);
 	}
-	
+
 }

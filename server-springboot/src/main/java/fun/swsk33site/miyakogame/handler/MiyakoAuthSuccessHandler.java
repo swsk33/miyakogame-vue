@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import fun.swsk33site.miyakogame.model.Result;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -25,11 +24,9 @@ public class MiyakoAuthSuccessHandler implements AuthenticationSuccessHandler {
 		// 设定响应内容是utf-8编码的json类型
 		httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		httpServletResponse.setCharacterEncoding("utf-8");
-		// 获取用户名以返回给前端本地储存
-		UserDetails getUser = (UserDetails) authentication.getPrincipal();
 		// 组装自己的结果对象
 		Result<String> result = new Result();
-		result.setResultSuccess("登录成功！", getUser.getUsername());
+		result.setResultSuccess("登录成功！");
 		// 序列化结果对象为JSON
 		String resultJSON = JSON.toJSONString(result);
 		// 写入响应体
