@@ -37,7 +37,11 @@ export default {
 		/**
 		 * 重置密码页面
 		 */
-		resetPassword: false
+		resetPassword: false,
+		/**
+		 * 注册页面
+		 */
+		register: false
 	},
 	mutations: {
 		/**
@@ -93,6 +97,12 @@ export default {
 		 */
 		setResetPasswordPage(state, payload) {
 			state.resetPassword = payload;
+		},
+		/**
+		 * 设置用户注册页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setRegisterPage(state, payload) {
+			state.register = payload;
 		}
 	}
 }

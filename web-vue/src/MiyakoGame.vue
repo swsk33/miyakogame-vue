@@ -10,6 +10,7 @@
 		<successpage></successpage>
 		<failedpage></failedpage>
 		<pausepage></pausepage>
+		<registerpage></registerpage>
 	</div>
 </template>
 
@@ -24,6 +25,7 @@ import pausepage from '@/components/PausePage.vue';
 import shop from '@/components/Shop.vue';
 import loginpage from '@/components/LoginPage.vue';
 import resetpasswordpage from '@/components/ResetPasswordPage.vue';
+import registerpage from '@/components/RegisterPage.vue';
 
 import mouseffect from '@/assets/js/mouseffect.js';
 import random from '@/assets/js/random.js';
@@ -45,6 +47,7 @@ export default {
 		shop,
 		loginpage,
 		resetpasswordpage,
+		registerpage,
 	},
 	computed: {
 		...timeState(['time', 'festival']),
