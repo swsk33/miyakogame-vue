@@ -1,3 +1,4 @@
+<!-- 游戏加载模态窗 -->
 <template>
 	<div v-if="loading" :class="styleValue" ref="loadingPageDom">
 		<div class="loadingComponent">

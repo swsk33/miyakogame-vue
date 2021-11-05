@@ -1,3 +1,4 @@
+<!-- 主菜单页面 -->
 <template>
 	<div v-if="mainMenu" :class="styleValue" ref="mainMenuDom">
 		<div class="title">
@@ -19,7 +20,6 @@
 import { createNamespacedHelpers } from 'vuex';
 import { showDialog } from '@/components/util/mydialog.js';
 import random from '@/assets/js/random.js';
-import mouseffect from '@/assets/js/mouseffect.js';
 
 import user from './User.vue';
 
@@ -106,7 +106,6 @@ export default {
 		 * 显示商店
 		 */
 		showShop() {
-			mouseffect.disableAll();
 			this.setShopPage(true);
 		},
 	},

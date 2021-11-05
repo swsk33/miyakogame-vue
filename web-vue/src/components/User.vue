@@ -1,3 +1,4 @@
+<!-- 主菜单右上角用户组件 -->
 <template>
 	<div class="userComponent">
 		<div class="loginButton" v-if="!isLogin">
@@ -10,7 +11,7 @@
 			<div class="arrow" ref="arrow">▲</div>
 		</div>
 		<ul class="dropDownMenu" v-if="menuShow" @mouseleave="menuShow = false">
-			<li>个人中心</li>
+			<li @click="setInfoEditPage(true)">个人中心</li>
 			<li @click="logoutButton">退出登录</li>
 		</ul>
 	</div>
@@ -48,7 +49,7 @@ export default {
 	},
 	methods: {
 		...dataActions(['userLogout']),
-		...pageMutations(['setLoginPage', 'setRegisterPage']),
+		...pageMutations(['setLoginPage', 'setRegisterPage', 'setInfoEditPage']),
 		/**
 		 * 退出登录按钮事件
 		 */

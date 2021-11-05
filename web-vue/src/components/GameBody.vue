@@ -1,3 +1,4 @@
+<!-- 游戏主体 -->
 <template>
 	<div :class="styleValue" ref="gameBodyDom">
 		<div class="topBar">

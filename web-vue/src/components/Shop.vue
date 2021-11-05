@@ -1,3 +1,4 @@
+<!-- 商店页面 -->
 <template>
 	<div :class="styleValue" v-if="shop">
 		<div class="frame">
@@ -102,6 +103,16 @@ export default {
 		},
 	},
 	watch: {
+		/**
+		 * 监听商店页面，若页面打开则关闭鼠标效果
+		 */
+		shop() {
+			if (this.shop) {
+				mouseffect.disableAll();
+			} else {
+				mouseffect.enableAll();
+			}
+		},
 		'weaponList.length': {
 			handler: function () {
 				let weaponCart = [];
@@ -157,7 +168,6 @@ export default {
 		 * 关闭商店
 		 */
 		closeShop() {
-			mouseffect.enableAll();
 			this.setShopPage(false);
 			// 清空购物车
 			for (let i = 0; i < this.buyPropCount.length; i++) {

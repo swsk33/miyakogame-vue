@@ -1,3 +1,4 @@
+<!-- 帮助模态窗 -->
 <template>
 	<div v-if="help" :class="styleValue">
 		<div class="frame">

@@ -2,6 +2,7 @@ import {
 	createApp
 } from 'vue';
 
+import store from '@/store';
 import Loading from './Loading.vue';
 
 /**
@@ -19,7 +20,7 @@ export function showLoading(x, y, text) {
 	mountDom.style.left = 0;
 	mountDom.style.top = 0;
 	document.body.appendChild(mountDom);
-	let loading = createApp(Loading).mount(mountDom);
+	let loading = createApp(Loading).use(store).mount(mountDom);
 	loading.setData(x, y, text);
 	let loadingObject = {
 		destory: () => {

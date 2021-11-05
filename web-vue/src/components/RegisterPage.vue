@@ -1,13 +1,13 @@
 <template>
 	<div v-if="register" class="register">
 		<div class="frame">
-			<div class="title">用户注册</div>
+			<div class="title">玩家注册</div>
 			<input class="username" type="text" placeholder="用户名" v-model="postData.username" />
 			<input class="password" type="password" placeholder="密码" v-model="postData.password" />
 			<input class="email" type="text" placeholder="邮箱" v-model="postData.email" />
 			<input class="nickname" type="text" placeholder="昵称" v-model="postData.nickname" />
-			<div class="ok">确认注册</div>
-			<div class="close" @click="closeButton">关闭</div>
+			<div class="ok" @click="okButton">确认注册</div>
+			<div class="close" @click="setRegisterPage(false)">关闭</div>
 		</div>
 	</div>
 </template>
@@ -15,10 +15,12 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { showTip, tipType } from '@/components/util/tip.js';
+import { showLoading } from '@/components/util/loading.js';
 import mouseffect from '@/assets/js/mouseffect.js';
 import axios from 'axios';
 
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapActions: dataActions } = createNamespacedHelpers('userdata');
 
 export default {
 	data() {
@@ -46,21 +48,44 @@ export default {
 				mouseffect.disableAll();
 			} else {
 				mouseffect.enableAll();
+				// 清空输入
+				for (let key in this.postData) {
+					this.postData[key] = '';
+				}
 			}
 		},
 	},
 	methods: {
+		...dataActions(['userLogin']),
 		...pageMutations(['setRegisterPage']),
 		/**
-		 * 关闭按钮
+		 * 确认注册按钮
 		 */
-		closeButton() {
-			this.setRegisterPage(false);
-			/**
-			 * 清空输入
-			 */
-			for (let key in this.postData) {
-				this.postData[key] = '';
+		async okButton() {
+			let loading = showLoading('45vw', '12vh', '发起注册请求...');
+			try {
+				const response = await axios({
+					method: 'POST',
+					url: '/api/player/register',
+					data: this.postData,
+				});
+				if (!response.data.success) {
+					showTip('注册失败！' + response.data.message, tipType.error);
+					loading.destory();
+					return;
+				}
+				showTip('注册成功！', tipType.info);
+				loading.destory();
+				// 注册成功，则自动登录
+				this.userLogin({
+					credential: this.postData.username,
+					password: this.postData.password,
+				});
+				// 关闭页面
+				this.setRegisterPage(false);
+			} catch (error) {
+				showTip('注册失败！', tipType.error);
+				loading.destory();
 			}
 		},
 	},
@@ -85,7 +110,7 @@ export default {
 		justify-content: flex-start;
 		align-items: center;
 		width: 350px;
-		height: 325px;
+		height: 335px;
 		background-color: rgb(122, 255, 255);
 		border-radius: 10px;
 
@@ -118,7 +143,7 @@ export default {
 
 		.ok,
 		.close {
-			margin-top: 20px;
+			margin-top: 17px;
 			width: 75%;
 			font-size: 20px;
 			text-align: center;

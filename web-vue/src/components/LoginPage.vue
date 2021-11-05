@@ -1,3 +1,4 @@
+<!-- 用户登录模态窗 -->
 <template>
 	<div class="loginPage" v-if="login">
 		<div class="frame">
@@ -6,7 +7,7 @@
 			<input class="password" type="password" placeholder="密码" v-model="loginData.password" />
 			<div class="forget" @click="forgetPasswordButton">忘记密码？</div>
 			<div class="login" @click="loginButton">登录</div>
-			<div class="close" @click="exitLoginFrame">关闭</div>
+			<div class="close" @click="setLoginPage(false)">关闭</div>
 		</div>
 	</div>
 </template>
@@ -14,6 +15,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import mouseffect from '@/assets/js/mouseffect.js';
+import { showLoading } from '@/components/util/loading.js';
 
 const { mapState: pageState, mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
 const { mapActions: dataActions } = createNamespacedHelpers('userdata');
@@ -39,6 +41,9 @@ export default {
 				mouseffect.disableAll();
 			} else {
 				mouseffect.enableAll();
+				// 清空输入框
+				this.loginData.credential = '';
+				this.loginData.password = '';
 			}
 		},
 	},
@@ -46,27 +51,20 @@ export default {
 		...pageMutations(['setLoginPage', 'setResetPasswordPage']),
 		...dataActions(['userLogin']),
 		/**
-		 * 关闭登录窗口
-		 */
-		exitLoginFrame() {
-			this.setLoginPage(false);
-			// 清空输入框
-			this.loginData.credential = '';
-			this.loginData.password = '';
-		},
-		/**
 		 * 登录按钮
 		 */
 		async loginButton() {
+			let loading = showLoading('45vw', '12vh', '发起登录请求...');
 			if (await this.userLogin(this.loginData)) {
-				this.exitLoginFrame();
+				this.setLoginPage(false);
 			}
+			loading.destory();
 		},
 		/**
 		 * 忘记密码按钮
 		 */
 		forgetPasswordButton() {
-			this.exitLoginFrame();
+			this.setLoginPage(false);
 			this.setResetPasswordPage(true);
 		},
 	},

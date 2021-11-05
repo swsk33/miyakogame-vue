@@ -1,3 +1,4 @@
+<!-- 失败蒙层 -->
 <template>
 	<div v-if="failed" :class="styleValue">
 		<div class="t1">failed!</div>

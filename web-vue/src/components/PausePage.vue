@@ -1,3 +1,4 @@
+<!-- 暂停蒙层 -->
 <template>
 	<div v-if="pause" :class="styleValue">
 		<div class="banner">

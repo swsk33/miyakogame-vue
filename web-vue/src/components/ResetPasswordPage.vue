@@ -1,3 +1,4 @@
+<!-- 重置密码模态窗 -->
 <template>
 	<div class="resetPassword" v-if="resetPassword">
 		<div class="frame">
@@ -9,7 +10,7 @@
 			</div>
 			<input type="password" class="resetInput" placeholder="请输入新密码" v-model="newPassword" />
 			<div class="ok" @click="resetButton">确认重置</div>
-			<div class="cancel" @click="closePage">关闭</div>
+			<div class="cancel" @click="setResetPasswordPage(false)">关闭</div>
 		</div>
 	</div>
 </template>
@@ -17,6 +18,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { showTip, tipType } from '@/components/util/tip.js';
+import { showLoading } from '@/components/util/loading.js';
 import mouseffect from '@/assets/js/mouseffect.js';
 import axios from 'axios';
 
@@ -63,22 +65,16 @@ export default {
 				mouseffect.disableAll();
 			} else {
 				mouseffect.enableAll();
+				// 清空输入内容
+				this.email = '';
+				this.code = '';
+				this.newPassword = '';
+				this.currentUserId = undefined;
 			}
 		},
 	},
 	methods: {
 		...pageMutations(['setResetPasswordPage']),
-		/**
-		 * 关闭忘记密码页面
-		 */
-		closePage() {
-			this.setResetPasswordPage(false);
-			// 清空输入内容
-			this.email = '';
-			this.code = '';
-			this.newPassword = '';
-			this.currentUserId = undefined;
-		},
 		/**
 		 * 发送验证码按钮
 		 */
@@ -88,11 +84,13 @@ export default {
 					showTip('请先填写邮箱！', tipType.error);
 					return;
 				}
+				let loading = showLoading('45vw', '12vh', '请求发送验证码...');
 				try {
 					// 先根据邮箱找到用户
 					const userResponse = await axios.get('/api/player/getbyemail/' + this.email);
 					if (!userResponse.data.success) {
 						showTip('发送失败！' + userResponse.data.message, tipType.error);
+						loading.destory();
 						return;
 					}
 					this.currentUserId = userResponse.data.data.id;
@@ -100,9 +98,11 @@ export default {
 					const sendCodeResponse = await axios.get('/api/email/reset/' + this.currentUserId);
 					if (!sendCodeResponse.data.success) {
 						showTip('发送失败！' + userResponse.data.message, tipType.error);
+						loading.destory();
 						return;
 					}
 					showTip('发送验证码成功！', tipType.info);
+					loading.destory();
 					this.sendCodeButtonText = '发送成功！';
 					// 60s内发送验证码按钮不可用
 					this.sendCodeEnable = false;
@@ -118,6 +118,7 @@ export default {
 					}, 1000);
 				} catch (error) {
 					showTip('发送验证码失败！', tipType.error);
+					loading.destory();
 				}
 			}
 		},
@@ -142,6 +143,7 @@ export default {
 				id: this.currentUserId,
 				password: this.newPassword,
 			};
+			let loading = showLoading('45vw', '12vh', '请求密码重置...');
 			try {
 				const response = await axios({
 					method: 'PATCH',
@@ -150,12 +152,15 @@ export default {
 				});
 				if (!response.data.success) {
 					showTip('重置密码失败！' + response.data.message, tipType.error);
+					loading.destory();
 					return;
 				}
 				showTip('重置密码成功！请用新密码登录！', tipType.info);
-				this.closePage();
+				this.setResetPasswordPage(false);
+				loading.destory();
 			} catch (error) {
 				showTip('重置密码失败！', tipType.error);
+				loading.destory();
 			}
 		},
 	},

@@ -41,7 +41,15 @@ export default {
 		/**
 		 * 注册页面
 		 */
-		register: false
+		register: false,
+		/**
+		 * 信息修改页面
+		 */
+		infoEdit: false,
+		/**
+		 * 用户注销验证页面
+		 */
+		userDeleteVerify: false
 	},
 	mutations: {
 		/**
@@ -103,6 +111,18 @@ export default {
 		 */
 		setRegisterPage(state, payload) {
 			state.register = payload;
+		},
+		/**
+		 * 设置用户信息修改页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setInfoEditPage(state, payload) {
+			state.infoEdit = payload;
+		},
+		/**
+		 * 设置用户注销验证码页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setUserDeleteVerifyPage(state, payload) {
+			state.userDeleteVerify = payload;
 		}
 	}
 }

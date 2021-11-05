@@ -12,9 +12,11 @@ import fun.swsk33site.miyakogame.service.AvatarService;
 import fun.swsk33site.miyakogame.service.MailService;
 import fun.swsk33site.miyakogame.service.PlayerService;
 import fun.swsk33site.miyakogame.util.ClassExamine;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,9 @@ public class PlayerServiceImpl implements PlayerService {
 
 	@Autowired
 	private PlayerCache playerCache;
+
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	@Autowired
 	private InvalidData invalidData;
@@ -91,7 +96,9 @@ public class PlayerServiceImpl implements PlayerService {
 		// 设定基本信息
 		// 加密储存密码
 		player.setPassword(encoder.encode(player.getPassword()));
-		player.setNickname(player.getUsername());
+		if (StringUtils.isEmpty(player.getNickname())) {
+			player.setNickname(player.getUsername());
+		}
 		player.setAvatar(avatarService.getRandomAvatar().getData());
 		player.setHighScore(0);
 		player.setGameData("null");
@@ -175,6 +182,26 @@ public class PlayerServiceImpl implements PlayerService {
 		// 如果用户修改了密码，则加密储存
 		if (!player.getPassword().equals(getPlayer.getPassword())) {
 			player.setPassword(encoder.encode(player.getPassword()));
+		}
+		// 若用户修改了邮箱，则检查新邮箱是否有人注册过了
+		if (!player.getEmail().equals(getPlayer.getEmail())) {
+			Player checkPlayer = playerCache.getByEmail(player.getEmail());
+			if (checkPlayer == null) {
+				try {
+					checkPlayer = playerDAO.findByEmail(player.getEmail());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (checkPlayer != null) {
+					playerCache.addOrSet(checkPlayer);
+				}
+			}
+			if (checkPlayer != null) {
+				result.setResultFailed("待修改邮箱已经有人使用！");
+				return result;
+			}
+			// 修改成功，则先删除Redis缓存中邮箱对id表中的旧的邮箱
+			redisTemplate.opsForHash().delete(CommonValue.REDIS_PLAYER_EMAIL_TO_ID_HASH, getPlayer.getEmail());
 		}
 		// 写入数据库、Redis
 		// 上锁

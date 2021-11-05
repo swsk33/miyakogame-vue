@@ -1,3 +1,4 @@
+<!-- 成功蒙层 -->
 <template>
 	<div v-if="success" :class="styleValue">
 		<div class="t1">succeed!</div>
