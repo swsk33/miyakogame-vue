@@ -38,16 +38,16 @@ public class PlayerAPI {
 	}
 
 	@RequestMapping(method = RequestMethod.PATCH, value = "/update")
-	public Result update(@RequestBody @Validated(ValidationGroup.PlayerUpdate.class) Player player, BindingResult errors, Authentication authentication) throws Exception {
-		Result result;
+	public Result<Player> update(@RequestBody @Validated(ValidationGroup.PlayerUpdate.class) Player player, BindingResult errors, Authentication authentication) throws Exception {
+		Result<Player> result;
 		if (errors.hasErrors()) {
-			result = new Result();
+			result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
 		// 校验登录用户和当前被修改用户是否一致
 		if (!((UserDetails) authentication.getPrincipal()).getUsername().equals(player.getUsername())) {
-			result = new Result();
+			result = new Result<>();
 			result.setResultFailed("被修改用户和当前登录用户不一致！终止！");
 			return result;
 		}
