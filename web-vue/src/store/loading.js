@@ -43,6 +43,7 @@ export default {
 				context.commit('setProcess', process.toFixed(2));
 				// 加载完成之后
 				if (imageLoaded == context.state.imageCount && audioLoaded == context.state.audioCount) {
+					// 设置加载完成
 					context.commit('setComplete', true);
 					// 替换图片资源为require形式
 					await context.commit('image/setImageResource', 'imageList', {
@@ -55,7 +56,11 @@ export default {
 					await context.dispatch('prop/initializeProps', null, {
 						root: true
 					});
-					// 读取本地数据
+					// 先判断用户是否登录
+					await context.dispatch('userdata/checkUserLogin', null, {
+						root: true
+					});
+					// 再读取本地数据
 					await context.dispatch('userdata/readGameData', null, {
 						root: true
 					});

@@ -2,7 +2,7 @@
 	<div class="userComponent">
 		<div class="loginButton" v-if="!isLogin">
 			<div class="login" @click="setLoginPage(true)">登录</div>
-			<div class="register">注册</div>
+			<div class="register" @click="setRegisterPage(true)">注册</div>
 		</div>
 		<div class="userInfo" v-if="isLogin" @mouseenter="menuShow = true">
 			<img class="avatar" :src="onlineUserData.avatar" />
@@ -48,7 +48,7 @@ export default {
 	},
 	methods: {
 		...dataActions(['userLogout']),
-		...pageMutations(['setLoginPage']),
+		...pageMutations(['setLoginPage', 'setRegisterPage']),
 		/**
 		 * 退出登录按钮事件
 		 */

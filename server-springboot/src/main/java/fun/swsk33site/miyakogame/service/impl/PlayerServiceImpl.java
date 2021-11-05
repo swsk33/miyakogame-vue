@@ -149,8 +149,8 @@ public class PlayerServiceImpl implements PlayerService {
 	}
 
 	@Override
-	public Result update(Player player) throws Exception {
-		Result result = new Result();
+	public Result<Player> update(Player player) throws Exception {
+		Result<Player> result = new Result<>();
 		// 先去Redis中获取用户信息
 		Player getPlayer = playerCache.getById(player.getId());
 		if (getPlayer == null) {
@@ -188,7 +188,7 @@ public class PlayerServiceImpl implements PlayerService {
 		} finally {
 			lock.unlock();
 		}
-		result.setResultSuccess("更新用户信息成功！");
+		result.setResultSuccess("更新用户信息成功！", player);
 		return result;
 	}
 

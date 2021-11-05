@@ -100,7 +100,9 @@ export default {
 				} else {
 					showTip('登录成功！', tipType.info);
 					// 获取用户信息
-					context.dispatch('checkUserLogin');
+					await context.dispatch('checkUserLogin');
+					// 重读数据
+					await context.dispatch('readGameData');
 					return true;
 				}
 			} catch (error) {
@@ -225,6 +227,7 @@ export default {
 				const userData = {
 					id: context.state.onlineUserData.id,
 					username: context.state.onlineUserData.username,
+					highScore: context.state.gameData.highScore,
 					gameData: JSON.stringify(context.state.gameData)
 				};
 				try {
@@ -235,7 +238,10 @@ export default {
 					});
 					if (!response.data.success) {
 						showTip('保存数据至云端失败！请检查网络或者是否登录！', tipType.error);
+						return;
 					}
+					// 刷新在线用户信息缓存
+					context.state.onlineUserData = response.data.data;
 				} catch (error) {
 					showTip('保存数据至云端失败！请检查网络或者是否登录！', tipType.error);
 				}
@@ -249,12 +255,36 @@ export default {
 		 */
 		resetAllData(context) {
 			let highScore = context.state.gameData.highScore;
+			// 清空本地
 			localStorage.clear();
-			context.dispatch('readGameData');
-			context.commit('setGameData', {
-				name: 'highScore',
-				value: highScore
-			});
+			context.commit('setNewGame', true);
+			// 初始化基本数据
+			const newGameData = {
+				level: 1,
+				health: 3,
+				highScore: highScore,
+				currentScore: 0,
+				propsCount: [],
+				weaponCount: []
+			}
+			// 初始化武器道具数量，价格为0的武器子弹无限（用-1表示）
+			const getWeapons = context.rootState.weapon.weaponList;
+			for (let i = 0; i < getWeapons.length; i++) {
+				if (getWeapons[i].price == 0) {
+					newGameData.weaponCount.push(-1);
+				} else {
+					newGameData.weaponCount.push(10);
+				}
+			}
+			// 初始化道具数量
+			const getProps = context.rootState.prop.propList;
+			for (let i = 0; i < getProps.length; i++) {
+				newGameData.propsCount.push(1);
+			}
+			// 执行提交数据
+			context.commit('setTotalData', newGameData);
+			// 保存数据
+			context.dispatch('saveData', false);
 		},
 		/**
 		 * 加分，payload为一个整数表示要加的分的值

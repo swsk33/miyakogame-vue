@@ -12,7 +12,7 @@ public interface PlayerService {
 	/**
 	 * 用户注册
 	 */
-	Result register(Player player) throws MessagingException;
+	Result<Player> register(Player player) throws MessagingException;
 
 	/**
 	 * 用户销号
@@ -22,7 +22,7 @@ public interface PlayerService {
 	/**
 	 * 用户信息更新
 	 */
-	Result update(Player player) throws Exception;
+	Result<Player> update(Player player) throws Exception;
 
 	/**
 	 * 重置用户密码，提供用户id和新的密码即可
