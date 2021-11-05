@@ -43,7 +43,7 @@
 			</div>
 			<div class="buttonBox">
 				<div class="ok" @click="buy">购买</div>
-				<div class="cancel" @click="closeShop">取消</div>
+				<div class="cancel" @click="setShopPage(false)">关闭</div>
 			</div>
 		</div>
 	</div>
@@ -104,13 +104,20 @@ export default {
 	},
 	watch: {
 		/**
-		 * 监听商店页面，若页面打开则关闭鼠标效果
+		 * 监听商店页面，若页面打开则关闭鼠标效果，并清空购物车
 		 */
 		shop() {
 			if (this.shop) {
 				mouseffect.disableAll();
 			} else {
 				mouseffect.enableAll();
+				// 清空购物车
+				for (let i = 0; i < this.buyPropCount.length; i++) {
+					this.buyPropCount[i] = 0;
+				}
+				for (let i = 0; i < this.buyWeaponCount.length; i++) {
+					this.buyWeaponCount[i] = 0;
+				}
 			}
 		},
 		'weaponList.length': {
@@ -162,19 +169,6 @@ export default {
 		closeTip() {
 			if (this.tipObject != undefined) {
 				this.tipObject.destroy();
-			}
-		},
-		/**
-		 * 关闭商店
-		 */
-		closeShop() {
-			this.setShopPage(false);
-			// 清空购物车
-			for (let i = 0; i < this.buyPropCount.length; i++) {
-				this.buyPropCount[i] = 0;
-			}
-			for (let i = 0; i < this.buyWeaponCount.length; i++) {
-				this.buyWeaponCount[i] = 0;
 			}
 		},
 		/**

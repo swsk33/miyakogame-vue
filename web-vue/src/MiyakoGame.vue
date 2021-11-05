@@ -13,6 +13,7 @@
 		<registerpage></registerpage>
 		<userinfoeditpage></userinfoeditpage>
 		<userdeleteverifypage></userdeleteverifypage>
+		<ranktablepage ref="rankTablePage"></ranktablepage>
 	</div>
 </template>
 
@@ -30,6 +31,7 @@ import resetpasswordpage from '@/components/ResetPasswordPage.vue';
 import registerpage from '@/components/RegisterPage.vue';
 import userinfoeditpage from '@/components/UserInfoEdit.vue';
 import userdeleteverifypage from '@/components/UserDeleteVerify.vue';
+import ranktablepage from '@/components/RankTable.vue';
 
 import mouseffect from '@/assets/js/mouseffect.js';
 import random from '@/assets/js/random.js';
@@ -53,6 +55,7 @@ export default {
 		registerpage,
 		userinfoeditpage,
 		userdeleteverifypage,
+		ranktablepage,
 	},
 	computed: {
 		...timeState(['time', 'festival']),
@@ -99,6 +102,9 @@ export default {
 			// 商店
 			this.$refs.shopPage.styleValue.shopHalloween = this.festival.halloween;
 			this.$refs.shopPage.styleValue.shopNight = this.time.night;
+			// 排行榜
+			this.$refs.rankTablePage.styleValue.rankTableHalloween = this.festival.halloween;
+			this.$refs.rankTablePage.styleValue.rankTableNight = this.time.night;
 			// 游戏主体背景
 			this.$refs.gameBody.styleValue.gameBodyHalloween = this.festival.halloween;
 			this.$refs.gameBody.styleValue.gameBodyNight = this.time.night;

@@ -1,6 +1,6 @@
 <!-- 主菜单右上角用户组件 -->
 <template>
-	<div class="userComponent">
+	<div :class="styleValue">
 		<div class="loginButton" v-if="!isLogin">
 			<div class="login" @click="setLoginPage(true)">登录</div>
 			<div class="register" @click="setRegisterPage(true)">注册</div>
@@ -23,11 +23,19 @@ import mouseffect from '@/assets/js/mouseffect.js';
 
 const { mapState: dataState, mapActions: dataActions } = createNamespacedHelpers('userdata');
 const { mapMutations: pageMutations } = createNamespacedHelpers('pagecontrol');
+const { mapState: timeState } = createNamespacedHelpers('timecontrol');
 
 export default {
 	data() {
 		return {
 			menuShow: false,
+			/**
+			 * 样式变量
+			 */
+			styleValue: {
+				userComponent: true,
+				userComponentNight: false,
+			},
 		};
 	},
 	watch: {
@@ -43,9 +51,30 @@ export default {
 				mouseffect.enableAll();
 			}
 		},
+		/**
+		 * 监听时间
+		 */
+		time: {
+			handler() {
+				this.styleValue.userComponentNight = this.time.night;
+			},
+			immediate: true,
+			deep: true,
+		},
+		/**
+		 * 监听节日
+		 */
+		festival: {
+			handler() {
+				this.styleValue.userComponentNight = this.festival.halloween;
+			},
+			immediate: true,
+			deep: true,
+		},
 	},
 	computed: {
 		...dataState(['isLogin', 'onlineUserData']),
+		...timeState(['time', 'festival']),
 	},
 	methods: {
 		...dataActions(['userLogout']),
@@ -160,6 +189,43 @@ export default {
 				color: white;
 				background-color: blue;
 			}
+		}
+	}
+}
+
+// 用户组件-夜晚或者万圣节
+.userComponentNight {
+	.loginButton {
+		.login,
+		.register {
+			color: white;
+			text-shadow: 0px 0px 1px white;
+		}
+
+		.login {
+			&:hover {
+				color: black;
+				background-color: rgb(0, 238, 255);
+			}
+		}
+
+		.register {
+			&:hover {
+				color: black;
+				background-color: rgb(255, 157, 255);
+			}
+		}
+	}
+
+	.userInfo {
+		.avatar {
+			border: 2px rgb(72, 234, 255) solid;
+		}
+
+		.nickname,
+		.arrow {
+			color: white;
+			text-shadow: 0px 0px 1px white;
 		}
 	}
 }

@@ -35,11 +35,6 @@ public class RankInfo implements Serializable {
 	private int highScore;
 
 	/**
-	 * 用户游戏数据
-	 */
-	private String gameData;
-
-	/**
 	 * 排名
 	 */
 	private Long sequence;
@@ -55,7 +50,6 @@ public class RankInfo implements Serializable {
 		nickname = player.getNickname();
 		avatar = player.getAvatar();
 		highScore = player.getHighScore();
-		gameData = player.getGameData();
 		this.sequence = sequence;
 	}
 

@@ -49,7 +49,11 @@ export default {
 		/**
 		 * 用户注销验证页面
 		 */
-		userDeleteVerify: false
+		userDeleteVerify: false,
+		/**
+		 * 排行榜页面
+		 */
+		rankTable: false
 	},
 	mutations: {
 		/**
@@ -123,6 +127,12 @@ export default {
 		 */
 		setUserDeleteVerifyPage(state, payload) {
 			state.userDeleteVerify = payload;
+		},
+		/**
+		 * 设置排行榜页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setRankTablePage(state, payload) {
+			state.rankTable = payload;
 		}
 	}
 }

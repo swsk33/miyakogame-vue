@@ -6,18 +6,17 @@
 		<result column="nickname" property="nickname"/>
 		<result column="avatar" property="avatar"/>
 		<result column="high_score" property="highScore"/>
-		<result column="game_data" property="gameData"/>
 		<result column="sequence" property="sequence"/>
 	</resultMap>
 
 	<select id="findByHighScoreInTen" resultMap="rankResultMap">
-		select id, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
+		select id, nickname, avatar, high_score, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
 			 (select * from `player` order by high_score desc limit 10) as playerinfo
 	</select>
 
 	<select id="findUserRankById" resultMap="rankResultMap">
-		select id, nickname, avatar, high_score, game_data, @row := @row + 1 as sequence
+		select id, nickname, avatar, high_score, @row := @row + 1 as sequence
 		from (select @row := 0) as rowtemptable,
 			 (select * from `player` order by high_score desc) as playerinfo
 		where id = #{id}

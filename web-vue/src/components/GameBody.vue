@@ -409,7 +409,7 @@ export default {
 		position: relative;
 		width: 100%;
 		height: calc(100vh - 55px);
-		background-color: #77ffff;
+		background-color: #77d1fa;
 
 		@for $i from 0 through 3 {
 			@for $j from 0 through 7 {

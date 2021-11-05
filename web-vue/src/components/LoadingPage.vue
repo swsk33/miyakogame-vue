@@ -65,6 +65,15 @@ export default {
 	}
 }
 
+@keyframes showBar {
+	from {
+		width: 0px;
+	}
+	to {
+		width: 350px;
+	}
+}
+
 .loading {
 	position: absolute;
 	display: flex;
@@ -106,6 +115,9 @@ export default {
 		margin-top: 16px;
 		border: 3px blue solid;
 		border-radius: 18px;
+		animation-name: showBar;
+		animation-duration: 0.8s;
+		animation-timing-function: ease-out;
 
 		.processValue {
 			position: absolute;

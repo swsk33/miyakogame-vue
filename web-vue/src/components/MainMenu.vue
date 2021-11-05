@@ -1,6 +1,6 @@
 <!-- 主菜单页面 -->
 <template>
-	<div v-if="mainMenu" :class="styleValue" ref="mainMenuDom">
+	<div v-show="mainMenu" :class="styleValue" ref="mainMenuDom">
 		<div class="title">
 			<img class="avatar" :src="imageList.png.avatar.excepted" />
 			<img class="main" :src="imageList.png.title" />
@@ -9,7 +9,7 @@
 			<li :class="{ newGameStyle: isNewGame }" @click="continueGame">继续游戏</li>
 			<li @click="newGame">新游戏</li>
 			<li @click="showShop">魔法商店</li>
-			<li>排行榜</li>
+			<li @click="setRankTablePage(true)">排行榜</li>
 			<li @click="setHelpPage(true)">帮助</li>
 		</ul>
 		<user class="userComponent"></user>
@@ -53,7 +53,7 @@ export default {
 		};
 	},
 	methods: {
-		...pageMutations(['setMainMenuPage', 'setHelpPage', 'setShopPage']),
+		...pageMutations(['setMainMenuPage', 'setHelpPage', 'setShopPage', 'setRankTablePage']),
 		...dataActions(['resetAllData']),
 		...gameActions(['enterGame']),
 		/**
