@@ -1,2 +1,2 @@
 在前端的vue工程目录下执行npm run build命令构建之后，将该工程文件夹下的dist文件夹中除了index.html文件之外的全部内容复制到该文件夹下即可。
-index文件放在Spring Boot工程目录下的src/main/resources/templates目录下。
+index.html文件放在Spring Boot工程目录下的src/main/resources/templates目录下。
