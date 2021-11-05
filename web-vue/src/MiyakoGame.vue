@@ -6,14 +6,15 @@
 		<shop ref="shopPage"></shop>
 		<loginpage></loginpage>
 		<resetpasswordpage></resetpasswordpage>
-		<loadingpage ref="loadingPage"></loadingpage>
-		<successpage></successpage>
-		<failedpage></failedpage>
-		<pausepage></pausepage>
 		<registerpage></registerpage>
 		<userinfoeditpage></userinfoeditpage>
 		<userdeleteverifypage></userdeleteverifypage>
 		<ranktablepage ref="rankTablePage"></ranktablepage>
+		<loadingpage ref="loadingPage"></loadingpage>
+		<successpage></successpage>
+		<failedpage></failedpage>
+		<pausepage></pausepage>
+		<notsupportpage></notsupportpage>
 	</div>
 </template>
 
@@ -32,6 +33,7 @@ import registerpage from '@/components/RegisterPage.vue';
 import userinfoeditpage from '@/components/UserInfoEdit.vue';
 import userdeleteverifypage from '@/components/UserDeleteVerify.vue';
 import ranktablepage from '@/components/RankTable.vue';
+import notsupportpage from '@/components/NotSupport.vue';
 
 import mouseffect from '@/assets/js/mouseffect.js';
 import random from '@/assets/js/random.js';
@@ -56,6 +58,7 @@ export default {
 		userinfoeditpage,
 		userdeleteverifypage,
 		ranktablepage,
+		notsupportpage,
 	},
 	computed: {
 		...timeState(['time', 'festival']),

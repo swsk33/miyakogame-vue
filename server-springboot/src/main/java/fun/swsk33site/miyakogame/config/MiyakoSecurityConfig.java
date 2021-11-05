@@ -65,8 +65,8 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/rank/total").permitAll()
 				// 需要登录才能获取用户排名
 				.antMatchers("/api/rank/getmine/*").authenticated()
-				// 放行头像等等静态资源url
-				.antMatchers("/static-resources/**").permitAll();
+				// 放行头像静态资源url
+				.antMatchers("/avatar/**").permitAll();
 		// 自定义退出登录url和配置自定义的登出成功处理器
 		httpSecurity.logout().logoutUrl("/api/player/logout").logoutSuccessHandler(new MiyakoLogoutSuccessHandler());
 		// 关闭csrf

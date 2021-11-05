@@ -69,6 +69,23 @@ export default {
 			}, 100);
 		},
 		async loadAll(context) {
+			// 加载之前先检测UA
+			const userBrowserUA = window.navigator.userAgent;
+			// 若为移动端，则显示不支持页面
+			if (userBrowserUA.indexOf('Android') != -1 || userBrowserUA.indexOf('iPhone') != -1 || userBrowserUA.indexOf('iPad') != -1) {
+				// 关闭所有页面
+				context.commit('pagecontrol/setLoadingPage', false, {
+					root: true
+				});
+				context.commit('pagecontrol/setMainMenuPage', false, {
+					root: true
+				});
+				context.commit('pagecontrol/setNotSupportPage', true, {
+					root: true
+				});
+				return;
+			}
+			// 否则，执行全部资源加载
 			context.commit('setImageCount', await context.dispatch('image/getTotal', null, {
 				root: true
 			}));

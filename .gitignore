@@ -15,3 +15,9 @@
 # 自定义
 /server-springboot/resource/avatar/user/
 /server-springboot/resource/config/config-dev.properties
+/server-springboot/resource/web/css/
+/server-springboot/resource/web/img/
+/server-springboot/resource/web/js/
+/server-springboot/resource/web/media/
+/server-springboot/resource/web/*.ico
+/server-springboot/src/main/resources/templates/index.html

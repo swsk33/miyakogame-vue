@@ -53,7 +53,11 @@ export default {
 		/**
 		 * 排行榜页面
 		 */
-		rankTable: false
+		rankTable: false,
+		/**
+		 * 不支持页面
+		 */
+		notSupport: false
 	},
 	mutations: {
 		/**
@@ -133,6 +137,12 @@ export default {
 		 */
 		setRankTablePage(state, payload) {
 			state.rankTable = payload;
+		},
+		/**
+		 * 设置不支持页面显示还是隐藏，payload为一个布尔值，true表示显示，false表示隐藏
+		 */
+		setNotSupportPage(state, payload) {
+			state.notSupport = payload;
 		}
 	}
 }
