@@ -62,7 +62,7 @@ npm run build
 
 在配置之前，Spring Boot的一些配置可能需要修改。配置文件位于`项目文件夹/server-springboot/resource/config`目录下，首先修改`config.properties`文件，将里面的`spring.profiles.active`配置项的值由`dev`改为`prod`。
 
-然后修改`config-prod.properties`文件，按照里面的注释提示，把数据库地址修改为自己的数据库地址，需要有MySQL和Redis数据库。
+然后修改`config-prod.properties`文件，按照里面的注释提示，把数据库地址修改为自己的数据库地址，需要有MySQL和Redis数据库。以及需要配置一个邮箱，用于发送邮件验证码。其余配置按需修改。
 
 如果需要开启https，那么将其中`miyako.server.enablehttps`的值改为`true`，并将`# SSL证书设置`下面三项的注释去掉，按照提示填上你的证书位置和密码。证书位置可以是`classpath`路径，也可以是`file`路径。若不明白这两个路径可以参考：[网址](https://juejin.cn/post/6989109110172024840)
 
