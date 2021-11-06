@@ -20,4 +20,4 @@
 /server-springboot/resource/web/js/
 /server-springboot/resource/web/media/
 /server-springboot/resource/web/*.ico
-/server-springboot/src/main/resources/templates/index.html
+/server-springboot/resource/web/index.html
