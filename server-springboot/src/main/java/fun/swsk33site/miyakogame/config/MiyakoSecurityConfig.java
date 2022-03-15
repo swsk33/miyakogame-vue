@@ -52,7 +52,7 @@ public class MiyakoSecurityConfig extends WebSecurityConfigurerAdapter {
 		// 设定认证拦截器
 		httpSecurity.authorizeRequests()
 				// 需要登录后才能获取用户信息和进行用户操作
-				.antMatchers("/api/player/delete/**", "/api/player/update", "/api/player/islogin").authenticated()
+				.antMatchers("/api/player/delete/**", "/api/player/update").authenticated()
 				// 放行用户注册、用户登录、密码重置、以邮箱查询用户
 				.antMatchers("/api/player/register", "/api/player/login", "/api/player/reset/**", "/api/player/getbyemail/*").permitAll()
 				// 放行密码重置邮箱验证码接口

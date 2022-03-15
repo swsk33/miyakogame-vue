@@ -23,8 +23,7 @@ public class AvatarServiceImpl implements AvatarService {
 	/**
 	 * 静态资源路径
 	 */
-	@Value("${spring.mvc.static-path-pattern}")
-	private String staticResourcePath;
+	private String staticResourcePath = "/**";
 
 	@PostConstruct
 	public void fileInitialize() {

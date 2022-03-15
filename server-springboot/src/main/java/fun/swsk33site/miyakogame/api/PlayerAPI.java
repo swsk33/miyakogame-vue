@@ -70,7 +70,7 @@ public class PlayerAPI {
 	@GetMapping("/islogin")
 	public Result<Player> isLogin(Authentication authentication) {
 		Result<Player> result;
-		if (!authentication.isAuthenticated()) {
+		if (authentication == null || !authentication.isAuthenticated()) {
 			result = new Result<>();
 			result.setResultFailed("用户未登录！");
 			return result;
